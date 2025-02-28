@@ -99,6 +99,10 @@ public class ChessBoard {
     return this.board[row][col];
   }
 
+  public ArrayList<Piece> getLivingPieces() {
+    return this.livingPieces;
+  }
+
   public int getBoardSize() {
     return this.boardSize;
   }

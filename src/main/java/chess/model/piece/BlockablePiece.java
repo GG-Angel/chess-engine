@@ -10,7 +10,7 @@ public abstract class BlockablePiece extends ChessPiece {
     super(color, type);
   }
 
-  protected void computeValidMoves(int fromRow, int fromCol, int[][] directions, ChessBoard board) {
+  protected void computeValidMoves(int fromRow, int fromCol, int[][] directions, ChessBoard board) throws IndexOutOfBoundsException {
     board.validateBounds(fromRow, fromCol);
     validMoves = new ArrayList<>();
 

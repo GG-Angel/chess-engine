@@ -19,6 +19,9 @@ public class Chess {
     board.movePiece(new ChessMove(5, 5, 3, 4, board));
     board.movePiece(new ChessMove(1, 3, 3, 3, board));
     board.movePiece(new ChessMove(4, 4, 3, 3, board));
+    board.movePiece(new ChessMove(6, 5, 4, 5, board));
+    board.movePiece(new ChessMove(0, 3, 4, 7, board));
     view.renderBoard();
+    System.out.println(board.getPieceAt(7, 4).getValidMoves());
   }
 }

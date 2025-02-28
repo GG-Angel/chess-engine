@@ -51,8 +51,6 @@ public abstract class ChessPiece implements Piece {
     this.hasMoved = hasMoved;
   }
 
-  public abstract void computeValidMoves(int fromRow, int fromCol, ChessBoard board);
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) return true;
