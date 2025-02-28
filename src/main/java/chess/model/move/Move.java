@@ -1,24 +1,12 @@
 package chess.model.move;
 
-public class Move {
-  private final int row;
-  private final int col;
+public interface Move {
 
-  public Move(int row, int col) {
-    this.row = row;
-    this.col = col;
-  }
+  int fromRow();
 
-  public int getRow() {
-    return row;
-  }
+  int fromCol();
 
-  public int getCol() {
-    return col;
-  }
+  int toRow();
 
-  @Override
-  public String toString() {
-    return String.format("(%d, %d)", row, col);
-  }
+  int toCol();
 }

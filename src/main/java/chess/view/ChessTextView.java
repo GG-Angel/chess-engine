@@ -1,7 +1,7 @@
 package chess.view;
 
 import chess.model.board.ChessBoard;
-import chess.model.piece.IPiece;
+import chess.model.piece.Piece;
 
 public class ChessTextView extends ChessView {
 
@@ -20,7 +20,7 @@ public class ChessTextView extends ChessView {
     for (int row = 0; row < size; row++) {
       StringBuilder rowSB = new StringBuilder();
       for (int col = 0; col < size; col++) {
-        IPiece piece = board.getPieceAt(row, col);
+        Piece piece = board.getPieceAt(row, col);
         rowSB.append(piece != null ? piece.toString() : '＿');
         if (col < size - 1) {
           rowSB.append(' ');

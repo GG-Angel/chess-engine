@@ -1,34 +1,35 @@
 package chess.model.piece;
 
 import chess.model.board.ChessBoard;
-import chess.model.move.Move;
+import chess.model.move.ChessMove;
 
-public abstract class BlockablePiece extends Piece {
+public abstract class BlockablePiece extends ChessPiece {
 
   protected BlockablePiece(PieceColor color, PieceType type) {
     super(color, type);
   }
 
-  protected void computeValidMoves(int row, int col, int[][] directions, ChessBoard board) {
-    board.validateBounds(row, col);
+  protected void computeValidMoves(int fromRow, int fromCol, int[][] directions, ChessBoard board) {
+    board.validateBounds(fromRow, fromCol);
     validMoves.clear();
 
     for (int[] dir : directions) {
       int dist = 1;
       while (dist < board.getBoardSize()) {
-        int destRow = row + dist * dir[0];
-        int destCol = col + dist * dir[1];
+        int destRow = fromRow + dist * dir[0];
+        int destCol = fromCol + dist * dir[1];
         if (!board.isInBounds(destRow, destCol)) break;
 
-        IPiece destPiece = board.getPieceAt(destRow, destCol);
+        Piece destPiece = board.getPieceAt(destRow, destCol);
         if (destPiece != null) {
           if (destPiece.getColor() != this.color) {
-            validMoves.add(new Move(destRow, destCol)); // capture an enemy piece
+            // capture an enemy piece
+            validMoves.add(new ChessMove(fromRow, fromCol, destRow, destCol));
           }
-          break; // blocked by friendly piece
+          break; // blocked by friendly or enemy piece
         }
 
-        validMoves.add(new Move(destRow, destCol));
+        validMoves.add(new ChessMove(fromRow, fromCol, destRow, destCol));
         dist++; // expand in this direction
       }
     }

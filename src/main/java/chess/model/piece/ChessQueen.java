@@ -9,12 +9,12 @@ public class ChessQueen extends BlockablePiece {
   }
 
   @Override
-  public void computeValidMoves(int row, int col, ChessBoard board) {
+  public void computeValidMoves(int fromRow, int fromCol, ChessBoard board) {
     int[][] directions = new int[][] {
         {1, 0}, {-1, 0}, {0, 1}, {0, -1},  // diagonal
         {1, 1}, {1, -1}, {-1, 1}, {-1, -1} // straight
     };
-    computeValidMoves(row, col, directions, board);
+    computeValidMoves(fromRow, fromCol, directions, board);
   }
 
   @Override

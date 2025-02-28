@@ -3,7 +3,7 @@ package chess.view;
 import chess.model.board.ChessBoard;
 import java.io.IOException;
 
-public abstract class ChessView implements IView {
+public abstract class ChessView implements View {
   private final Appendable appendable;
   protected final ChessBoard board;
 

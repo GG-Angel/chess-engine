@@ -1,34 +1,14 @@
 package chess.model.piece;
 
 import chess.model.board.ChessBoard;
-import chess.model.move.Move;
+import chess.model.move.ChessMove;
 import java.util.ArrayList;
 
-public abstract class Piece implements IPiece {
-  protected PieceColor color;
-  protected PieceType type;
-  protected ArrayList<Move> validMoves;
+public interface Piece {
+  PieceColor getColor();
 
-  protected Piece(PieceColor color, PieceType type) {
-    this.color = color;
-    this.type = type;
-    this.validMoves = new ArrayList<>();
-  }
+  PieceType getType();
 
-  @Override
-  public PieceColor getColor() {
-    return this.color;
-  }
-
-  @Override
-  public PieceType getType() {
-    return this.type;
-  }
-
-  @Override
-  public ArrayList<Move> getValidMoves() {
-    return this.validMoves;
-  }
-
-  public abstract void computeValidMoves(int row, int col, ChessBoard board);
+  ArrayList<ChessMove> getValidMoves();
+  void computeValidMoves(int row, int col, ChessBoard board);
 }

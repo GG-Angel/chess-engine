@@ -1,7 +1,7 @@
 package chess.model.piece;
 
 public class PieceFactory {
-  public static Piece createPiece(PieceColor color, PieceType type) {
+  public static ChessPiece createPiece(PieceColor color, PieceType type) {
     return switch (type) {
       case PAWN -> new ChessPawn(color);
       case BISHOP -> new ChessBishop(color);

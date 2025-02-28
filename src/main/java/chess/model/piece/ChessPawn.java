@@ -1,30 +1,30 @@
 package chess.model.piece;
 
 import chess.model.board.ChessBoard;
-import chess.model.move.Move;
+import chess.model.move.ChessMove;
 
-public class ChessPawn extends Piece {
+public class ChessPawn extends ChessPiece {
 
   public ChessPawn(PieceColor color) {
     super(color, PieceType.PAWN);
   }
 
   @Override
-  public void computeValidMoves(int row, int col, ChessBoard board) {
-    board.validateBounds(row, col);
+  public void computeValidMoves(int fromRow, int fromCol, ChessBoard board) {
+    board.validateBounds(fromRow, fromCol);
     validMoves.clear();
 
     int orientation = this.color == PieceColor.WHITE ? 1 : -1;
-    int destRow = row + orientation;
+    int destRow = fromRow + orientation;
 
     for (int direction = -1; direction <= 1; direction++) {
-      int destCol = col + direction;
+      int destCol = fromCol + direction;
       if (!board.isInBounds(destRow, destCol)) continue;
 
-      IPiece destPiece = board.getPieceAt(destRow, destCol);
+      Piece destPiece = board.getPieceAt(destRow, destCol);
       if ((direction == 0 && destPiece == null) || // move forward
           (direction != 0 && destPiece != null && destPiece.getColor() != this.color)) { // capture an enemy piece
-        Move move = new Move(destRow, destCol);
+        ChessMove move = new ChessMove(fromRow, fromCol, destRow, destCol);
         validMoves.add(move);
       }
     }

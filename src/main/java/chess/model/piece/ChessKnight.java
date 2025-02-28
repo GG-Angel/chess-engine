@@ -1,16 +1,16 @@
 package chess.model.piece;
 
 import chess.model.board.ChessBoard;
-import chess.model.move.Move;
+import chess.model.move.ChessMove;
 
-public class ChessKnight extends Piece {
+public class ChessKnight extends ChessPiece {
   public ChessKnight(PieceColor color) {
     super(color, PieceType.KNIGHT);
   }
 
   @Override
-  public void computeValidMoves(int row, int col, ChessBoard board) {
-    board.validateBounds(row, col);
+  public void computeValidMoves(int fromRow, int fromCol, ChessBoard board) {
+    board.validateBounds(fromRow, fromCol);
     validMoves.clear();
 
     int[][] distances = new int[][] {
@@ -18,15 +18,15 @@ public class ChessKnight extends Piece {
         {1, 2}, {1, -2}, {-1, 2}, {-1, -2}
     };
     for (int[] dist : distances) {
-      int destRow = row + dist[0];
-      int destCol = col + dist[1];
+      int destRow = fromRow + dist[0];
+      int destCol = fromCol + dist[1];
       if (!board.isInBounds(destRow, destCol)) {
         continue;
       }
 
-      IPiece destPiece = board.getPieceAt(destRow, destCol);
+      Piece destPiece = board.getPieceAt(destRow, destCol);
       if (destPiece == null || destPiece.getColor() != this.color) {
-        Move move = new Move(destRow, destCol);
+        ChessMove move = new ChessMove(fromRow, fromCol, destRow, destCol);
         validMoves.add(move);
       }
     }

@@ -10,18 +10,17 @@ import static chess.model.piece.PieceType.PAWN;
 import static chess.model.piece.PieceType.QUEEN;
 import static chess.model.piece.PieceType.ROOK;
 
-import chess.model.piece.IPiece;
 import chess.model.piece.Piece;
+import chess.model.piece.ChessPiece;
 import chess.model.piece.PieceType;
-import java.util.Arrays;
 
 public class ChessBoard {
-  private final IPiece[][] board;
+  private final Piece[][] board;
   private final int boardSize;
 
   public ChessBoard() {
     this.boardSize = 8;
-    this.board =  new Piece[boardSize][boardSize];
+    this.board =  new ChessPiece[boardSize][boardSize];
     initializeBoard();
   }
 
@@ -39,7 +38,7 @@ public class ChessBoard {
     }
   }
 
-  public IPiece getPieceAt(int row, int col) throws IndexOutOfBoundsException {
+  public Piece getPieceAt(int row, int col) throws IndexOutOfBoundsException {
     validateBounds(row, col);
     return this.board[row][col];
   }
