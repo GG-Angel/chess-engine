@@ -3,6 +3,7 @@ package chess.model.piece;
 import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
 import chess.model.move.Move;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public interface Piece {
@@ -10,9 +11,11 @@ public interface Piece {
 
   PieceType getType();
 
+  ArrayList<Move> getPossibleMoves();
+
   ArrayList<Move> getValidMoves();
 
   void setHasMoved(boolean hasMoved);
 
-  void computeValidMoves(int row, int col, ChessBoard board);
+  void computeMoves(int row, int col, ChessBoard board);
 }

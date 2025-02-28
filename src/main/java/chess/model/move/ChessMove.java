@@ -34,6 +34,11 @@ public class ChessMove implements Move, Comparable<ChessMove> {
   }
 
   @Override
+  public boolean collidesWith(Move other) {
+    return this.toRow == other.toRow() && this.toCol == other.toCol();
+  }
+
+  @Override
   public int fromRow() {
     return this.fromRow;
   }

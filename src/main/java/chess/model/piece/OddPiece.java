@@ -2,6 +2,7 @@ package chess.model.piece;
 
 import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
+import chess.model.move.Move;
 import java.util.ArrayList;
 
 public abstract class OddPiece extends ChessPiece {
@@ -9,20 +10,21 @@ public abstract class OddPiece extends ChessPiece {
     super(color, type);
   }
 
-  protected void computeValidMoves(int fromRow, int fromCol, int[][] distances, ChessBoard board) throws IndexOutOfBoundsException {
+  protected void computeMoves(int fromRow, int fromCol, int[][] distances, ChessBoard board) throws IndexOutOfBoundsException {
     board.validateBounds(fromRow, fromCol);
+    possibleMoves = new ArrayList<>();
     validMoves = new ArrayList<>();
 
     for (int[] dist : distances) {
-      int destRow = fromRow + dist[0];
-      int destCol = fromCol + dist[1];
-      if (!board.isInBounds(destRow, destCol)) {
-        continue;
-      }
+      int toRow = fromRow + dist[0];
+      int toCol = fromCol + dist[1];
+      if (!board.isInBounds(toRow, toCol)) continue;
 
-      Piece destPiece = board.getPieceAt(destRow, destCol);
-      if (destPiece == null || destPiece.getColor() != this.color) {
-        ChessMove move = new ChessMove(fromRow, fromCol, this, destRow, destCol, destPiece);
+      Piece toPiece = board.getPieceAt(toRow, toCol);
+      Move move = new ChessMove(fromRow, fromCol, this, toRow, toCol, toPiece);
+      possibleMoves.add(move);
+
+      if (toPiece == null || toPiece.getColor() != this.color) {
         validMoves.add(move);
       }
     }

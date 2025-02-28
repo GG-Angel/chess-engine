@@ -4,6 +4,8 @@ import chess.model.piece.Piece;
 
 public interface Move {
 
+  boolean collidesWith(Move other);
+
   int fromRow();
 
   int fromCol();

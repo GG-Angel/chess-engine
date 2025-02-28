@@ -11,7 +11,7 @@ public class ChessPawn extends ChessPiece {
   }
 
   @Override
-  public void computeValidMoves(int fromRow, int fromCol, ChessBoard board) {
+  public void computeMoves(int fromRow, int fromCol, ChessBoard board) {
     board.validateBounds(fromRow, fromCol);
     validMoves = new ArrayList<>();
 

@@ -50,7 +50,7 @@ public class ChessBoard {
     for (int row : rows) {
       for (int col = 0; col < getBoardSize(); col++) {
         Piece piece = this.board[row][col];
-        piece.computeValidMoves(row, col, this);
+        piece.computeMoves(row, col, this);
         this.livingPieces.add(piece);
       }
     }
@@ -62,7 +62,7 @@ public class ChessBoard {
       throw new IllegalArgumentException("Suggested move on board is not valid.");
     }
 
-    // move piece to new position on board
+    // move the piece to new position on board
     this.board[move.fromRow()][move.fromCol()] = null;
     this.board[move.toRow()][move.toCol()] = move.fromPiece();
     move.fromPiece().setHasMoved(true);
@@ -86,7 +86,7 @@ public class ChessBoard {
       for (int col = 0; col < this.boardSize; col++) {
         Piece piece = this.board[row][col];
         if (piece != null) {
-          piece.computeValidMoves(row, col, this);
+          piece.computeMoves(row, col, this);
         }
       }
     }

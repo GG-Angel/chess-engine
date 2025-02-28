@@ -12,14 +12,9 @@ public class Chess {
     ChessBoard board = new ChessBoard();
     View view = new ChessTextView(board);
 
-    board.movePiece(new ChessMove(6, 4, 4, 4, board));
+    board.movePiece(new ChessMove(6, 6, 4, 6, board));
     board.movePiece(new ChessMove(1, 4, 3, 4, board));
-    board.movePiece(new ChessMove(7, 6, 5, 5, board));
-    board.movePiece(new ChessMove(0, 5, 3, 2, board));
-    board.movePiece(new ChessMove(5, 5, 3, 4, board));
-    board.movePiece(new ChessMove(1, 3, 3, 3, board));
-    board.movePiece(new ChessMove(4, 4, 3, 3, board));
-    board.movePiece(new ChessMove(6, 5, 4, 5, board));
+    board.movePiece(new ChessMove(6, 5, 5, 5, board));
     board.movePiece(new ChessMove(0, 3, 4, 7, board));
     view.renderBoard();
     System.out.println(board.getPieceAt(7, 4).getValidMoves());

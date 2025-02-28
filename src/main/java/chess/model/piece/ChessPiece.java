@@ -21,6 +21,7 @@ public abstract class ChessPiece implements Piece {
 
   protected PieceColor color;
   protected PieceType type;
+  protected ArrayList<Move> possibleMoves;
   protected ArrayList<Move> validMoves;
   protected boolean hasMoved;
 
@@ -39,6 +40,11 @@ public abstract class ChessPiece implements Piece {
   @Override
   public PieceType getType() {
     return this.type;
+  }
+
+  @Override
+  public ArrayList<Move> getPossibleMoves() {
+    return this.possibleMoves;
   }
 
   @Override

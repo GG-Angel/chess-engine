@@ -10,12 +10,12 @@ public class ChessKnight extends OddPiece {
   }
 
   @Override
-  public void computeValidMoves(int fromRow, int fromCol, ChessBoard board) throws IndexOutOfBoundsException {
+  public void computeMoves(int fromRow, int fromCol, ChessBoard board) throws IndexOutOfBoundsException {
     int[][] distances = new int[][] {
         {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
         {1, 2}, {1, -2}, {-1, 2}, {-1, -2}
     };
-    computeValidMoves(fromRow, fromCol, distances, board);
+    computeMoves(fromRow, fromCol, distances, board);
   }
 
   @Override

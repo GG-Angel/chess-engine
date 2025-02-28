@@ -9,15 +9,17 @@ public class ChessKing extends OddPiece {
   }
 
   @Override
-  public void computeValidMoves(int fromRow, int fromCol, ChessBoard board) throws IndexOutOfBoundsException {
+  public void computeMoves(int fromRow, int fromCol, ChessBoard board) throws IndexOutOfBoundsException {
     // compute moves before checks
     int[][] distances = new int[][] {{1, -1}, {1, 0}, {1, 1}, {0, -1}, {0, 1}, {-1, -1}, {-1, 0}, {-1, 1}};
-    computeValidMoves(fromRow, fromCol, distances, board);
+    computeMoves(fromRow, fromCol, distances, board);
 
     // prune moves that would walk into a check
     for (Piece piece : board.getLivingPieces()) {
       if (piece.getColor() != this.color) {
-        this.validMoves.removeAll(piece.getValidMoves());
+        this.validMoves.removeIf(myMove ->
+            piece.getValidMoves().stream().anyMatch(myMove::collidesWith)
+        );
       }
     }
   }
