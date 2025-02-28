@@ -1,14 +1,13 @@
 package chess.model.piece;
 
-import chess.Chess;
 import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
 import chess.model.move.Move;
 import java.util.ArrayList;
 
-public abstract class BlockablePiece extends ChessPiece {
+public abstract class DirectionalPiece extends ChessPiece {
 
-  protected BlockablePiece(PieceColor color, PieceType type) throws NullPointerException {
+  protected DirectionalPiece(PieceColor color, PieceType type) throws NullPointerException {
     super(color, type);
   }
 

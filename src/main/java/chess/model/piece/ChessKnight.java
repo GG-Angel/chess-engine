@@ -1,10 +1,8 @@
 package chess.model.piece;
 
 import chess.model.board.ChessBoard;
-import chess.model.move.ChessMove;
-import java.util.ArrayList;
 
-public class ChessKnight extends OddPiece {
+public class ChessKnight extends SpecialPiece {
   public ChessKnight(PieceColor color) {
     super(color, PieceType.KNIGHT);
   }

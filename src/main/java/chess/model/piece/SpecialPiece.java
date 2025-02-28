@@ -5,8 +5,8 @@ import chess.model.move.ChessMove;
 import chess.model.move.Move;
 import java.util.ArrayList;
 
-public abstract class OddPiece extends ChessPiece {
-  protected OddPiece(PieceColor color, PieceType type) throws NullPointerException {
+public abstract class SpecialPiece extends ChessPiece {
+  protected SpecialPiece(PieceColor color, PieceType type) throws NullPointerException {
     super(color, type);
   }
 

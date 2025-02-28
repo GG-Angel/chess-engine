@@ -2,7 +2,7 @@ package chess.model.piece;
 
 import chess.model.board.ChessBoard;
 
-public class ChessKing extends OddPiece {
+public class ChessKing extends SpecialPiece {
 
   public ChessKing(PieceColor color) {
     super(color, PieceType.KING);

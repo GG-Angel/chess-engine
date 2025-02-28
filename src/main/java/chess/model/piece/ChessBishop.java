@@ -2,7 +2,7 @@ package chess.model.piece;
 
 import chess.model.board.ChessBoard;
 
-public class ChessBishop extends BlockablePiece {
+public class ChessBishop extends DirectionalPiece {
 
   public ChessBishop(PieceColor color) {
     super(color, PieceType.BISHOP);
