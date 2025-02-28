@@ -21,8 +21,7 @@ public class ChessTextView extends ChessView {
       StringBuilder rowSB = new StringBuilder();
       for (int col = 0; col < size; col++) {
         IPiece piece = board.getPieceAt(row, col);
-        String display = piece != null ? piece.toString() : "_";
-        rowSB.append(display);
+        rowSB.append(piece != null ? piece.toString() : '＿');
         if (col < size - 1) {
           rowSB.append(' ');
         }

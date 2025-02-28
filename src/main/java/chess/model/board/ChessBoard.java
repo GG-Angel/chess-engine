@@ -13,6 +13,7 @@ import static chess.model.piece.PieceType.ROOK;
 import chess.model.piece.IPiece;
 import chess.model.piece.Piece;
 import chess.model.piece.PieceType;
+import java.util.Arrays;
 
 public class ChessBoard {
   private final IPiece[][] board;
@@ -48,7 +49,7 @@ public class ChessBoard {
   }
 
   public boolean isInBounds(int row, int col) {
-    return row > 0 && row < getBoardSize() && col > 0 && col < getBoardSize();
+    return row >= 0 && row < getBoardSize() && col >= 0 && col < getBoardSize();
   }
 
   public void validateBounds(int row, int col) throws IndexOutOfBoundsException {
