@@ -2,16 +2,32 @@ package chess.model.move;
 
 import static java.util.Objects.requireNonNull;
 
+import chess.model.board.ChessBoard;
 import chess.model.piece.Piece;
+import java.util.Objects;
 
 public class ChessMove implements Move, Comparable<ChessMove> {
-  private final int fromRow, fromCol, toRow, toCol;
-  private final Piece fromPiece, toPiece;
+  private int fromRow, fromCol, toRow, toCol;
+  private Piece fromPiece, toPiece;
+
+  public ChessMove(int fromRow, int fromCol, int toRow, int toCol, ChessBoard board) throws IndexOutOfBoundsException, NullPointerException {
+    if (!board.isInBounds(fromRow, fromCol) || !board.isInBounds(toRow, toCol)) {
+      throw new IndexOutOfBoundsException("Move coordinates are out of bounds.");
+    }
+
+    Piece fromPiece = board.getPieceAt(fromRow, fromCol);
+    Piece toPiece = board.getPieceAt(toRow, toCol);
+    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece);
+  }
 
   public ChessMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece) throws NullPointerException {
+    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece);
+  }
+
+  private void initializeMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece) throws NullPointerException {
+    this.fromPiece = requireNonNull(fromPiece, "No piece to move specified.");
     this.fromRow = fromRow;
     this.fromCol = fromCol;
-    this.fromPiece = requireNonNull(fromPiece, "No piece to move specified.");
     this.toRow = toRow;
     this.toCol = toCol;
     this.toPiece = toPiece;
@@ -62,6 +78,11 @@ public class ChessMove implements Move, Comparable<ChessMove> {
            fromCol == chessMove.fromCol &&
            toRow == chessMove.toRow &&
            toCol == chessMove.toCol;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(fromRow, fromCol, toRow, toCol);
   }
 
   @Override

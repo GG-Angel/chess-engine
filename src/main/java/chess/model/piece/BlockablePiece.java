@@ -2,6 +2,7 @@ package chess.model.piece;
 
 import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
+import java.util.ArrayList;
 
 public abstract class BlockablePiece extends ChessPiece {
 
@@ -11,7 +12,7 @@ public abstract class BlockablePiece extends ChessPiece {
 
   protected void computeValidMoves(int fromRow, int fromCol, int[][] directions, ChessBoard board) {
     board.validateBounds(fromRow, fromCol);
-    validMoves.clear();
+    validMoves = new ArrayList<>();
 
     for (int[] dir : directions) {
       int dist = 1;

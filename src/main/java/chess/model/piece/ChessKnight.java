@@ -2,6 +2,7 @@ package chess.model.piece;
 
 import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
+import java.util.ArrayList;
 
 public class ChessKnight extends ChessPiece {
   public ChessKnight(PieceColor color) {
@@ -11,7 +12,7 @@ public class ChessKnight extends ChessPiece {
   @Override
   public void computeValidMoves(int fromRow, int fromCol, ChessBoard board) {
     board.validateBounds(fromRow, fromCol);
-    validMoves.clear();
+    validMoves = new ArrayList<>();
 
     int[][] distances = new int[][] {
         {2, 1}, {2, -1}, {-2, 1}, {-2, -1},

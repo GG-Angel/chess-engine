@@ -3,8 +3,9 @@ package chess.model.piece;
 import static java.util.Objects.requireNonNull;
 
 import chess.model.board.ChessBoard;
-import chess.model.move.ChessMove;
+import chess.model.move.Move;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public abstract class ChessPiece implements Piece {
   public static ChessPiece createPiece(PieceColor color, PieceType type) throws NullPointerException {
@@ -20,7 +21,7 @@ public abstract class ChessPiece implements Piece {
 
   protected PieceColor color;
   protected PieceType type;
-  protected ArrayList<ChessMove> validMoves;
+  protected ArrayList<Move> validMoves;
   protected boolean hasMoved;
 
   protected ChessPiece(PieceColor color, PieceType type) throws NullPointerException {
@@ -41,9 +42,27 @@ public abstract class ChessPiece implements Piece {
   }
 
   @Override
-  public ArrayList<ChessMove> getValidMoves() {
+  public ArrayList<Move> getValidMoves() {
     return this.validMoves;
   }
 
+  @Override
+  public void setHasMoved(boolean hasMoved) {
+    this.hasMoved = hasMoved;
+  }
+
   public abstract void computeValidMoves(int fromRow, int fromCol, ChessBoard board);
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null || getClass() != obj.getClass()) return false;
+    ChessPiece that = (ChessPiece) obj;
+    return color == that.color && type == that.type;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(color, type);
+  }
 }

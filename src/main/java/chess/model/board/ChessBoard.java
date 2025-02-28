@@ -20,14 +20,14 @@ import java.util.Stack;
 
 public class ChessBoard {
   private final Piece[][] board;
-  private final ArrayList<Piece> pieces;
+  private final ArrayList<Piece> livingPieces;
   private final Stack<Move> moveStack;
   private final int boardSize;
 
   public ChessBoard() {
     this.boardSize = 8;
     this.board =  new ChessPiece[boardSize][boardSize];
-    this.pieces = new ArrayList<>();
+    this.livingPieces = new ArrayList<>();
     this.moveStack = new Stack<>();
     initializeBoard();
   }
@@ -51,17 +51,48 @@ public class ChessBoard {
       for (int col = 0; col < getBoardSize(); col++) {
         Piece piece = this.board[row][col];
         piece.computeValidMoves(row, col, this);
-        this.pieces.add(piece);
+        this.livingPieces.add(piece);
       }
     }
   }
 
-  public void movePiece(Piece piece, Move move) throws IllegalArgumentException, NullPointerException {
+  public void movePiece(Move move) throws IllegalArgumentException, NullPointerException {
     requireNonNull(move, "Suggested move on board cannot be null.");
-    if (!piece.getValidMoves().contains(move)) {
+    if (!move.fromPiece().getValidMoves().contains(move)) {
       throw new IllegalArgumentException("Suggested move on board is not valid.");
     }
+
+    // move piece to new position on board
+    this.board[move.fromRow()][move.fromCol()] = null;
+    this.board[move.toRow()][move.toCol()] = move.fromPiece();
+    move.fromPiece().setHasMoved(true);
+
+    // kill an enemy piece if taken
+    if (move.toPiece() != null) {
+      livingPieces.remove(move.toPiece());
+    }
+
+    // store move for backtracking
+    moveStack.push(move);
+
+    refreshValidMoves();
   }
+
+  private void refreshValidMoves() {
+    // TODO: Find more efficient means of recomputing valid moves.
+    //       Maybe there's a way that only recomputes the affected pieces?
+
+    for (int row = 0; row < this.boardSize; row++) {
+      for (int col = 0; col < this.boardSize; col++) {
+        Piece piece = this.board[row][col];
+        if (piece != null) {
+          piece.computeValidMoves(row, col, this);
+        }
+      }
+    }
+  }
+
+  // TODO: Handle checks/wins in transition by checking if the king does/doesn't have valid moves.
 
   public Piece getPieceAt(int row, int col) throws IndexOutOfBoundsException {
     validateBounds(row, col);

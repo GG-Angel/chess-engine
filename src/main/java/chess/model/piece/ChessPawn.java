@@ -2,6 +2,7 @@ package chess.model.piece;
 
 import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
+import java.util.ArrayList;
 
 public class ChessPawn extends ChessPiece {
 
@@ -12,7 +13,7 @@ public class ChessPawn extends ChessPiece {
   @Override
   public void computeValidMoves(int fromRow, int fromCol, ChessBoard board) {
     board.validateBounds(fromRow, fromCol);
-    validMoves.clear();
+    validMoves = new ArrayList<>();
 
     int orientation = this.color == PieceColor.WHITE ? -1 : 1;
     int destRow = fromRow + orientation;
