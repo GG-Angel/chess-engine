@@ -11,6 +11,8 @@ public class Chess {
     ChessBoard board = new ChessBoard();
     View view = new ChessTextView(board);
 
+    System.out.println(board.getPieceAt(6, 3).getValidMoves());
+
     view.renderBoard();
   }
 }

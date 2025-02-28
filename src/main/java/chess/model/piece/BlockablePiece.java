@@ -5,7 +5,7 @@ import chess.model.move.ChessMove;
 
 public abstract class BlockablePiece extends ChessPiece {
 
-  protected BlockablePiece(PieceColor color, PieceType type) {
+  protected BlockablePiece(PieceColor color, PieceType type) throws NullPointerException {
     super(color, type);
   }
 

@@ -5,11 +5,11 @@ import chess.model.piece.Piece;
 
 public class ChessTextView extends ChessView {
 
-  public ChessTextView(ChessBoard board) throws IllegalArgumentException {
+  public ChessTextView(ChessBoard board) throws NullPointerException {
     super(board);
   }
 
-  public ChessTextView(ChessBoard board, Appendable appendable) throws IllegalArgumentException {
+  public ChessTextView(ChessBoard board, Appendable appendable) throws NullPointerException {
     super(board, appendable);
   }
 

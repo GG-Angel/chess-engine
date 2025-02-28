@@ -1,8 +1,8 @@
 package chess.model.board;
 
+import static chess.model.piece.ChessPiece.createPiece;
 import static chess.model.piece.PieceColor.BLACK;
 import static chess.model.piece.PieceColor.WHITE;
-import static chess.model.piece.PieceFactory.createPiece;
 import static chess.model.piece.PieceType.BISHOP;
 import static chess.model.piece.PieceType.KING;
 import static chess.model.piece.PieceType.KNIGHT;
@@ -10,17 +10,24 @@ import static chess.model.piece.PieceType.PAWN;
 import static chess.model.piece.PieceType.QUEEN;
 import static chess.model.piece.PieceType.ROOK;
 
+import chess.model.move.Move;
 import chess.model.piece.Piece;
 import chess.model.piece.ChessPiece;
 import chess.model.piece.PieceType;
+import java.util.ArrayList;
+import java.util.Stack;
 
 public class ChessBoard {
   private final Piece[][] board;
+  private final ArrayList<Piece> pieces;
+  private final Stack<Move> moveStack;
   private final int boardSize;
 
   public ChessBoard() {
     this.boardSize = 8;
     this.board =  new ChessPiece[boardSize][boardSize];
+    this.pieces = new ArrayList<>();
+    this.moveStack = new Stack<>();
     initializeBoard();
   }
 
@@ -35,6 +42,16 @@ public class ChessBoard {
       // create pawn rows
       this.board[1][col] = createPiece(BLACK, PAWN);
       this.board[6][col] = createPiece(WHITE, PAWN);
+    }
+
+    // calculate initial valid moves, store references to pieces
+    int[] rows = new int[] { 0, 1, 6, 7 };
+    for (int row : rows) {
+      for (int col = 0; col < getBoardSize(); col++) {
+        Piece piece = this.board[row][col];
+        piece.computeValidMoves(row, col, this);
+        this.pieces.add(piece);
+      }
     }
   }
 

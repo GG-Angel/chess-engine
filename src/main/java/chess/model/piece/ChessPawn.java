@@ -14,18 +14,29 @@ public class ChessPawn extends ChessPiece {
     board.validateBounds(fromRow, fromCol);
     validMoves.clear();
 
-    int orientation = this.color == PieceColor.WHITE ? 1 : -1;
+    int orientation = this.color == PieceColor.WHITE ? -1 : 1;
     int destRow = fromRow + orientation;
-
     for (int direction = -1; direction <= 1; direction++) {
       int destCol = fromCol + direction;
       if (!board.isInBounds(destRow, destCol)) continue;
 
       Piece destPiece = board.getPieceAt(destRow, destCol);
       if ((direction == 0 && destPiece == null) || // move forward
-          (direction != 0 && destPiece != null && destPiece.getColor() != this.color)) { // capture an enemy piece
+          (direction != 0 && destPiece != null
+              && destPiece.getColor() != this.color)) { // capture an enemy piece
         ChessMove move = new ChessMove(fromRow, fromCol, destRow, destCol);
         validMoves.add(move);
+
+        // check for double jump
+        if (direction == 0 && !hasMoved) {
+          int destRowJump = destRow + orientation;
+          if (!board.isInBounds(destRowJump, destCol)) continue;
+          Piece destPieceJump = board.getPieceAt(destRowJump, destCol);
+          if (destPieceJump == null || destPieceJump.getColor() != this.color) {
+            ChessMove moveJump = new ChessMove(fromRow, fromCol, destRowJump, destCol);
+            validMoves.add(moveJump);
+          }
+        }
       }
     }
 
