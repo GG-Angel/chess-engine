@@ -24,12 +24,12 @@ public abstract class BlockablePiece extends ChessPiece {
         if (destPiece != null) {
           if (destPiece.getColor() != this.color) {
             // capture an enemy piece
-            validMoves.add(new ChessMove(fromRow, fromCol, destRow, destCol));
+            validMoves.add(new ChessMove(fromRow, fromCol, this, destRow, destCol, destPiece));
           }
           break; // blocked by friendly or enemy piece
         }
 
-        validMoves.add(new ChessMove(fromRow, fromCol, destRow, destCol));
+        validMoves.add(new ChessMove(fromRow, fromCol, this, destRow, destCol, null));
         dist++; // expand in this direction
       }
     }

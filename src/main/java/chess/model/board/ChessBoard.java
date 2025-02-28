@@ -9,6 +9,7 @@ import static chess.model.piece.PieceType.KNIGHT;
 import static chess.model.piece.PieceType.PAWN;
 import static chess.model.piece.PieceType.QUEEN;
 import static chess.model.piece.PieceType.ROOK;
+import static java.util.Objects.requireNonNull;
 
 import chess.model.move.Move;
 import chess.model.piece.Piece;
@@ -52,6 +53,13 @@ public class ChessBoard {
         piece.computeValidMoves(row, col, this);
         this.pieces.add(piece);
       }
+    }
+  }
+
+  public void movePiece(Piece piece, Move move) throws IllegalArgumentException, NullPointerException {
+    requireNonNull(move, "Suggested move on board cannot be null.");
+    if (!piece.getValidMoves().contains(move)) {
+      throw new IllegalArgumentException("Suggested move on board is not valid.");
     }
   }
 

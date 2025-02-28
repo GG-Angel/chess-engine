@@ -24,7 +24,7 @@ public class ChessPawn extends ChessPiece {
       if ((direction == 0 && destPiece == null) || // move forward
           (direction != 0 && destPiece != null
               && destPiece.getColor() != this.color)) { // capture an enemy piece
-        ChessMove move = new ChessMove(fromRow, fromCol, destRow, destCol);
+        ChessMove move = new ChessMove(fromRow, fromCol, this, destRow, destCol, destPiece);
         validMoves.add(move);
 
         // check for double jump
@@ -33,7 +33,7 @@ public class ChessPawn extends ChessPiece {
           if (!board.isInBounds(destRowJump, destCol)) continue;
           Piece destPieceJump = board.getPieceAt(destRowJump, destCol);
           if (destPieceJump == null || destPieceJump.getColor() != this.color) {
-            ChessMove moveJump = new ChessMove(fromRow, fromCol, destRowJump, destCol);
+            ChessMove moveJump = new ChessMove(fromRow, fromCol, this, destRowJump, destCol, destPieceJump);
             validMoves.add(moveJump);
           }
         }

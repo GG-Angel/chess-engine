@@ -26,7 +26,7 @@ public class ChessKnight extends ChessPiece {
 
       Piece destPiece = board.getPieceAt(destRow, destCol);
       if (destPiece == null || destPiece.getColor() != this.color) {
-        ChessMove move = new ChessMove(fromRow, fromCol, destRow, destCol);
+        ChessMove move = new ChessMove(fromRow, fromCol, this, destRow, destCol, destPiece);
         validMoves.add(move);
       }
     }
