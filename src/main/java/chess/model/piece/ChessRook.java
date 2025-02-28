@@ -13,4 +13,9 @@ public class ChessRook extends BlockablePiece {
     int[][] directions = new int[][] { {1, 0}, {-1, 0}, {0, 1}, {0, -1} };
     computeValidMoves(row, col, directions, board);
   }
+
+  @Override
+  public String toString() {
+    return this.color == PieceColor.WHITE ? "♖" : "♜";
+  }
 }

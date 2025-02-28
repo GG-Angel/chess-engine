@@ -31,4 +31,9 @@ public class ChessPawn extends Piece {
 
     // TODO: Implement en passant.
   }
+
+  @Override
+  public String toString() {
+    return this.color == PieceColor.WHITE ? "♙" : "♟";
+  }
 }

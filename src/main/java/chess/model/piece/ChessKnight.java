@@ -31,4 +31,9 @@ public class ChessKnight extends Piece {
       }
     }
   }
+
+  @Override
+  public String toString() {
+    return this.color == PieceColor.WHITE ? "♘" : "♞";
+  }
 }

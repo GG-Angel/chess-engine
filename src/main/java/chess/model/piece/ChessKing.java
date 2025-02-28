@@ -12,4 +12,9 @@ public class ChessKing extends Piece {
   public void computeValidMoves(int row, int col, ChessBoard board) {
     
   }
+
+  @Override
+  public String toString() {
+    return this.color == PieceColor.WHITE ? "♔" : "♚";
+  }
 }

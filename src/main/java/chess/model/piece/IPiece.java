@@ -10,6 +10,5 @@ public interface IPiece {
   PieceType getType();
 
   ArrayList<Move> getValidMoves();
-
   void computeValidMoves(int row, int col, ChessBoard board);
 }

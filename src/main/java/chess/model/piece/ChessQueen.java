@@ -16,4 +16,9 @@ public class ChessQueen extends BlockablePiece {
     };
     computeValidMoves(row, col, directions, board);
   }
+
+  @Override
+  public String toString() {
+    return this.color == PieceColor.WHITE ? "♕" : "♛";
+  }
 }

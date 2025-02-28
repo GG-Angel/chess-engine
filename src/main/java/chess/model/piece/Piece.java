@@ -15,14 +15,17 @@ public abstract class Piece implements IPiece {
     this.validMoves = new ArrayList<>();
   }
 
+  @Override
   public PieceColor getColor() {
     return this.color;
   }
 
+  @Override
   public PieceType getType() {
     return this.type;
   }
 
+  @Override
   public ArrayList<Move> getValidMoves() {
     return this.validMoves;
   }
