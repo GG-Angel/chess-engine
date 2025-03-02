@@ -6,6 +6,8 @@ public interface Move {
 
   boolean collidesWith(Move other);
 
+  Move getSubMove();
+
   int fromRow();
 
   int fromCol();
@@ -17,4 +19,5 @@ public interface Move {
   int toCol();
 
   Piece toPiece();
+
 }

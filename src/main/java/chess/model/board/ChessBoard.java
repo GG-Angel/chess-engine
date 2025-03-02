@@ -14,20 +14,24 @@ import static java.util.Objects.requireNonNull;
 import chess.model.move.Move;
 import chess.model.piece.Piece;
 import chess.model.piece.ChessPiece;
+import chess.model.piece.PieceColor;
 import chess.model.piece.PieceType;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Stack;
 
 public class ChessBoard {
   private final Piece[][] board;
-  private final ArrayList<Piece> livingPieces;
+  private final ArrayList<Piece> whitePieces;
+  private final ArrayList<Piece> blackPieces;
   private final Stack<Move> moveStack;
   private final int boardSize;
 
   public ChessBoard() {
     this.boardSize = 8;
     this.board =  new ChessPiece[boardSize][boardSize];
-    this.livingPieces = new ArrayList<>();
+    this.whitePieces = new ArrayList<>();
+    this.blackPieces = new ArrayList<>();
     this.moveStack = new Stack<>();
     initializeBoard();
   }
@@ -51,7 +55,11 @@ public class ChessBoard {
       for (int col = 0; col < getBoardSize(); col++) {
         Piece piece = this.board[row][col];
         piece.computeMoves(row, col, this);
-        this.livingPieces.add(piece);
+        if (row <= 1) {
+          this.blackPieces.add(piece);
+        } else {
+          this.whitePieces.add(piece);
+        }
       }
     }
   }
@@ -61,7 +69,10 @@ public class ChessBoard {
     if (!move.fromPiece().getValidMoves().contains(move)) {
       throw new IllegalArgumentException("Suggested move on board is not valid.");
     }
+    executeMovePiece(move);
+  }
 
+  private void executeMovePiece(Move move) {
     // move the piece to new position on board
     this.board[move.fromRow()][move.fromCol()] = null;
     this.board[move.toRow()][move.toCol()] = move.fromPiece();
@@ -69,13 +80,19 @@ public class ChessBoard {
 
     // kill an enemy piece if taken
     if (move.toPiece() != null) {
-      livingPieces.remove(move.toPiece());
+      PieceColor color = move.toPiece().getColor();
+      getFriendlyPieces(color).remove(move.toPiece());
     }
 
     // store move for backtracking
     moveStack.push(move);
 
-    refreshValidMoves();
+    // check for move chains
+    if (move.getSubMove() != null) {
+      executeMovePiece(move.getSubMove());
+    } else {
+      refreshValidMoves();
+    }
   }
 
   private void refreshValidMoves() {
@@ -99,8 +116,16 @@ public class ChessBoard {
     return this.board[row][col];
   }
 
-  public ArrayList<Piece> getLivingPieces() {
-    return this.livingPieces;
+  public Stack<Move> getMoveStack() {
+    return this.moveStack;
+  }
+
+  public ArrayList<Piece> getFriendlyPieces(PieceColor color) {
+    return color == PieceColor.WHITE ? whitePieces : blackPieces;
+  }
+
+  public ArrayList<Piece> getOpposingPieces(PieceColor color) {
+    return color == PieceColor.WHITE ? blackPieces : whitePieces ;
   }
 
   public int getBoardSize() {

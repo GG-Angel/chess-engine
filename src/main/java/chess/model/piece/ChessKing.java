@@ -2,7 +2,7 @@ package chess.model.piece;
 
 import chess.model.board.ChessBoard;
 
-public class ChessKing extends SpecialPiece {
+public class ChessKing extends ProximityPiece {
 
   public ChessKing(PieceColor color) {
     super(color, PieceType.KING);
@@ -15,12 +15,10 @@ public class ChessKing extends SpecialPiece {
     computeMoves(fromRow, fromCol, distances, board);
 
     // prune moves that would walk into a check
-    for (Piece piece : board.getLivingPieces()) {
-      if (piece.getColor() != this.color) {
-        this.validMoves.removeIf(myMove ->
-            piece.getValidMoves().stream().anyMatch(myMove::collidesWith)
-        );
-      }
+    for (Piece piece : board.getOpposingPieces(this.color)) {
+      this.validMoves.removeIf(move ->
+          piece.getValidMoves().stream().anyMatch(move::collidesWith)
+      );
     }
   }
 

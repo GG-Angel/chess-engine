@@ -28,14 +28,16 @@ public abstract class DirectionalPiece extends ChessPiece {
         possibleMoves.add(move);
 
         if (!collision) {
-          if (toPiece != null) {
-            if (toPiece.getColor() != this.color) {
-              validMoves.add(move); // capture an enemy piece
-            }
-            collision = true; // blocked by friendly or enemy piece
-          } else {
+          if (toPiece == null) {
             validMoves.add(move);
+            continue;
           }
+
+          // collided with some piece
+          if (isOpposingPiece(toPiece)) {
+            validMoves.add(move); // capture an enemy piece
+          }
+          collision = true; // blocked by friendly or enemy piece
         }
       }
     }

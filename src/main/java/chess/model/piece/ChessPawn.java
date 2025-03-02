@@ -2,46 +2,71 @@ package chess.model.piece;
 
 import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
+import chess.model.move.Move;
 import java.util.ArrayList;
 
 public class ChessPawn extends ChessPiece {
 
+  private final int direction;
+
   public ChessPawn(PieceColor color) {
     super(color, PieceType.PAWN);
+    this.direction = this.color == PieceColor.WHITE ? -1 : 1;
   }
 
   @Override
   public void computeMoves(int fromRow, int fromCol, ChessBoard board) {
     board.validateBounds(fromRow, fromCol);
+    possibleMoves = new ArrayList<>();
     validMoves = new ArrayList<>();
 
-    int orientation = this.color == PieceColor.WHITE ? -1 : 1;
-    int destRow = fromRow + orientation;
-    for (int direction = -1; direction <= 1; direction++) {
-      int destCol = fromCol + direction;
-      if (!board.isInBounds(destRow, destCol)) continue;
+    computeForwardMoves(fromRow, fromCol, board);
+    computeDiagonalCaptures(fromRow, fromCol, board);
+    computeEnPassant(fromRow, fromCol, board);
+  }
 
-      Piece destPiece = board.getPieceAt(destRow, destCol);
-      if ((direction == 0 && destPiece == null) || // move forward
-          (direction != 0 && destPiece != null
-              && destPiece.getColor() != this.color)) { // capture an enemy piece
-        ChessMove move = new ChessMove(fromRow, fromCol, this, destRow, destCol, destPiece);
+  private void computeForwardMoves(int fromRow, int fromCol, ChessBoard board) {
+    for (int distance = 1; distance <= 2; distance++) {
+      int toRow = fromRow + (direction * distance);
+      if (!board.isInBounds(toRow, fromCol) || (board.getPieceAt(toRow, fromCol) != null)) return;
+      if (distance == 1 || (distance == 2 && !this.hasMoved)) {
+        Move move = new ChessMove(fromRow, fromCol, this, toRow, fromCol, null);
         validMoves.add(move);
-
-        // check for double jump
-        if (direction == 0 && !hasMoved) {
-          int destRowJump = destRow + orientation;
-          if (!board.isInBounds(destRowJump, destCol)) continue;
-          Piece destPieceJump = board.getPieceAt(destRowJump, destCol);
-          if (destPieceJump == null || destPieceJump.getColor() != this.color) {
-            ChessMove moveJump = new ChessMove(fromRow, fromCol, this, destRowJump, destCol, destPieceJump);
-            validMoves.add(moveJump);
-          }
-        }
       }
     }
+  }
 
-    // TODO: Implement en passant.
+  private void computeDiagonalCaptures(int fromRow, int fromCol, ChessBoard board) {
+    int toRow = fromRow + direction;
+    int[] diagonalCols = new int[] { fromCol - 1, fromCol + 1 };
+    for (int toCol : diagonalCols) {
+      if (!board.isInBounds(toRow, toCol)) continue;
+      Piece destPiece = board.getPieceAt(toRow, toCol);
+      Move move = new ChessMove(fromRow, fromCol, this, toRow, toCol, destPiece);
+      if (isOpposingPiece(destPiece)) {
+        validMoves.add(move);
+      }
+    }
+  }
+
+  private void computeEnPassant(int fromRow, int fromCol, ChessBoard board) {
+    int toRow = fromRow + direction;
+    if (!board.isInBounds(toRow, fromCol)) return; // ensure there is an extra row forward
+
+    if (board.getMoveStack().isEmpty()) return;
+    Move lastMove = board.getMoveStack().peek();
+
+    // check that the last move was by an opposing pawn
+    // that stepped twice and landed on an adjacent slot
+    if (lastMove.fromPiece().getType() != PieceType.PAWN || !isOpposingPiece(lastMove.fromPiece())) return;
+    if (lastMove.toRow() != fromRow) return;
+    if (Math.abs(lastMove.toRow() - lastMove.fromRow()) != 2) return;
+    if (lastMove.toCol() == fromCol - 1 || lastMove.toCol() == fromCol + 1) {
+      int toCol = lastMove.toCol();
+      Move forwardMove = new ChessMove(fromRow, toCol, this, toRow, toCol, null);
+      Move captureMove = new ChessMove(fromRow, fromCol, this, fromRow, toCol, lastMove.fromPiece(), forwardMove);
+      validMoves.add(captureMove);
+    }
   }
 
   @Override

@@ -9,6 +9,7 @@ import java.util.Objects;
 public class ChessMove implements Move, Comparable<ChessMove> {
   private int fromRow, fromCol, toRow, toCol;
   private Piece fromPiece, toPiece;
+  private Move subMove;
 
   public ChessMove(int fromRow, int fromCol, int toRow, int toCol, ChessBoard board) throws IndexOutOfBoundsException, NullPointerException {
     if (!board.isInBounds(fromRow, fromCol) || !board.isInBounds(toRow, toCol)) {
@@ -17,25 +18,45 @@ public class ChessMove implements Move, Comparable<ChessMove> {
 
     Piece fromPiece = board.getPieceAt(fromRow, fromCol);
     Piece toPiece = board.getPieceAt(toRow, toCol);
-    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece);
+    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, null);
   }
 
-  public ChessMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece) throws NullPointerException {
-    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece);
+  public ChessMove(int fromRow, int fromCol, int toRow, int toCol, ChessBoard board, Move subMove) throws IndexOutOfBoundsException, NullPointerException {
+    if (!board.isInBounds(fromRow, fromCol) || !board.isInBounds(toRow, toCol)) {
+      throw new IndexOutOfBoundsException("Move coordinates are out of bounds.");
+    }
+
+    Piece fromPiece = board.getPieceAt(fromRow, fromCol);
+    Piece toPiece = board.getPieceAt(toRow, toCol);
+    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, subMove);
   }
 
-  private void initializeMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece) throws NullPointerException {
-    this.fromPiece = requireNonNull(fromPiece, "No piece to move specified.");
-    this.fromRow = fromRow;
-    this.fromCol = fromCol;
-    this.toRow = toRow;
-    this.toCol = toCol;
-    this.toPiece = toPiece;
+  public ChessMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece) {
+    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, null);
   }
+
+  public ChessMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, Move subMove) {
+    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, subMove);
+  }
+
+  private void initializeMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, Move subMove) throws NullPointerException {
+      this.fromPiece = requireNonNull(fromPiece, "No piece to move specified.");
+      this.fromRow = fromRow;
+      this.fromCol = fromCol;
+      this.toRow = toRow;
+      this.toCol = toCol;
+      this.toPiece = toPiece;
+      this.subMove = subMove;
+    }
 
   @Override
   public boolean collidesWith(Move other) {
     return this.toRow == other.toRow() && this.toCol == other.toCol();
+  }
+
+  @Override
+  public Move getSubMove() {
+    return this.subMove;
   }
 
   @Override
@@ -70,8 +91,10 @@ public class ChessMove implements Move, Comparable<ChessMove> {
 
   @Override
   public String toString() {
+    String subMoveString = (subMove != null) ? " ==> " + subMove.toString() : "";
     String to = toPiece != null ? toPiece.toString() : "_";
-    return String.format("(%d, %d, %s) → (%d, %d, %s)", fromRow, fromCol, fromPiece, toRow, toCol, to);
+    return String.format("(%d, %d, %s) → (%d, %d, %s)%s",
+        fromRow, fromCol, fromPiece, toRow, toCol, to, subMoveString);
   }
 
   @Override

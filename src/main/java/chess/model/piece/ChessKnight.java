@@ -2,7 +2,7 @@ package chess.model.piece;
 
 import chess.model.board.ChessBoard;
 
-public class ChessKnight extends SpecialPiece {
+public class ChessKnight extends ProximityPiece {
   public ChessKnight(PieceColor color) {
     super(color, PieceType.KNIGHT);
   }
