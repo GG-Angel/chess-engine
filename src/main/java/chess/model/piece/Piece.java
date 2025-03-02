@@ -7,6 +7,9 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public interface Piece {
+
+  boolean hasMoved();
+
   boolean isOpposingPiece(Piece other);
 
   PieceColor getColor();

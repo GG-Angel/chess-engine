@@ -33,6 +33,11 @@ public abstract class ChessPiece implements Piece {
   }
 
   @Override
+  public boolean hasMoved() {
+    return this.hasMoved;
+  }
+
+  @Override
   public boolean isOpposingPiece(Piece other) {
     return other != null && this.color != other.getColor();
   }

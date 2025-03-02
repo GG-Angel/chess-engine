@@ -11,16 +11,6 @@ public class ChessMove implements Move, Comparable<ChessMove> {
   private Piece fromPiece, toPiece;
   private Move subMove;
 
-  public ChessMove(int fromRow, int fromCol, int toRow, int toCol, ChessBoard board) throws IndexOutOfBoundsException, NullPointerException {
-    if (!board.isInBounds(fromRow, fromCol) || !board.isInBounds(toRow, toCol)) {
-      throw new IndexOutOfBoundsException("Move coordinates are out of bounds.");
-    }
-
-    Piece fromPiece = board.getPieceAt(fromRow, fromCol);
-    Piece toPiece = board.getPieceAt(toRow, toCol);
-    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, null);
-  }
-
   public ChessMove(int fromRow, int fromCol, int toRow, int toCol, ChessBoard board, Move subMove) throws IndexOutOfBoundsException, NullPointerException {
     if (!board.isInBounds(fromRow, fromCol) || !board.isInBounds(toRow, toCol)) {
       throw new IndexOutOfBoundsException("Move coordinates are out of bounds.");
