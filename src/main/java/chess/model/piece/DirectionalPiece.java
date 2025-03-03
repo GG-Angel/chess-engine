@@ -13,8 +13,7 @@ public abstract class DirectionalPiece extends ChessPiece {
 
   protected void computeMoves(int fromRow, int fromCol, int[][] directions, ChessBoard board) throws IndexOutOfBoundsException {
     board.validateBounds(fromRow, fromCol);
-    possibleMoves = new ArrayList<>();
-    validMoves = new ArrayList<>();
+    clearMoves();
 
     for (int[] dir : directions) {
       boolean collision = false;

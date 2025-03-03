@@ -12,8 +12,7 @@ public abstract class ProximityPiece extends ChessPiece {
 
   protected void computeMoves(int fromRow, int fromCol, int[][] distances, ChessBoard board) throws IndexOutOfBoundsException {
     board.validateBounds(fromRow, fromCol);
-    possibleMoves = new ArrayList<>();
-    validMoves = new ArrayList<>();
+    clearMoves();
 
     for (int[] dist : distances) {
       int toRow = fromRow + dist[0];

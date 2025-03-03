@@ -27,19 +27,15 @@ public class ChessBoard {
   private final ArrayList<Piece> blackPieces;
   private final Stack<Move> moveStack;
   private final int boardSize;
+  private PieceColor turn;
 
   public ChessBoard() {
-    this.boardSize = 8;
-    this.board =  new ChessPiece[boardSize][boardSize];
-    this.whitePieces = new ArrayList<>();
-    this.blackPieces = new ArrayList<>();
-    this.moveStack = new Stack<>();
-    initializeBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    this("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
   }
 
   public ChessBoard(String fen) {
     this.boardSize = 8;
-    this.board =  new ChessPiece[boardSize][boardSize];
+    this.board = new ChessPiece[boardSize][boardSize];
     this.whitePieces = new ArrayList<>();
     this.blackPieces = new ArrayList<>();
     this.moveStack = new Stack<>();
@@ -56,7 +52,8 @@ public class ChessBoard {
       symbolToPieceType.put('q', QUEEN);
       symbolToPieceType.put('k', KING);
 
-      char[] fenBoard = fen.split(" ")[0].toCharArray();
+      String[] fenFields = fen.split(" ");
+      char[] fenBoard = fenFields[0].toCharArray();
       int row = 0; int col = 0;
 
       for (char symbol : fenBoard) {
@@ -77,6 +74,7 @@ public class ChessBoard {
         }
       }
 
+      this.turn = fenFields[1].equals("w") ? WHITE : BLACK;
       generateMoves();
     } catch (Exception e) {
       throw new IllegalArgumentException("Invalid FEN string.");
@@ -84,14 +82,15 @@ public class ChessBoard {
   }
 
   private void generateMoves() {
-    // TODO: Find more efficient means of recomputing valid moves.
-    //       Maybe there's a way that only recomputes the affected pieces?
-
-    for (int row = 0; row < this.boardSize; row++) {
-      for (int col = 0; col < this.boardSize; col++) {
+    for (int row = 0; row < getBoardSize(); row++) {
+      for (int col = 0; col < getBoardSize(); col++) {
         Piece piece = this.board[row][col];
         if (piece != null) {
-          piece.computeMoves(row, col, this);
+          if (piece.getColor() == turn) {
+            piece.computeMoves(row, col, this);
+          } else {
+            piece.clearMoves();
+          }
         }
       }
     }
@@ -128,11 +127,6 @@ public class ChessBoard {
     }
   }
 
-  public Piece getPieceAt(int row, int col) throws IndexOutOfBoundsException {
-    validateBounds(row, col);
-    return this.board[row][col];
-  }
-
   public Stack<Move> getMoveStack() {
     return this.moveStack;
   }
@@ -147,6 +141,11 @@ public class ChessBoard {
 
   public int getBoardSize() {
     return this.boardSize;
+  }
+
+  public Piece getPieceAt(int row, int col) throws IndexOutOfBoundsException {
+    validateBounds(row, col);
+    return this.board[row][col];
   }
 
   public boolean isOutOfBounds(int row, int col) {

@@ -63,6 +63,12 @@ public abstract class ChessPiece implements Piece {
   }
 
   @Override
+  public void clearMoves() {
+    possibleMoves = new ArrayList<>();
+    validMoves = new ArrayList<>();
+  }
+
+  @Override
   public void setHasMoved(boolean hasMoved) {
     this.hasMoved = hasMoved;
   }
