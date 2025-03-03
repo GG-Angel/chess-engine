@@ -67,7 +67,6 @@ public class Chess {
     board.movePiece(new ChessMove(7, 2, 4, 5, board, null));
     board.movePiece(new ChessMove(7, 3, 6, 3, board, null));
 
-
     view.renderBoard();
     view.renderMessage(king.getValidMoves().toString());
     view.renderMessage("");

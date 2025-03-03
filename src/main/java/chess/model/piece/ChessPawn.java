@@ -26,10 +26,11 @@ public class ChessPawn extends ChessPiece {
   }
 
   private void computeForwardMoves(int fromRow, int fromCol, ChessBoard board) {
+    int homeRow = this.color == PieceColor.WHITE ? 6 : 1;
     for (int distance = 1; distance <= 2; distance++) {
       int toRow = fromRow + (direction * distance);
-      if (!board.isInBounds(toRow, fromCol) || (board.getPieceAt(toRow, fromCol) != null)) return;
-      if (distance == 1 || (distance == 2 && !this.hasMoved)) {
+      if (board.isOutOfBounds(toRow, fromCol) || (board.getPieceAt(toRow, fromCol) != null)) return;
+      if (distance == 1 || (distance == 2 && !this.hasMoved && fromRow == homeRow)) {
         Move move = new ChessMove(fromRow, fromCol, this, toRow, fromCol, null);
         validMoves.add(move);
       }
@@ -40,7 +41,7 @@ public class ChessPawn extends ChessPiece {
     int toRow = fromRow + direction;
     int[] diagonalCols = new int[] { fromCol - 1, fromCol + 1 };
     for (int toCol : diagonalCols) {
-      if (!board.isInBounds(toRow, toCol)) continue;
+      if (board.isOutOfBounds(toRow, toCol)) continue;
       Piece destPiece = board.getPieceAt(toRow, toCol);
       Move move = new ChessMove(fromRow, fromCol, this, toRow, toCol, destPiece);
       if (isOpposingPiece(destPiece)) {
@@ -51,7 +52,7 @@ public class ChessPawn extends ChessPiece {
 
   private void computeEnPassant(int fromRow, int fromCol, ChessBoard board) {
     int toRow = fromRow + direction;
-    if (!board.isInBounds(toRow, fromCol)) return; // ensure there is an extra row forward
+    if (board.isOutOfBounds(toRow, fromCol)) return; // ensure there is an extra row forward
 
     if (board.getMoveStack().isEmpty()) return;
     Move lastMove = board.getMoveStack().peek();

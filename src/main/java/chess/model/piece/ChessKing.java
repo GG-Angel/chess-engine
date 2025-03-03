@@ -27,7 +27,6 @@ public class ChessKing extends ProximityPiece {
 
   private void computeCastling(int fromRow, int fromCol, ChessBoard board) {
     if (hasMoved) return;
-
     checkCastling(fromRow, fromCol, board, 7, 6, 5); // king-side castling
     checkCastling(fromRow, fromCol, board, 0, 2, 3); // queen-side castling
   }

@@ -16,8 +16,9 @@ import chess.model.piece.Piece;
 import chess.model.piece.ChessPiece;
 import chess.model.piece.PieceColor;
 import chess.model.piece.PieceType;
-import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 public class ChessBoard {
@@ -33,32 +34,64 @@ public class ChessBoard {
     this.whitePieces = new ArrayList<>();
     this.blackPieces = new ArrayList<>();
     this.moveStack = new Stack<>();
-    initializeBoard();
+    initializeBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
   }
 
-  private void initializeBoard() {
-    PieceType[] order = { ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK };
-    for (int col = 0; col < getBoardSize(); col++) {
-      // create back ranks
-      PieceType type = order[col];
-      this.board[0][col] = createPiece(BLACK, type);
-      this.board[7][col] = createPiece(WHITE, type);
+  public ChessBoard(String fen) {
+    this.boardSize = 8;
+    this.board =  new ChessPiece[boardSize][boardSize];
+    this.whitePieces = new ArrayList<>();
+    this.blackPieces = new ArrayList<>();
+    this.moveStack = new Stack<>();
+    initializeBoard(fen);
+  }
 
-      // create pawn rows
-      this.board[1][col] = createPiece(BLACK, PAWN);
-      this.board[6][col] = createPiece(WHITE, PAWN);
-    }
+  private void initializeBoard(String fen) {
+    try {
+      Map<Character, PieceType> symbolToPieceType = new HashMap<>();
+      symbolToPieceType.put('p', PAWN);
+      symbolToPieceType.put('b', BISHOP);
+      symbolToPieceType.put('n', KNIGHT);
+      symbolToPieceType.put('r', ROOK);
+      symbolToPieceType.put('q', QUEEN);
+      symbolToPieceType.put('k', KING);
 
-    // calculate initial valid moves, store references to pieces
-    int[] rows = new int[] { 0, 1, 6, 7 };
-    for (int row : rows) {
-      for (int col = 0; col < getBoardSize(); col++) {
-        Piece piece = this.board[row][col];
-        piece.computeMoves(row, col, this);
-        if (row <= 1) {
-          this.blackPieces.add(piece);
+      char[] fenBoard = fen.split(" ")[0].toCharArray();
+      int row = 0; int col = 0;
+
+      for (char symbol : fenBoard) {
+        if (symbol == '/') {
+          row++;
+          col = 0;
         } else {
-          this.whitePieces.add(piece);
+          if (Character.isDigit(symbol)) {
+            col += Character.getNumericValue(symbol);
+          } else {
+            PieceType type = symbolToPieceType.get(Character.toLowerCase(symbol));
+            PieceColor color = Character.isUpperCase(symbol) ? WHITE : BLACK;
+            Piece piece = createPiece(color, type);
+            getFriendlyPieces(color).add(piece);
+            this.board[row][col] = piece;
+            col++;
+          }
+        }
+      }
+
+      generateMoves();
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid FEN string.");
+    }
+  }
+
+  private void generateMoves() {
+    // TODO: Find more efficient means of recomputing valid moves.
+    //       Maybe there's a way that only recomputes the affected pieces?
+
+    for (int row = 0; row < this.boardSize; row++) {
+      for (int col = 0; col < this.boardSize; col++) {
+        Piece piece = this.board[row][col];
+        if (piece != null) {
+          piece.computeMoves(row, col, this);
         }
       }
     }
@@ -91,25 +124,9 @@ public class ChessBoard {
     if (move.getSubMove() != null) {
       executeMovePiece(move.getSubMove());
     } else {
-      refreshValidMoves();
+      generateMoves();
     }
   }
-
-  private void refreshValidMoves() {
-    // TODO: Find more efficient means of recomputing valid moves.
-    //       Maybe there's a way that only recomputes the affected pieces?
-
-    for (int row = 0; row < this.boardSize; row++) {
-      for (int col = 0; col < this.boardSize; col++) {
-        Piece piece = this.board[row][col];
-        if (piece != null) {
-          piece.computeMoves(row, col, this);
-        }
-      }
-    }
-  }
-
-  // TODO: Handle checks/wins in transition by checking if the king does/doesn't have valid moves.
 
   public Piece getPieceAt(int row, int col) throws IndexOutOfBoundsException {
     validateBounds(row, col);
@@ -132,12 +149,12 @@ public class ChessBoard {
     return this.boardSize;
   }
 
-  public boolean isInBounds(int row, int col) {
-    return row >= 0 && row < getBoardSize() && col >= 0 && col < getBoardSize();
+  public boolean isOutOfBounds(int row, int col) {
+    return row < 0 || row >= getBoardSize() || col < 0 || col >= getBoardSize();
   }
 
   public void validateBounds(int row, int col) throws IndexOutOfBoundsException {
-    if (!isInBounds(row, col)) {
+    if (isOutOfBounds(row, col)) {
       throw new IndexOutOfBoundsException(String.format(
           "Cannot access row or column out of bounds: (%d, %d)", row, col
       ));

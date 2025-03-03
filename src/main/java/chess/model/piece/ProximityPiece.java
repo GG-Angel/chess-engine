@@ -18,7 +18,7 @@ public abstract class ProximityPiece extends ChessPiece {
     for (int[] dist : distances) {
       int toRow = fromRow + dist[0];
       int toCol = fromCol + dist[1];
-      if (!board.isInBounds(toRow, toCol)) continue;
+      if (board.isOutOfBounds(toRow, toCol)) continue;
 
       Piece toPiece = board.getPieceAt(toRow, toCol);
       Move move = new ChessMove(fromRow, fromCol, this, toRow, toCol, toPiece);

@@ -12,7 +12,7 @@ public class ChessMove implements Move, Comparable<ChessMove> {
   private Move subMove;
 
   public ChessMove(int fromRow, int fromCol, int toRow, int toCol, ChessBoard board, Move subMove) throws IndexOutOfBoundsException, NullPointerException {
-    if (!board.isInBounds(fromRow, fromCol) || !board.isInBounds(toRow, toCol)) {
+    if (board.isOutOfBounds(fromRow, fromCol) || board.isOutOfBounds(toRow, toCol)) {
       throw new IndexOutOfBoundsException("Move coordinates are out of bounds.");
     }
 

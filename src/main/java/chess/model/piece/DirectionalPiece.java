@@ -21,7 +21,7 @@ public abstract class DirectionalPiece extends ChessPiece {
       for (int dist = 1; dist < board.getBoardSize(); dist++) {
         int toRow = fromRow + dist * dir[0];
         int toCol = fromCol + dist * dir[1];
-        if (!board.isInBounds(toRow, toCol)) break;
+        if (board.isOutOfBounds(toRow, toCol)) break;
 
         Piece toPiece = board.getPieceAt(toRow, toCol);
         Move move = new ChessMove(fromRow, fromCol, this, toRow, toCol, toPiece);
