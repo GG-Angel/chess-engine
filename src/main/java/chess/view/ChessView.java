@@ -31,4 +31,9 @@ public abstract class ChessView implements View {
         .append(message)
         .append("\n");
   }
+
+  @Override
+  public void renderNewLine() throws IOException {
+    this.appendable.append("\n");
+  }
 }

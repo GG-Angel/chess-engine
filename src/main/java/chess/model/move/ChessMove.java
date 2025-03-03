@@ -10,6 +10,7 @@ public class ChessMove implements Move, Comparable<ChessMove> {
   private int fromRow, fromCol, toRow, toCol;
   private Piece fromPiece, toPiece;
   private Move subMove;
+  private boolean wasFirstMove;
 
   public ChessMove(int fromRow, int fromCol, int toRow, int toCol, ChessBoard board, Move subMove) throws IndexOutOfBoundsException, NullPointerException {
     if (board.isOutOfBounds(fromRow, fromCol) || board.isOutOfBounds(toRow, toCol)) {
@@ -33,6 +34,7 @@ public class ChessMove implements Move, Comparable<ChessMove> {
       this.fromPiece = requireNonNull(fromPiece, "No piece to move specified.");
       this.fromRow = fromRow;
       this.fromCol = fromCol;
+      this.wasFirstMove = !fromPiece.hasMoved();
       this.toRow = toRow;
       this.toCol = toCol;
       this.toPiece = toPiece;
@@ -42,6 +44,11 @@ public class ChessMove implements Move, Comparable<ChessMove> {
   @Override
   public boolean collidesWith(Move other) {
     return this.toRow == other.toRow() && this.toCol == other.toCol();
+  }
+
+  @Override
+  public boolean wasFirstMove() {
+    return this.wasFirstMove;
   }
 
   @Override

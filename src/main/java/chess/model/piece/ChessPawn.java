@@ -30,7 +30,7 @@ public class ChessPawn extends ChessPiece {
     for (int distance = 1; distance <= 2; distance++) {
       int toRow = fromRow + (direction * distance);
       if (board.isOutOfBounds(toRow, fromCol) || (board.getPieceAt(toRow, fromCol) != null)) return;
-      if (distance == 1 || (distance == 2 && !this.hasMoved && fromRow == homeRow)) {
+      if (distance == 1 || (distance == 2 && fromRow == homeRow)) {
         Move move = new ChessMove(fromRow, fromCol, this, toRow, fromCol, null);
         validMoves.add(move);
       }

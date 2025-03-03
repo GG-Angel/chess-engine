@@ -6,6 +6,8 @@ public interface Move {
 
   boolean collidesWith(Move other);
 
+  boolean wasFirstMove();
+
   Move getSubMove();
 
   int fromRow();

@@ -4,7 +4,9 @@ import java.io.IOException;
 
 public interface View {
 
-  public void renderBoard() throws IOException;
+  void renderBoard() throws IOException;
 
-  public void renderMessage(String message) throws IOException;
+  void renderMessage(String message) throws IOException;
+
+  void renderNewLine() throws IOException;
 }

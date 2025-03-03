@@ -96,15 +96,21 @@ public class ChessBoard {
     }
   }
 
-  public void movePiece(Move move) throws IllegalArgumentException, NullPointerException {
+  public void makeMove(Move move) throws IllegalArgumentException, NullPointerException {
     requireNonNull(move, "Suggested move on board cannot be null.");
     if (!move.fromPiece().getValidMoves().contains(move)) {
-      throw new IllegalArgumentException("Suggested move on board is not valid.");
+      throw new IllegalArgumentException(String.format("Suggested move on board is not valid: %s", move));
     }
-    executeMovePiece(move);
+
+    // store move for backtracking
+    moveStack.push(move);
+
+    executeMakeMove(move);
+    switchTurn();
+    generateMoves();
   }
 
-  private void executeMovePiece(Move move) {
+  private void executeMakeMove(Move move) {
     // move the piece to new position on board
     this.board[move.fromRow()][move.fromCol()] = null;
     this.board[move.toRow()][move.toCol()] = move.fromPiece();
@@ -116,15 +122,46 @@ public class ChessBoard {
       getFriendlyPieces(color).remove(move.toPiece());
     }
 
-    // store move for backtracking
-    moveStack.push(move);
-
     // check for move chains
     if (move.getSubMove() != null) {
-      executeMovePiece(move.getSubMove());
-    } else {
-      generateMoves();
+      executeMakeMove(move.getSubMove());
     }
+  }
+
+  public void undoMove() throws IllegalStateException {
+    if (moveStack.isEmpty()) {
+      throw new IllegalStateException("Cannot undo move when stack is empty.");
+    }
+
+    Move lastMove = moveStack.pop();
+    executeUndoMove(lastMove);
+    switchTurn();
+    generateMoves();
+  }
+
+  private void executeUndoMove(Move move) {
+    if (move.getSubMove() != null) {
+      executeUndoMove(move.getSubMove());
+    }
+
+    // put pieces back in place
+    this.board[move.fromRow()][move.fromCol()] = move.fromPiece();
+    this.board[move.toRow()][move.toCol()] = move.toPiece();
+
+    // restore previous has moved state
+    if (move.wasFirstMove()) {
+      move.fromPiece().setHasMoved(false);
+    }
+
+    // restore piece in reference list if killed
+    if (move.toPiece() != null) {
+      PieceColor color = move.toPiece().getColor();
+      getFriendlyPieces(color).add(move.toPiece());
+    }
+  }
+
+  private void switchTurn() {
+    this.turn = this.turn == WHITE ? BLACK : WHITE;
   }
 
   public Stack<Move> getMoveStack() {
