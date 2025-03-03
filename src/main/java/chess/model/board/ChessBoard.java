@@ -27,7 +27,10 @@ public class ChessBoard {
   private final ArrayList<Piece> blackPieces;
   private final Stack<Move> moveStack;
   private final int boardSize;
+
   private PieceColor turn;
+  private final Stack<Integer> halfMoveClock;
+  private int fullMoveClock;
 
   public ChessBoard() {
     this("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -39,6 +42,7 @@ public class ChessBoard {
     this.whitePieces = new ArrayList<>();
     this.blackPieces = new ArrayList<>();
     this.moveStack = new Stack<>();
+    this.halfMoveClock = new Stack<>();
     initializeBoard(fen);
   }
 
@@ -54,8 +58,14 @@ public class ChessBoard {
 
       String[] fenFields = fen.split(" ");
       char[] fenBoard = fenFields[0].toCharArray();
-      int row = 0; int col = 0;
+      this.turn = fenFields[1].equals("w") ? WHITE : BLACK;
+      // missing 2 for castling possibility
+      // missing 3 for en passant target square
 
+      this.halfMoveClock.push(Integer.parseInt(fenFields[4]));
+      this.fullMoveClock = Integer.parseInt(fenFields[5]);
+
+      int row = 0; int col = 0;
       for (char symbol : fenBoard) {
         if (symbol == '/') {
           row++;
@@ -74,7 +84,6 @@ public class ChessBoard {
         }
       }
 
-      this.turn = fenFields[1].equals("w") ? WHITE : BLACK;
       generateMoves();
     } catch (Exception e) {
       throw new IllegalArgumentException("Invalid FEN string.");
@@ -104,8 +113,19 @@ public class ChessBoard {
 
     // store move for backtracking
     moveStack.push(move);
-
     executeMakeMove(move);
+
+
+    if (move.fromPiece().getType() == PAWN || move.toPiece() != null) {
+      this.halfMoveClock.push(0);
+    } else {
+      this.halfMoveClock.push(this.halfMoveClock.peek() + 1);
+    }
+
+    if (turn == BLACK) {
+      this.fullMoveClock++;
+    }
+
     switchTurn();
     generateMoves();
   }
@@ -135,6 +155,12 @@ public class ChessBoard {
 
     Move lastMove = moveStack.pop();
     executeUndoMove(lastMove);
+
+    this.halfMoveClock.pop();
+    if (turn == WHITE) {
+      this.fullMoveClock--;
+    }
+
     switchTurn();
     generateMoves();
   }
@@ -178,6 +204,14 @@ public class ChessBoard {
 
   public int getBoardSize() {
     return this.boardSize;
+  }
+
+  public int getHalfMoves() {
+    return this.halfMoveClock.peek();
+  }
+
+  public int getFullMoves() {
+    return this.fullMoveClock;
   }
 
   public Piece getPieceAt(int row, int col) throws IndexOutOfBoundsException {

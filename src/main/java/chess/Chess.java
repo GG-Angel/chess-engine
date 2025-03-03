@@ -10,22 +10,25 @@ import java.io.IOException;
 public class Chess {
 
   public static void main(String[] args) throws IOException {
-    ChessBoard board = new ChessBoard("rnbqkbnr/pppppppp/8/8/2B1P/5N/PPPP1PPP/RNBQK2R w KQkq - 0 1");
+    ChessBoard board = new ChessBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     View view = new ChessTextView(board);
 
+    board.makeMove(new ChessMove(6, 4, 4, 4, board, null));
+    board.makeMove(new ChessMove(1, 2, 3, 2, board, null));
+    board.makeMove(new ChessMove(7, 6, 5, 5, board, null));
+
     view.renderBoard();
-    view.renderMessage(board.getPieceAt(7, 4).getValidMoves().toString());
+    view.renderMessage(String.format("Halfmoves: %d, Fullmoves: %d",
+        board.getHalfMoves(), board.getFullMoves()));
     view.renderNewLine();
 
-    board.makeMove(board.getPieceAt(7, 4).getValidMoves().getLast());
+    board.undoMove();
+    board.undoMove();
     board.undoMove();
 
     view.renderBoard();
-    view.renderMessage(board.getPieceAt(7, 4).getValidMoves().toString());
-    view.renderNewLine();
-
-    board.makeMove(board.getPieceAt(7, 4).getValidMoves().getLast());
-    view.renderBoard();
+    view.renderMessage(String.format("Halfmoves: %d, Fullmoves: %d",
+        board.getHalfMoves(), board.getFullMoves()));
 
 //    ChessBoard board = new ChessBoard();
 //    View view = new ChessTextView(board);
