@@ -57,14 +57,15 @@ public class ChessBoard {
       symbolToPieceType.put('k', KING);
 
       String[] fenFields = fen.split(" ");
-      char[] fenBoard = fenFields[0].toCharArray();
       this.turn = fenFields[1].equals("w") ? WHITE : BLACK;
-      // missing 2 for castling possibility
-      // missing 3 for en passant target square
-
       this.halfMoveClock.push(Integer.parseInt(fenFields[4]));
       this.fullMoveClock = Integer.parseInt(fenFields[5]);
+      // missing en passant target square, can make one move in stack for it and its done!
 
+      char[] fenBoard = fenFields[0].toCharArray();
+      String fenCastling = fenFields[2];
+
+      // place pieces on board
       int row = 0; int col = 0;
       for (char symbol : fenBoard) {
         if (symbol == '/') {
@@ -80,6 +81,19 @@ public class ChessBoard {
             getFriendlyPieces(color).add(piece);
             this.board[row][col] = piece;
             col++;
+          }
+        }
+      }
+
+      // assign castling permissions
+      if (!fenCastling.equals("-")) {
+        char[] cannotCastle = "KQkq".replaceAll("[" + fenCastling + "]", "").toCharArray();
+        for (char symbol : cannotCastle) {
+          int rank = Character.isUpperCase(symbol) ? 7 : 0;
+          int rookCol = Character.toLowerCase(symbol) == 'k' ? 7 : 0;
+          Piece piece = this.board[rank][rookCol];
+          if (piece != null && piece.getType() == ROOK) {
+            piece.setHasMoved(true);
           }
         }
       }
