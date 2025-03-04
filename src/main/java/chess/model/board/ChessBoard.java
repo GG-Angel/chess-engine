@@ -18,6 +18,7 @@ import chess.model.piece.PieceColor;
 import chess.model.piece.PieceType;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -98,25 +99,50 @@ public class ChessBoard {
         }
       }
 
-      generateMoves();
+      generateLegalMoves();
     } catch (Exception e) {
-      throw new IllegalArgumentException("Invalid FEN string.");
+      throw new IllegalArgumentException("Invalid FEN string: " + e.getMessage());
     }
   }
 
-  private void generateMoves() {
+  private List<Move> generateMoves() {
+    List<Move> generatedMoves = new ArrayList<>();
     for (int row = 0; row < getBoardSize(); row++) {
       for (int col = 0; col < getBoardSize(); col++) {
         Piece piece = this.board[row][col];
         if (piece != null) {
           if (piece.getColor() == turn) {
             piece.computeMoves(row, col, this);
+            generatedMoves.addAll(piece.getValidMoves());
           } else {
             piece.clearMoves();
           }
         }
       }
     }
+    return generatedMoves;
+  }
+
+  private List<Move> generateLegalMoves() {
+    List<Move> pseudoLegalMoves = generateMoves();
+    List<Move> legalMoves = new ArrayList<>();
+
+    for (Move moveToVerify : pseudoLegalMoves) {
+      makeMove(moveToVerify);
+      List<Move> opponentResponses = generateMoves();
+      if (opponentResponses.stream().anyMatch(move ->
+          move.toPiece() != null &&
+          move.toPiece().getType() == KING
+      )) {
+        // this move would result in a king capture, remove it
+        moveToVerify.fromPiece().getValidMoves().remove(moveToVerify);
+      } else {
+        legalMoves.add(moveToVerify);
+      }
+      undoMove();
+    }
+
+    return legalMoves;
   }
 
   public void makeMove(Move move) throws IllegalArgumentException, NullPointerException {
@@ -128,7 +154,6 @@ public class ChessBoard {
     // store move for backtracking
     moveStack.push(move);
     executeMakeMove(move);
-
 
     if (move.fromPiece().getType() == PAWN || move.toPiece() != null) {
       this.halfMoveClock.push(0);
