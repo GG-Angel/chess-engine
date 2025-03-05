@@ -135,6 +135,8 @@ public class ChessBoard implements Board {
       makeMove(moveToVerify);
       if (!isKingInCheck(currentTurnColor)) {
         legalMoves.add(moveToVerify);
+      } else {
+        moveToVerify.fromPiece().getValidMoves().remove(moveToVerify);
       }
       undoMove();
     }
