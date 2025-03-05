@@ -27,7 +27,7 @@ public class ChessBoard {
   private final Stack<Move> moveStack;
   private final int boardSize;
 
-  private PieceColor colorTurn;
+  private PieceColor turnColor;
   private final Stack<Boolean> checkStack;;
   private final Stack<Integer> halfMoveClock;
   private int fullMoveClock;
@@ -58,7 +58,7 @@ public class ChessBoard {
       symbolToPieceType.put('k', KING);
 
       String[] fenFields = fen.split(" ");
-      this.colorTurn = fenFields[1].equals("w") ? WHITE : BLACK;
+      this.turnColor = fenFields[1].equals("w") ? WHITE : BLACK;
       this.halfMoveClock.push(Integer.parseInt(fenFields[4]));
       this.fullMoveClock = Integer.parseInt(fenFields[5]);
       // missing en passant target square, can make one move in stack for it and its done!
@@ -99,15 +99,15 @@ public class ChessBoard {
         }
       }
 
-      this.checkStack.push(isKingInCheck());
+      this.checkStack.push(isKingInCheck(turnColor));
       generateLegalMoves();
     } catch (Exception e) {
       throw new IllegalArgumentException("Invalid FEN string: " + e.getMessage());
     }
   }
 
-  private boolean isKingInCheck() {
-    PieceColor opponentColor = getOpposingColor(colorTurn);
+  private boolean isKingInCheck(PieceColor side) {
+    PieceColor opponentColor = getOpposingColor(side);
     for (int row = 0; row < getBoardSize(); row++) {
       for (int col = 0; col < getBoardSize(); col++) {
         Piece piece = this.board[row][col];
@@ -127,7 +127,7 @@ public class ChessBoard {
     for (int row = 0; row < getBoardSize(); row++) {
       for (int col = 0; col < getBoardSize(); col++) {
         Piece piece = this.board[row][col];
-        if (piece != null && piece.getColor() == colorTurn) {
+        if (piece != null && piece.getColor() == turnColor) {
           piece.setValidMoves(piece.computeMoves(row, col, this));
           generatedMoves.addAll(piece.getValidMoves());
         }
@@ -139,17 +139,13 @@ public class ChessBoard {
   public List<Move> generateLegalMoves() {
     List<Move> pseudoLegalMoves = generateMoves();
     List<Move> legalMoves = new ArrayList<>();
+    PieceColor currentTurnColor = turnColor;
 
     for (Move moveToVerify : pseudoLegalMoves) {
       makeMove(moveToVerify);
-
-      List<Move> opponentResponses = generateMoves();
-      boolean isLegal = opponentResponses.stream().noneMatch(Move::threatensKing);
-
-      if (isLegal) {
+      if (!isKingInCheck(currentTurnColor)) {
         legalMoves.add(moveToVerify);
       }
-
       undoMove();
     }
 
@@ -173,12 +169,12 @@ public class ChessBoard {
       this.halfMoveClock.push(this.halfMoveClock.peek() + 1);
     }
 
-    if (colorTurn == BLACK) {
+    if (turnColor == BLACK) {
       this.fullMoveClock++;
     }
 
     switchTurn();
-    this.checkStack.push(isKingInCheck());
+    this.checkStack.push(isKingInCheck(turnColor));
   }
 
   private void executeMakeMove(Move move) {
@@ -208,7 +204,7 @@ public class ChessBoard {
     executeUndoMove(lastMove);
 
     this.halfMoveClock.pop();
-    if (colorTurn == WHITE) {
+    if (turnColor == WHITE) {
       this.fullMoveClock--;
     }
 
@@ -238,7 +234,7 @@ public class ChessBoard {
   }
 
   private void switchTurn() {
-    this.colorTurn = this.colorTurn == WHITE ? BLACK : WHITE;
+    this.turnColor = this.turnColor == WHITE ? BLACK : WHITE;
   }
 
   public Stack<Move> getMoveStack() {
