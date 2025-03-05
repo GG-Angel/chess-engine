@@ -94,10 +94,21 @@ public class ChessMove implements Move, Comparable<ChessMove> {
 
   @Override
   public String toString() {
-    String subMoveString = (subMove != null) ? " ==> " + subMove.toString() : "";
+    StringBuilder sb = new StringBuilder();
+    sb.append(moveType).append(": ");
+    return recToString(sb, this);
+  }
+
+  private String recToString(StringBuilder sb, Move move) {
     String to = toPiece != null ? toPiece.toString() : "_";
-    return String.format("(%d, %d, %s) → (%d, %d, %s)%s",
-        fromRow, fromCol, fromPiece, toRow, toCol, to, subMoveString);
+    sb.append(String.format("(%d, %d, %s) → (%d, %d, %s)",
+            fromRow, fromCol, fromPiece, toRow, toCol, to));
+    if (move.getSubMove() != null) {
+      sb.append(" ==> ");
+      return recToString(sb, getSubMove());
+    } else {
+      return sb.toString();
+    }
   }
 
   @Override

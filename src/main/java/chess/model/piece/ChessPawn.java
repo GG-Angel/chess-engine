@@ -7,6 +7,8 @@ import chess.model.move.Move;
 import java.util.ArrayList;
 import java.util.List;
 
+import static chess.model.piece.PieceType.*;
+
 public class ChessPawn extends ChessPiece {
 
   private final int direction;
@@ -21,21 +23,32 @@ public class ChessPawn extends ChessPiece {
     board.validateBounds(fromRow, fromCol);
     List<Move> moves = new ArrayList<>();
 
-    computeForwardMoves(fromRow, fromCol, board, moves);
+    computeForwardMovesAndPromotions(fromRow, fromCol, board, moves);
     computeDiagonalCaptures(fromRow, fromCol, board, moves);
     computeEnPassant(fromRow, fromCol, board, moves);
 
     return moves;
   }
 
-  private void computeForwardMoves(int fromRow, int fromCol, ChessBoard board, List<Move> moves) {
+  private void computeForwardMovesAndPromotions(int fromRow, int fromCol, ChessBoard board, List<Move> moves) {
     int homeRow = this.color == PieceColor.WHITE ? 6 : 1;
+    int promotionRow = this.color == PieceColor.WHITE ? 0 : 7;
     for (int distance = 1; distance <= 2; distance++) {
       int toRow = fromRow + (direction * distance);
       if (board.isOutOfBounds(toRow, fromCol) || (board.getPieceAt(toRow, fromCol) != null)) return;
       if (distance == 1 || (distance == 2 && fromRow == homeRow)) {
-        Move move = new ChessMove(fromRow, fromCol, this, toRow, fromCol, null);
-        moves.add(move);
+        if (toRow == promotionRow) {
+          PieceType[] promotionTypes = new PieceType[] { KNIGHT, BISHOP, ROOK, QUEEN };
+          for (PieceType type : promotionTypes) {
+            Piece promotionPiece = createPiece(this.color, type);
+            Move promotionMove = new ChessMove(fromRow, fromCol, this, toRow, fromCol, promotionPiece);
+            Move forwardMove = new ChessMove(fromRow, fromCol, this, toRow, fromCol, null, promotionMove, ChessMoveType.PROMOTION);
+            moves.add(forwardMove);
+          }
+        } else {
+          Move move = new ChessMove(fromRow, fromCol, this, toRow, fromCol, null);
+          moves.add(move);
+        }
       }
     }
   }

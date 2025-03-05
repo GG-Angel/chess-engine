@@ -4,4 +4,5 @@ public enum ChessMoveType {
     STANDARD,
     CASTLE,
     EN_PASSANT,
+    PROMOTION
 }
