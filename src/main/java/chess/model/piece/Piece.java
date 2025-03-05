@@ -1,5 +1,6 @@
 package chess.model.piece;
 
+import chess.model.board.Board;
 import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
 import chess.model.move.Move;
@@ -23,5 +24,5 @@ public interface Piece {
 
   void setHasMoved(boolean hasMoved);
 
-  List<Move> computeMoves(int row, int col, ChessBoard board);
+  List<Move> computeMoves(int row, int col, Board board);
 }

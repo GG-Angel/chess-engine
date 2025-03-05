@@ -2,18 +2,19 @@ package chess.view;
 
 import static java.util.Objects.requireNonNull;
 
+import chess.model.board.Board;
 import chess.model.board.ChessBoard;
 import java.io.IOException;
 
 public abstract class ChessView implements View {
   private final Appendable appendable;
-  protected final ChessBoard board;
+  protected final Board board;
 
-  protected ChessView(ChessBoard board) throws NullPointerException {
+  protected ChessView(Board board) throws NullPointerException {
     this(board, System.out);
   }
 
-  protected ChessView(ChessBoard board, Appendable appendable) throws NullPointerException {
+  protected ChessView(Board board, Appendable appendable) throws NullPointerException {
     this.board = requireNonNull(board, "Must pass non-null Model to View.");
     this.appendable = requireNonNull(appendable, "Must pass non-null Appendable to View.");
   }

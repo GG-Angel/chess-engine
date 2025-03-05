@@ -1,16 +1,17 @@
 package chess.view;
 
+import chess.model.board.Board;
 import chess.model.board.ChessBoard;
 import chess.model.piece.Piece;
 
 public class ChessTextView extends ChessView {
   private final char emptySlot = System.getProperty("os.name").equals("Mac OS X") ? '_' : '＿';
 
-  public ChessTextView(ChessBoard board) throws NullPointerException {
+  public ChessTextView(Board board) throws NullPointerException {
     super(board);
   }
 
-  public ChessTextView(ChessBoard board, Appendable appendable) throws NullPointerException {
+  public ChessTextView(Board board, Appendable appendable) throws NullPointerException {
     super(board, appendable);
   }
 

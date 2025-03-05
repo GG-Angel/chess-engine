@@ -1,5 +1,6 @@
 package chess.model.piece;
 
+import chess.model.board.Board;
 import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
 import chess.model.move.Move;
@@ -13,7 +14,7 @@ public abstract class ProximityPiece extends ChessPiece {
     super(color, type);
   }
 
-  protected List<Move> computeMoves(int fromRow, int fromCol, int[][] distances, ChessBoard board) throws IndexOutOfBoundsException {
+  protected List<Move> computeMoves(int fromRow, int fromCol, int[][] distances, Board board) throws IndexOutOfBoundsException {
     board.validateBounds(fromRow, fromCol);
     List<Move> moves = new ArrayList<>();
 

@@ -1,5 +1,6 @@
 package chess.model.piece;
 
+import chess.model.board.Board;
 import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
 import chess.model.move.ChessMoveType;
@@ -15,7 +16,7 @@ public class ChessKing extends ProximityPiece {
   }
 
   @Override
-  public List<Move> computeMoves(int fromRow, int fromCol, ChessBoard board) throws IndexOutOfBoundsException {
+  public List<Move> computeMoves(int fromRow, int fromCol, Board board) throws IndexOutOfBoundsException {
     int[][] distances = new int[][] {{1, -1}, {1, 0}, {1, 1}, {0, -1}, {0, 1}, {-1, -1}, {-1, 0}, {-1, 1}};
     List<Move> moves = computeMoves(fromRow, fromCol, distances, board);
     List<Move> castlingMoves = computeCastling(fromRow, fromCol, board);
@@ -24,7 +25,7 @@ public class ChessKing extends ProximityPiece {
     return moves;
   }
 
-  private List<Move> computeCastling(int fromRow, int fromCol, ChessBoard board) {
+  private List<Move> computeCastling(int fromRow, int fromCol, Board board) {
     List<Move> moves = new ArrayList<>();
     if (hasMoved || board.isCurrentKingInCheck()) return moves;
 
@@ -34,7 +35,7 @@ public class ChessKing extends ProximityPiece {
     return moves;
   }
 
-  private void checkCastling(int fromRow, int fromCol, ChessBoard board, int rookCol, int kingTargetCol, int rookTargetCol, List<Move> moves) {
+  private void checkCastling(int fromRow, int fromCol, Board board, int rookCol, int kingTargetCol, int rookTargetCol, List<Move> moves) {
     Piece rook = board.getPieceAt(fromRow, rookCol);
     if (rook == null || rook.getType() != PieceType.ROOK || isOpposingPiece(rook) || rook.hasMoved()) return;
 

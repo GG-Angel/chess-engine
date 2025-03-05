@@ -1,5 +1,6 @@
 package chess.model.piece;
 
+import chess.model.board.Board;
 import chess.model.board.ChessBoard;
 import chess.model.move.Move;
 
@@ -12,7 +13,7 @@ public class ChessQueen extends DirectionalPiece {
   }
 
   @Override
-  public List<Move> computeMoves(int fromRow, int fromCol, ChessBoard board) {
+  public List<Move> computeMoves(int fromRow, int fromCol, Board board) {
     int[][] directions = new int[][] {
         {1, 0}, {-1, 0}, {0, 1}, {0, -1},  // diagonal
         {1, 1}, {1, -1}, {-1, 1}, {-1, -1} // straight

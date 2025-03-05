@@ -1,5 +1,6 @@
 package chess.model.piece;
 
+import chess.model.board.Board;
 import chess.model.board.ChessBoard;
 import chess.model.move.Move;
 
@@ -11,7 +12,7 @@ public class ChessKnight extends ProximityPiece {
   }
 
   @Override
-  public List<Move> computeMoves(int fromRow, int fromCol, ChessBoard board) throws IndexOutOfBoundsException {
+  public List<Move> computeMoves(int fromRow, int fromCol, Board board) throws IndexOutOfBoundsException {
     int[][] distances = new int[][] {
         {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
         {1, 2}, {1, -2}, {-1, 2}, {-1, -2}

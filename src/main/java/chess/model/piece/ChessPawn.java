@@ -1,5 +1,6 @@
 package chess.model.piece;
 
+import chess.model.board.Board;
 import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
 import chess.model.move.ChessMoveType;
@@ -19,7 +20,7 @@ public class ChessPawn extends ChessPiece {
   }
 
   @Override
-  public List<Move> computeMoves(int fromRow, int fromCol, ChessBoard board) {
+  public List<Move> computeMoves(int fromRow, int fromCol, Board board) {
     board.validateBounds(fromRow, fromCol);
     List<Move> moves = new ArrayList<>();
 
@@ -30,7 +31,7 @@ public class ChessPawn extends ChessPiece {
     return moves;
   }
 
-  private void computeForwardMovesAndPromotions(int fromRow, int fromCol, ChessBoard board, List<Move> moves) {
+  private void computeForwardMovesAndPromotions(int fromRow, int fromCol, Board board, List<Move> moves) {
     int homeRow = this.color == PieceColor.WHITE ? 6 : 1;
     int promotionRow = this.color == PieceColor.WHITE ? 0 : 7;
     for (int distance = 1; distance <= 2; distance++) {
@@ -53,7 +54,7 @@ public class ChessPawn extends ChessPiece {
     }
   }
 
-  private void computeDiagonalCaptures(int fromRow, int fromCol, ChessBoard board, List<Move> moves) {
+  private void computeDiagonalCaptures(int fromRow, int fromCol, Board board, List<Move> moves) {
     int toRow = fromRow + direction;
     int[] diagonalCols = new int[] { fromCol - 1, fromCol + 1 };
     for (int toCol : diagonalCols) {
@@ -66,7 +67,7 @@ public class ChessPawn extends ChessPiece {
     }
   }
 
-  private void computeEnPassant(int fromRow, int fromCol, ChessBoard board, List<Move> moves) {
+  private void computeEnPassant(int fromRow, int fromCol, Board board, List<Move> moves) {
     int toRow = fromRow + direction;
     if (board.isOutOfBounds(toRow, fromCol)) return; // ensure there is an extra row forward
 

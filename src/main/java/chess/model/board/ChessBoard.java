@@ -20,7 +20,7 @@ import chess.model.piece.PieceType;
 
 import java.util.*;
 
-public class ChessBoard {
+public class ChessBoard implements Board {
   private final Piece[][] board;
   private final int boardSize;
 
@@ -130,6 +130,7 @@ public class ChessBoard {
     return generatedMoves;
   }
 
+  @Override
   public List<Move> generateLegalMoves() {
     List<Move> pseudoLegalMoves = generateMoves();
     List<Move> legalMoves = new ArrayList<>();
@@ -146,6 +147,7 @@ public class ChessBoard {
     return legalMoves;
   }
 
+  @Override
   public void makeMove(Move move) throws IllegalArgumentException, NullPointerException {
     requireNonNull(move, "Suggested move on board cannot be null.");
     List<Move> validMoves = move.fromPiece().getValidMoves();
@@ -183,6 +185,7 @@ public class ChessBoard {
     }
   }
 
+  @Override
   public void undoMove() throws IllegalStateException {
     if (moveStack.isEmpty()) {
       throw new IllegalStateException("Cannot undo move when stack is empty.");
@@ -219,35 +222,43 @@ public class ChessBoard {
     this.turnColor = this.turnColor == WHITE ? BLACK : WHITE;
   }
 
-  public Stack<Move> getMoveStack() {
-    return this.moveStack;
-  }
-
+  @Override
   public boolean isCurrentKingInCheck() {
     return this.checkStack.peek();
   }
 
+  @Override
+  public Stack<Move> getMoveStack() {
+    return this.moveStack;
+  }
+
+  @Override
   public int getBoardSize() {
     return this.boardSize;
   }
 
+  @Override
   public int getHalfMoves() {
     return this.halfMoveClock.peek();
   }
 
+  @Override
   public int getFullMoves() {
     return this.fullMoveClock;
   }
 
+  @Override
   public Piece getPieceAt(int row, int col) throws IndexOutOfBoundsException {
     validateBounds(row, col);
     return this.board[row][col];
   }
 
+  @Override
   public boolean isOutOfBounds(int row, int col) {
     return row < 0 || row >= getBoardSize() || col < 0 || col >= getBoardSize();
   }
 
+  @Override
   public void validateBounds(int row, int col) throws IndexOutOfBoundsException {
     if (isOutOfBounds(row, col)) {
       throw new IndexOutOfBoundsException(String.format(
