@@ -5,6 +5,7 @@ import chess.model.move.ChessMove;
 import chess.model.move.Move;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 public interface Piece {
 
@@ -16,11 +17,13 @@ public interface Piece {
 
   PieceType getType();
 
-  ArrayList<Move> getPossibleMoves();
+  List<Move> getPossibleMoves();
 
-  ArrayList<Move> getValidMoves();
+  List<Move> getValidMoves();
+
+  void setValidMoves(List<Move> newValidMoves);
 
   void setHasMoved(boolean hasMoved);
 
-  void computeMoves(int row, int col, ChessBoard board);
+  List<Move> computeMoves(int row, int col, ChessBoard board);
 }

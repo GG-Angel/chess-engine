@@ -1,6 +1,9 @@
 package chess.model.piece;
 
 import chess.model.board.ChessBoard;
+import chess.model.move.Move;
+
+import java.util.List;
 
 public class ChessBishop extends DirectionalPiece {
 
@@ -9,9 +12,9 @@ public class ChessBishop extends DirectionalPiece {
   }
 
   @Override
-  public void computeMoves(int fromRow, int fromCol, ChessBoard board) {
+  public List<Move> computeMoves(int fromRow, int fromCol, ChessBoard board) {
     int[][] directions = new int[][] { {1, 1}, {1, -1}, {-1, 1}, {-1, -1} };
-    computeMoves(fromRow, fromCol, directions, board);
+    return computeMoves(fromRow, fromCol, directions, board);
   }
 
   @Override

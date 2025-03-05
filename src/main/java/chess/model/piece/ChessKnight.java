@@ -1,6 +1,9 @@
 package chess.model.piece;
 
 import chess.model.board.ChessBoard;
+import chess.model.move.Move;
+
+import java.util.List;
 
 public class ChessKnight extends ProximityPiece {
   public ChessKnight(PieceColor color) {
@@ -8,12 +11,12 @@ public class ChessKnight extends ProximityPiece {
   }
 
   @Override
-  public void computeMoves(int fromRow, int fromCol, ChessBoard board) throws IndexOutOfBoundsException {
+  public List<Move> computeMoves(int fromRow, int fromCol, ChessBoard board) throws IndexOutOfBoundsException {
     int[][] distances = new int[][] {
         {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
         {1, 2}, {1, -2}, {-1, 2}, {-1, -2}
     };
-    computeMoves(fromRow, fromCol, distances, board);
+    return computeMoves(fromRow, fromCol, distances, board);
   }
 
   @Override

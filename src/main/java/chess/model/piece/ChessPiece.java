@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import chess.model.board.ChessBoard;
 import chess.model.move.Move;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public abstract class ChessPiece implements Piece {
@@ -25,14 +26,15 @@ public abstract class ChessPiece implements Piece {
 
   protected PieceColor color;
   protected PieceType type;
-  protected ArrayList<Move> possibleMoves;
-  protected ArrayList<Move> validMoves;
+  protected List<Move> possibleMoves;
+  protected List<Move> validMoves;
   protected boolean hasMoved;
 
   protected ChessPiece(PieceColor color, PieceType type) throws NullPointerException {
     this.color = requireNonNull(color, "Must pass non-null Color to Piece.");
     this.type = requireNonNull(type, "Must pass non-null Type to Piece.");
     this.validMoves = new ArrayList<>();
+    this.possibleMoves = new ArrayList<>();
     this.hasMoved = false;
   }
 
@@ -62,13 +64,18 @@ public abstract class ChessPiece implements Piece {
   }
 
   @Override
-  public ArrayList<Move> getPossibleMoves() {
+  public List<Move> getPossibleMoves() {
     return this.possibleMoves;
   }
 
   @Override
-  public ArrayList<Move> getValidMoves() {
+  public List<Move> getValidMoves() {
     return this.validMoves;
+  }
+
+  @Override
+  public void setValidMoves(List<Move> newValidMoves) {
+    this.validMoves = newValidMoves;
   }
 
   @Override

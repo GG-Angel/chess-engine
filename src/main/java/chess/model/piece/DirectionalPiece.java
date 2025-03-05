@@ -4,6 +4,7 @@ import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
 import chess.model.move.Move;
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class DirectionalPiece extends ChessPiece {
 
@@ -11,9 +12,9 @@ public abstract class DirectionalPiece extends ChessPiece {
     super(color, type);
   }
 
-  protected void computeMoves(int fromRow, int fromCol, int[][] directions, ChessBoard board) throws IndexOutOfBoundsException {
+  protected List<Move> computeMoves(int fromRow, int fromCol, int[][] directions, ChessBoard board) throws IndexOutOfBoundsException {
     board.validateBounds(fromRow, fromCol);
-    clearMoves();
+    List<Move> moves = new ArrayList<>();
 
     for (int[] dir : directions) {
       boolean collision = false;
@@ -34,11 +35,13 @@ public abstract class DirectionalPiece extends ChessPiece {
 
           // collided with some piece
           if (isOpposingPiece(toPiece)) {
-            validMoves.add(move); // capture an enemy piece
+            moves.add(move); // capture an enemy piece
           }
           collision = true; // blocked by friendly or enemy piece
         }
       }
     }
+
+    return moves;
   }
 }

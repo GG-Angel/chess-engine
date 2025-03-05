@@ -106,13 +106,29 @@ public class ChessBoard {
     }
   }
 
+  private boolean isKingInCheck() {
+    PieceColor opponentColor = getOpposingColor(colorTurn);
+    for (int row = 0; row < getBoardSize(); row++) {
+      for (int col = 0; col < getBoardSize(); col++) {
+        Piece piece = this.board[row][col];
+        if (piece != null && piece.getColor() == opponentColor && piece.getType() != KING) {
+          List<Move> potentialNextMoves = piece.computeMoves(row, col, this);
+          if (potentialNextMoves.stream().anyMatch(Move::threatensKing)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   private List<Move> generateMoves() {
     List<Move> generatedMoves = new ArrayList<>();
     for (int row = 0; row < getBoardSize(); row++) {
       for (int col = 0; col < getBoardSize(); col++) {
         Piece piece = this.board[row][col];
         if (piece != null && piece.getColor() == colorTurn) {
-          piece.computeMoves(row, col, this);
+          piece.setValidMoves(piece.computeMoves(row, col, this));
           generatedMoves.addAll(piece.getValidMoves());
         }
       }
@@ -121,7 +137,6 @@ public class ChessBoard {
   }
 
   public List<Move> generateLegalMoves() {
-    this.checkStack.push(isKingInCheck());
     List<Move> pseudoLegalMoves = generateMoves();
     List<Move> legalMoves = new ArrayList<>();
 
@@ -163,22 +178,7 @@ public class ChessBoard {
     }
 
     switchTurn();
-  }
-
-  private boolean isKingInCheck() {
-    PieceColor opponentColor = getOpposingColor(colorTurn);
-    for (int row = 0; row < getBoardSize(); row++) {
-      for (int col = 0; col < getBoardSize(); col++) {
-        Piece piece = this.board[row][col];
-        if (piece != null && piece.getColor() == opponentColor && piece.getType() != KING) {
-          piece.computeMoves(row, col, this);
-          if (piece.getValidMoves().stream().anyMatch(Move::threatensKing)) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
+    this.checkStack.push(isKingInCheck());
   }
 
   private void executeMakeMove(Move move) {
@@ -213,6 +213,7 @@ public class ChessBoard {
     }
 
     switchTurn();
+    checkStack.pop();
   }
 
   private void executeUndoMove(Move move) {

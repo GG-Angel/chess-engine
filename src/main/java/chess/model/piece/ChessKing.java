@@ -5,6 +5,9 @@ import chess.model.move.ChessMove;
 import chess.model.move.ChessMoveType;
 import chess.model.move.Move;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChessKing extends ProximityPiece {
 
   public ChessKing(PieceColor color) {
@@ -12,20 +15,26 @@ public class ChessKing extends ProximityPiece {
   }
 
   @Override
-  public void computeMoves(int fromRow, int fromCol, ChessBoard board) throws IndexOutOfBoundsException {
-    // compute moves before checks
+  public List<Move> computeMoves(int fromRow, int fromCol, ChessBoard board) throws IndexOutOfBoundsException {
     int[][] distances = new int[][] {{1, -1}, {1, 0}, {1, 1}, {0, -1}, {0, 1}, {-1, -1}, {-1, 0}, {-1, 1}};
-    computeMoves(fromRow, fromCol, distances, board);
-    computeCastling(fromRow, fromCol, board);
+    List<Move> moves = computeMoves(fromRow, fromCol, distances, board);
+    List<Move> castlingMoves = computeCastling(fromRow, fromCol, board);
+
+    moves.addAll(castlingMoves);
+    return moves;
   }
 
-  private void computeCastling(int fromRow, int fromCol, ChessBoard board) {
-    if (hasMoved || board.isCurrentKingInCheck()) return;
-    checkCastling(fromRow, fromCol, board, 7, 6, 5); // king-side castling
-    checkCastling(fromRow, fromCol, board, 0, 2, 3); // queen-side castling
+  private List<Move> computeCastling(int fromRow, int fromCol, ChessBoard board) {
+    List<Move> moves = new ArrayList<>();
+    if (hasMoved || board.isCurrentKingInCheck()) return moves;
+
+    checkCastling(fromRow, fromCol, board, 7, 6, 5, moves); // king-side castling
+    checkCastling(fromRow, fromCol, board, 0, 2, 3, moves); // queen-side castling
+
+    return moves;
   }
 
-  private void checkCastling(int fromRow, int fromCol, ChessBoard board, int rookCol, int kingTargetCol, int rookTargetCol) {
+  private void checkCastling(int fromRow, int fromCol, ChessBoard board, int rookCol, int kingTargetCol, int rookTargetCol, List<Move> moves) {
     Piece rook = board.getPieceAt(fromRow, rookCol);
     if (rook == null || rook.getType() != PieceType.ROOK || isOpposingPiece(rook) || rook.hasMoved()) return;
 
@@ -36,7 +45,7 @@ public class ChessKing extends ProximityPiece {
 
     Move rookMove = new ChessMove(fromRow, rookCol, rook, fromRow, rookTargetCol, null);
     Move kingMove = new ChessMove(fromRow, fromCol, this, fromRow, kingTargetCol, null, rookMove, ChessMoveType.CASTLE);
-    validMoves.add(kingMove);
+    moves.add(kingMove);
   }
 
   @Override

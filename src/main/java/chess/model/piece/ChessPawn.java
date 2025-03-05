@@ -5,6 +5,7 @@ import chess.model.move.ChessMove;
 import chess.model.move.ChessMoveType;
 import chess.model.move.Move;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ChessPawn extends ChessPiece {
 
@@ -16,29 +17,30 @@ public class ChessPawn extends ChessPiece {
   }
 
   @Override
-  public void computeMoves(int fromRow, int fromCol, ChessBoard board) {
+  public List<Move> computeMoves(int fromRow, int fromCol, ChessBoard board) {
     board.validateBounds(fromRow, fromCol);
-    possibleMoves = new ArrayList<>();
-    validMoves = new ArrayList<>();
+    List<Move> moves = new ArrayList<>();
 
-    computeForwardMoves(fromRow, fromCol, board);
-    computeDiagonalCaptures(fromRow, fromCol, board);
-    computeEnPassant(fromRow, fromCol, board);
+    computeForwardMoves(fromRow, fromCol, board, moves);
+    computeDiagonalCaptures(fromRow, fromCol, board, moves);
+    computeEnPassant(fromRow, fromCol, board, moves);
+
+    return moves;
   }
 
-  private void computeForwardMoves(int fromRow, int fromCol, ChessBoard board) {
+  private void computeForwardMoves(int fromRow, int fromCol, ChessBoard board, List<Move> moves) {
     int homeRow = this.color == PieceColor.WHITE ? 6 : 1;
     for (int distance = 1; distance <= 2; distance++) {
       int toRow = fromRow + (direction * distance);
       if (board.isOutOfBounds(toRow, fromCol) || (board.getPieceAt(toRow, fromCol) != null)) return;
       if (distance == 1 || (distance == 2 && fromRow == homeRow)) {
         Move move = new ChessMove(fromRow, fromCol, this, toRow, fromCol, null);
-        validMoves.add(move);
+        moves.add(move);
       }
     }
   }
 
-  private void computeDiagonalCaptures(int fromRow, int fromCol, ChessBoard board) {
+  private void computeDiagonalCaptures(int fromRow, int fromCol, ChessBoard board, List<Move> moves) {
     int toRow = fromRow + direction;
     int[] diagonalCols = new int[] { fromCol - 1, fromCol + 1 };
     for (int toCol : diagonalCols) {
@@ -46,12 +48,12 @@ public class ChessPawn extends ChessPiece {
       Piece destPiece = board.getPieceAt(toRow, toCol);
       Move move = new ChessMove(fromRow, fromCol, this, toRow, toCol, destPiece);
       if (isOpposingPiece(destPiece)) {
-        validMoves.add(move);
+        moves.add(move);
       }
     }
   }
 
-  private void computeEnPassant(int fromRow, int fromCol, ChessBoard board) {
+  private void computeEnPassant(int fromRow, int fromCol, ChessBoard board, List<Move> moves) {
     int toRow = fromRow + direction;
     if (board.isOutOfBounds(toRow, fromCol)) return; // ensure there is an extra row forward
 
@@ -67,7 +69,7 @@ public class ChessPawn extends ChessPiece {
       int toCol = lastMove.toCol();
       Move forwardMove = new ChessMove(fromRow, toCol, this, toRow, toCol, null);
       Move captureMove = new ChessMove(fromRow, fromCol, this, fromRow, toCol, lastMove.fromPiece(), forwardMove, ChessMoveType.EN_PASSANT);
-      validMoves.add(captureMove);
+      moves.add(captureMove);
     }
   }
 
