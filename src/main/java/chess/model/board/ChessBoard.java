@@ -99,23 +99,21 @@ public class ChessBoard {
         }
       }
 
-      this.checkStack.push(isKingInCheck(colorTurn));
+      this.checkStack.push(isKingInCheck());
       generateLegalMoves();
     } catch (Exception e) {
       throw new IllegalArgumentException("Invalid FEN string: " + e.getMessage());
     }
   }
 
-  private List<Move> generateMoves(PieceColor side) {
+  private List<Move> generateMoves() {
     List<Move> generatedMoves = new ArrayList<>();
     for (int row = 0; row < getBoardSize(); row++) {
       for (int col = 0; col < getBoardSize(); col++) {
         Piece piece = this.board[row][col];
-        if (piece != null) {
-          if (piece.getColor() == side) {
-            piece.computeMoves(row, col, this);
-            generatedMoves.addAll(piece.getValidMoves());
-          }
+        if (piece != null && piece.getColor() == colorTurn) {
+          piece.computeMoves(row, col, this);
+          generatedMoves.addAll(piece.getValidMoves());
         }
       }
     }
@@ -123,20 +121,21 @@ public class ChessBoard {
   }
 
   public List<Move> generateLegalMoves() {
-    List<Move> pseudoLegalMoves = generateMoves(colorTurn);
+    this.checkStack.push(isKingInCheck());
+    List<Move> pseudoLegalMoves = generateMoves();
     List<Move> legalMoves = new ArrayList<>();
 
     for (Move moveToVerify : pseudoLegalMoves) {
       makeMove(moveToVerify);
-      List<Move> opponentResponses = generateMoves(colorTurn);
 
+      List<Move> opponentResponses = generateMoves();
       boolean isLegal = opponentResponses.stream().noneMatch(Move::threatensKing);
-
-      undoMove();
 
       if (isLegal) {
         legalMoves.add(moveToVerify);
       }
+
+      undoMove();
     }
 
     return legalMoves;
@@ -144,7 +143,8 @@ public class ChessBoard {
 
   public void makeMove(Move move) throws IllegalArgumentException, NullPointerException {
     requireNonNull(move, "Suggested move on board cannot be null.");
-    if (!move.fromPiece().getValidMoves().contains(move)) {
+    List<Move> validMoves = move.fromPiece().getValidMoves();
+    if (!validMoves.contains(move)) {
       throw new IllegalArgumentException(String.format("Suggested move on board is not valid: %s", move));
     }
 
@@ -163,12 +163,10 @@ public class ChessBoard {
     }
 
     switchTurn();
-    this.checkStack.push(isKingInCheck(colorTurn));
-    generateMoves(colorTurn);
   }
 
-  private boolean isKingInCheck(PieceColor kingColor) {
-    PieceColor opponentColor = getOpposingColor(kingColor);
+  private boolean isKingInCheck() {
+    PieceColor opponentColor = getOpposingColor(colorTurn);
     for (int row = 0; row < getBoardSize(); row++) {
       for (int col = 0; col < getBoardSize(); col++) {
         Piece piece = this.board[row][col];
@@ -209,14 +207,12 @@ public class ChessBoard {
     Move lastMove = moveStack.pop();
     executeUndoMove(lastMove);
 
-    this.checkStack.pop();
     this.halfMoveClock.pop();
     if (colorTurn == WHITE) {
       this.fullMoveClock--;
     }
 
     switchTurn();
-    generateMoves(colorTurn);
   }
 
   private void executeUndoMove(Move move) {
