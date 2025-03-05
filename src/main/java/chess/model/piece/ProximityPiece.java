@@ -23,10 +23,8 @@ public abstract class ProximityPiece extends ChessPiece {
       if (board.isOutOfBounds(toRow, toCol)) continue;
 
       Piece toPiece = board.getPieceAt(toRow, toCol);
-      Move move = new ChessMove(fromRow, fromCol, this, toRow, toCol, toPiece);
-      possibleMoves.add(move);
-
       if (toPiece == null || toPiece.getColor() != this.color) {
+        Move move = new ChessMove(fromRow, fromCol, this, toRow, toCol, toPiece);
         moves.add(move);
       }
     }

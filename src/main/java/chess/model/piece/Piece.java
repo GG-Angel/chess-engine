@@ -17,8 +17,6 @@ public interface Piece {
 
   PieceType getType();
 
-  List<Move> getPossibleMoves();
-
   List<Move> getValidMoves();
 
   void setValidMoves(List<Move> newValidMoves);

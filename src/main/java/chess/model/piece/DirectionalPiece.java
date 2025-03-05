@@ -17,27 +17,22 @@ public abstract class DirectionalPiece extends ChessPiece {
     List<Move> moves = new ArrayList<>();
 
     for (int[] dir : directions) {
-      boolean collision = false;
       for (int dist = 1; dist < board.getBoardSize(); dist++) {
-        int toRow = fromRow + dist * dir[0];
-        int toCol = fromCol + dist * dir[1];
+        int toRow = fromRow + (dist * dir[0]);
+        int toCol = fromCol + (dist * dir[1]);
         if (board.isOutOfBounds(toRow, toCol)) break;
 
         Piece toPiece = board.getPieceAt(toRow, toCol);
         Move move = new ChessMove(fromRow, fromCol, this, toRow, toCol, toPiece);
-        possibleMoves.add(move);
 
-        if (!collision) {
-          if (toPiece == null) {
-            validMoves.add(move);
-            continue;
-          }
-
-          // collided with some piece
+        // continue in this direction until we collide or go out of bounds
+        if (toPiece == null) {
+          moves.add(move);
+        } else {
           if (isOpposingPiece(toPiece)) {
-            moves.add(move); // capture an enemy piece
+            moves.add(move);
           }
-          collision = true; // blocked by friendly or enemy piece
+          break;
         }
       }
     }

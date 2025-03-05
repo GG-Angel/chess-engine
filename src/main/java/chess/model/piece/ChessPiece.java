@@ -26,7 +26,6 @@ public abstract class ChessPiece implements Piece {
 
   protected PieceColor color;
   protected PieceType type;
-  protected List<Move> possibleMoves;
   protected List<Move> validMoves;
   protected boolean hasMoved;
 
@@ -34,13 +33,7 @@ public abstract class ChessPiece implements Piece {
     this.color = requireNonNull(color, "Must pass non-null Color to Piece.");
     this.type = requireNonNull(type, "Must pass non-null Type to Piece.");
     this.validMoves = new ArrayList<>();
-    this.possibleMoves = new ArrayList<>();
     this.hasMoved = false;
-  }
-
-  protected void clearMoves() {
-    possibleMoves = new ArrayList<>();
-    validMoves = new ArrayList<>();
   }
 
   @Override
@@ -61,11 +54,6 @@ public abstract class ChessPiece implements Piece {
   @Override
   public PieceType getType() {
     return this.type;
-  }
-
-  @Override
-  public List<Move> getPossibleMoves() {
-    return this.possibleMoves;
   }
 
   @Override
