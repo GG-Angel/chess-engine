@@ -1,10 +1,10 @@
 package chess.model.piece;
 
 import chess.model.board.Board;
-import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
 import chess.model.move.ChessMoveType;
 import chess.model.move.Move;
+
 import java.util.ArrayList;
 import java.util.List;
 

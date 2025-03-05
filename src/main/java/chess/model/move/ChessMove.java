@@ -1,14 +1,12 @@
 package chess.model.move;
 
-import static chess.model.move.ChessMoveType.STANDARD;
-import static java.util.Objects.requireNonNull;
-
-import chess.model.piece.ChessPiece;
 import chess.model.piece.Piece;
-import chess.model.piece.PieceColor;
 import chess.model.piece.PieceType;
 
 import java.util.Objects;
+
+import static chess.model.move.ChessMoveType.STANDARD;
+import static java.util.Objects.requireNonNull;
 
 public class ChessMove implements Move, Comparable<ChessMove> {
   private int fromRow, fromCol, toRow, toCol;

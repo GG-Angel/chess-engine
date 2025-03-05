@@ -1,24 +1,19 @@
 package chess.model.board;
 
-import static chess.model.piece.ChessPiece.createPiece;
-import static chess.model.piece.ChessPiece.getOpposingColor;
-import static chess.model.piece.PieceColor.BLACK;
-import static chess.model.piece.PieceColor.WHITE;
-import static chess.model.piece.PieceType.BISHOP;
-import static chess.model.piece.PieceType.KING;
-import static chess.model.piece.PieceType.KNIGHT;
-import static chess.model.piece.PieceType.PAWN;
-import static chess.model.piece.PieceType.QUEEN;
-import static chess.model.piece.PieceType.ROOK;
-import static java.util.Objects.requireNonNull;
-
 import chess.model.move.Move;
-import chess.model.piece.Piece;
 import chess.model.piece.ChessPiece;
+import chess.model.piece.Piece;
 import chess.model.piece.PieceColor;
 import chess.model.piece.PieceType;
 
 import java.util.*;
+
+import static chess.model.piece.ChessPiece.createPiece;
+import static chess.model.piece.ChessPiece.getOpposingColor;
+import static chess.model.piece.PieceColor.BLACK;
+import static chess.model.piece.PieceColor.WHITE;
+import static chess.model.piece.PieceType.*;
+import static java.util.Objects.requireNonNull;
 
 public class ChessBoard implements Board {
   private final Piece[][] board;

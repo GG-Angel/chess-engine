@@ -1,10 +1,10 @@
 package chess.view;
 
-import static java.util.Objects.requireNonNull;
-
 import chess.model.board.Board;
-import chess.model.board.ChessBoard;
+
 import java.io.IOException;
+
+import static java.util.Objects.requireNonNull;
 
 public abstract class ChessView implements View {
   private final Appendable appendable;

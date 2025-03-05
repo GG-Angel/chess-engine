@@ -1,12 +1,12 @@
 package chess.model.piece;
 
-import static java.util.Objects.requireNonNull;
-
-import chess.model.board.ChessBoard;
 import chess.model.move.Move;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 public abstract class ChessPiece implements Piece {
   public static ChessPiece createPiece(PieceColor color, PieceType type) throws NullPointerException {

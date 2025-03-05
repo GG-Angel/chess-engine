@@ -1,7 +1,6 @@
 package chess.view;
 
 import chess.model.board.Board;
-import chess.model.board.ChessBoard;
 import chess.model.piece.Piece;
 
 public class ChessTextView extends ChessView {

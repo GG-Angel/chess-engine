@@ -2,10 +2,9 @@ package chess;
 
 import chess.model.board.Board;
 import chess.model.board.ChessBoard;
-import chess.model.move.ChessMove;
-import chess.model.piece.Piece;
 import chess.view.ChessTextView;
 import chess.view.View;
+
 import java.io.IOException;
 
 public class Chess {
