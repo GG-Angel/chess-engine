@@ -4,6 +4,7 @@ import chess.model.board.ChessBoard;
 import chess.model.piece.Piece;
 
 public class ChessTextView extends ChessView {
+  private final char emptySlot = System.getProperty("os.name").equals("Mac OS X") ? '_' : '＿';
 
   public ChessTextView(ChessBoard board) throws NullPointerException {
     super(board);
@@ -21,7 +22,7 @@ public class ChessTextView extends ChessView {
       StringBuilder rowSB = new StringBuilder();
       for (int col = 0; col < size; col++) {
         Piece piece = board.getPieceAt(row, col);
-        rowSB.append(piece != null ? piece.toString() : '＿');
+        rowSB.append(piece != null ? piece.toString() : emptySlot);
         if (col < size - 1) {
           rowSB.append(' ');
         }

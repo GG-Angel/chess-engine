@@ -99,7 +99,7 @@ public class ChessBoard {
         }
       }
 
-      generateLegalMoves();
+      generateMoves();
     } catch (Exception e) {
       throw new IllegalArgumentException("Invalid FEN string: " + e.getMessage());
     }
@@ -123,23 +123,25 @@ public class ChessBoard {
     return generatedMoves;
   }
 
-  private List<Move> generateLegalMoves() {
+  public List<Move> generateLegalMoves() {
     List<Move> pseudoLegalMoves = generateMoves();
     List<Move> legalMoves = new ArrayList<>();
 
     for (Move moveToVerify : pseudoLegalMoves) {
       makeMove(moveToVerify);
       List<Move> opponentResponses = generateMoves();
-      if (opponentResponses.stream().anyMatch(move ->
-          move.toPiece() != null &&
-          move.toPiece().getType() == KING
-      )) {
-        // this move would result in a king capture, remove it
-        moveToVerify.fromPiece().getValidMoves().remove(moveToVerify);
-      } else {
+
+      boolean isLegal = opponentResponses.stream().noneMatch(response ->
+              response.toPiece() != null &&
+              response.toPiece().getType() == KING &&
+              response.toPiece().getColor() != turn
+      );
+
+      undoMove();
+
+      if (isLegal) {
         legalMoves.add(moveToVerify);
       }
-      undoMove();
     }
 
     return legalMoves;
