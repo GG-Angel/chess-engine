@@ -20,8 +20,6 @@ public interface Piece {
 
   ArrayList<Move> getValidMoves();
 
-  void clearMoves();
-
   void setHasMoved(boolean hasMoved);
 
   void computeMoves(int row, int col, ChessBoard board);

@@ -2,6 +2,7 @@ package chess.model.piece;
 
 import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
+import chess.model.move.ChessMoveType;
 import chess.model.move.Move;
 import java.util.ArrayList;
 
@@ -65,7 +66,7 @@ public class ChessPawn extends ChessPiece {
     if (lastMove.toCol() == fromCol - 1 || lastMove.toCol() == fromCol + 1) {
       int toCol = lastMove.toCol();
       Move forwardMove = new ChessMove(fromRow, toCol, this, toRow, toCol, null);
-      Move captureMove = new ChessMove(fromRow, fromCol, this, fromRow, toCol, lastMove.fromPiece(), forwardMove);
+      Move captureMove = new ChessMove(fromRow, fromCol, this, fromRow, toCol, lastMove.fromPiece(), forwardMove, ChessMoveType.EN_PASSANT);
       validMoves.add(captureMove);
     }
   }

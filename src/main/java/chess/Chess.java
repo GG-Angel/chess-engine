@@ -15,6 +15,7 @@ public class Chess {
 
     view.renderBoard();
 //    view.renderMessage(board.getPieceAt(6, 4).getValidMoves().toString());
+    view.renderMessage("" + board.isCurrentKingInCheck());
     view.renderMessage(board.generateLegalMoves().toString());
 
 //    ChessBoard board = new ChessBoard();

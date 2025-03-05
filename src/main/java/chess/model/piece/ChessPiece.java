@@ -19,6 +19,10 @@ public abstract class ChessPiece implements Piece {
     };
   }
 
+  public static PieceColor getOpposingColor(PieceColor color) {
+    return color == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+  }
+
   protected PieceColor color;
   protected PieceType type;
   protected ArrayList<Move> possibleMoves;
@@ -30,6 +34,11 @@ public abstract class ChessPiece implements Piece {
     this.type = requireNonNull(type, "Must pass non-null Type to Piece.");
     this.validMoves = new ArrayList<>();
     this.hasMoved = false;
+  }
+
+  protected void clearMoves() {
+    possibleMoves = new ArrayList<>();
+    validMoves = new ArrayList<>();
   }
 
   @Override
@@ -60,12 +69,6 @@ public abstract class ChessPiece implements Piece {
   @Override
   public ArrayList<Move> getValidMoves() {
     return this.validMoves;
-  }
-
-  @Override
-  public void clearMoves() {
-    possibleMoves = new ArrayList<>();
-    validMoves = new ArrayList<>();
   }
 
   @Override

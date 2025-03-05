@@ -2,6 +2,7 @@ package chess.model.piece;
 
 import chess.model.board.ChessBoard;
 import chess.model.move.ChessMove;
+import chess.model.move.ChessMoveType;
 import chess.model.move.Move;
 
 public class ChessKing extends ProximityPiece {
@@ -15,18 +16,11 @@ public class ChessKing extends ProximityPiece {
     // compute moves before checks
     int[][] distances = new int[][] {{1, -1}, {1, 0}, {1, 1}, {0, -1}, {0, 1}, {-1, -1}, {-1, 0}, {-1, 1}};
     computeMoves(fromRow, fromCol, distances, board);
-    computeCastling(fromRow, fromCol, board); // TODO: Verify this avoid checks.
-
-    // prune moves that would walk into a check
-    for (Piece piece : board.getOpposingPieces(this.color)) {
-      this.validMoves.removeIf(move ->
-          piece.getValidMoves().stream().anyMatch(move::collidesWith)
-      );
-    }
+    computeCastling(fromRow, fromCol, board);
   }
 
   private void computeCastling(int fromRow, int fromCol, ChessBoard board) {
-    if (hasMoved) return;
+    if (hasMoved || board.isCurrentKingInCheck()) return;
     checkCastling(fromRow, fromCol, board, 7, 6, 5); // king-side castling
     checkCastling(fromRow, fromCol, board, 0, 2, 3); // queen-side castling
   }
@@ -41,7 +35,7 @@ public class ChessKing extends ProximityPiece {
     }
 
     Move rookMove = new ChessMove(fromRow, rookCol, rook, fromRow, rookTargetCol, null);
-    Move kingMove = new ChessMove(fromRow, fromCol, this, fromRow, kingTargetCol, null, rookMove);
+    Move kingMove = new ChessMove(fromRow, fromCol, this, fromRow, kingTargetCol, null, rookMove, ChessMoveType.CASTLE);
     validMoves.add(kingMove);
   }
 

@@ -6,9 +6,13 @@ public interface Move {
 
   boolean collidesWith(Move other);
 
+  boolean threatensKing();
+
   boolean wasFirstMove();
 
   Move getSubMove();
+
+  ChessMoveType getMoveType();
 
   int fromRow();
 
