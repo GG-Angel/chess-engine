@@ -22,12 +22,10 @@ import java.util.*;
 
 public class ChessBoard {
   private final Piece[][] board;
-  private final ArrayList<Piece> whitePieces;
-  private final ArrayList<Piece> blackPieces;
-  private final Stack<Move> moveStack;
   private final int boardSize;
 
   private PieceColor turnColor;
+  private final Stack<Move> moveStack;
   private final Stack<Boolean> checkStack;;
   private final Stack<Integer> halfMoveClock;
   private int fullMoveClock;
@@ -39,8 +37,6 @@ public class ChessBoard {
   public ChessBoard(String fen) {
     this.boardSize = 8;
     this.board = new ChessPiece[boardSize][boardSize];
-    this.whitePieces = new ArrayList<>();
-    this.blackPieces = new ArrayList<>();
     this.moveStack = new Stack<>();
     this.checkStack = new Stack<>();
     this.halfMoveClock = new Stack<>();
@@ -78,9 +74,7 @@ public class ChessBoard {
           } else {
             PieceType type = symbolToPieceType.get(Character.toLowerCase(symbol));
             PieceColor color = Character.isUpperCase(symbol) ? WHITE : BLACK;
-            Piece piece = createPiece(color, type);
-            getFriendlyPieces(color).add(piece);
-            this.board[row][col] = piece;
+            this.board[row][col] = createPiece(color, type);
             col++;
           }
         }
@@ -183,12 +177,6 @@ public class ChessBoard {
     this.board[move.toRow()][move.toCol()] = move.fromPiece();
     move.fromPiece().setHasMoved(true);
 
-    // kill an enemy piece if taken
-    if (move.toPiece() != null) {
-      PieceColor color = move.toPiece().getColor();
-      getFriendlyPieces(color).remove(move.toPiece());
-    }
-
     // check for move chains
     if (move.getSubMove() != null) {
       executeMakeMove(move.getSubMove());
@@ -225,12 +213,6 @@ public class ChessBoard {
     if (move.wasFirstMove()) {
       move.fromPiece().setHasMoved(false);
     }
-
-    // restore piece in reference list if killed
-    if (move.toPiece() != null) {
-      PieceColor color = move.toPiece().getColor();
-      getFriendlyPieces(color).add(move.toPiece());
-    }
   }
 
   private void switchTurn() {
@@ -243,14 +225,6 @@ public class ChessBoard {
 
   public boolean isCurrentKingInCheck() {
     return this.checkStack.peek();
-  }
-
-  public ArrayList<Piece> getFriendlyPieces(PieceColor color) {
-    return color == WHITE ? whitePieces : blackPieces;
-  }
-
-  public ArrayList<Piece> getOpposingPieces(PieceColor color) {
-    return color == WHITE ? blackPieces : whitePieces ;
   }
 
   public int getBoardSize() {
