@@ -10,6 +10,10 @@ public interface Board {
 
     List<Move> generateLegalMoves();
 
+    boolean isValidMove(Move move);
+
+    void validateMove(Move move);
+
     void makeMove(Move move);
 
     void undoMove();
