@@ -84,6 +84,7 @@ public class ChessBoard implements Board {
           PieceType type = symbolToPieceType.get(Character.toLowerCase(symbol));
           PieceColor color = Character.isUpperCase(symbol) ? WHITE : BLACK;
           Piece piece = createPiece(color, type, row, col);
+          System.out.println(row + ", " + col);
           getFriendlyPieces(color).add(piece);
           this.board[row][col] = piece;
           col++;

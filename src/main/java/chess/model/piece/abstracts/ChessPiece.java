@@ -26,10 +26,6 @@ public abstract class ChessPiece implements Piece {
     };
   }
 
-  public static PieceColor getOpposingColor(PieceColor color) {
-    return color == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-  }
-
   protected int row, col;
   protected PieceColor color;
   protected PieceType type;
@@ -91,11 +87,11 @@ public abstract class ChessPiece implements Piece {
     if (this == obj) return true;
     if (obj == null || getClass() != obj.getClass()) return false;
     ChessPiece that = (ChessPiece) obj;
-    return color == that.color && type == that.type;
+    return row == that.row && col == that.col && color == that.color && type == that.type;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(color, type);
+    return Objects.hash(row, col, color, type);
   }
 }
