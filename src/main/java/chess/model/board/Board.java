@@ -1,7 +1,7 @@
 package chess.model.board;
 
 import chess.model.move.Move;
-import chess.model.piece.Piece;
+import chess.model.piece.abstracts.Piece;
 
 import java.util.List;
 import java.util.Stack;
@@ -9,6 +9,10 @@ import java.util.Stack;
 public interface Board {
 
     List<Move> generateLegalMoves();
+
+    boolean isValidMove(Move move);
+
+    void validateMove(Move move);
 
     void makeMove(Move move);
 

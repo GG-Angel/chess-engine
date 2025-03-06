@@ -2,16 +2,36 @@ package chess;
 
 import chess.model.board.Board;
 import chess.model.board.ChessBoard;
+import chess.model.move.Move;
 import chess.view.ChessTextView;
 import chess.view.View;
 
 import java.io.IOException;
+import java.util.List;
 
 public class Chess {
 
   public static void main(String[] args) throws IOException {
-    Board board = new ChessBoard("rn3r2/pbppq1p1/1p2pN2/8/3P2NP/6P1/PPPKBP1R/R5k1 b - - 6 18");
+    Board board = new ChessBoard("2p6/1P6/8/8/8/8/8/8 w KQkq - 0 1");
     View view = new ChessTextView(board);
+
+    view.renderBoard();
+
+    long timeStart = System.nanoTime();
+    List<Move> legalMoves = board.generateLegalMoves();
+    long timeEnd = System.nanoTime();
+
+    long elapsedTime = timeEnd - timeStart;
+
+    view.renderMessage(legalMoves.toString());
+    view.renderMessage("TIME (ms): " + (elapsedTime / 1000000.0));
+
+    board.makeMove(board.getPieceAt(1, 1).getValidMoves().getFirst());
+
+    view.renderBoard();
+    view.renderMessage(board.generateLegalMoves().toString());
+    
+    board.undoMove();
 
     view.renderBoard();
     view.renderMessage(board.generateLegalMoves().toString());

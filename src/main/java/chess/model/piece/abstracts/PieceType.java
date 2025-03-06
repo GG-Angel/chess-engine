@@ -1,4 +1,4 @@
-package chess.model.piece;
+package chess.model.piece.abstracts;
 
 public enum PieceType {
   PAWN,

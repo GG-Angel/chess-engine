@@ -1,4 +1,4 @@
-package chess.model.piece;
+package chess.model.piece.abstracts;
 
 import chess.model.board.Board;
 import chess.model.move.Move;
@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface Piece {
 
-  boolean hasMoved();
+  boolean isAlive();
+
+  boolean hasMovedBefore();
 
   boolean isOpposingPiece(Piece other);
 
@@ -19,7 +21,11 @@ public interface Piece {
 
   void setValidMoves(List<Move> newValidMoves);
 
-  void setHasMoved(boolean hasMoved);
+  void setHasMovedBefore(boolean hasMovedBefore);
 
-  List<Move> computeMoves(int row, int col, Board board);
+  void setIsAlive(boolean isAlive);
+
+  void setPosition(int row, int col);
+
+  List<Move> computeMoves(Board board);
 }

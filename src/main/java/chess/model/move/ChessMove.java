@@ -1,8 +1,9 @@
 package chess.model.move;
 
-import chess.model.piece.Piece;
-import chess.model.piece.PieceType;
+import chess.model.piece.abstracts.Piece;
+import chess.model.piece.abstracts.PieceType;
 
+import chess.model.piece.impl.ChessPawn;
 import java.util.Objects;
 
 import static chess.model.move.ChessMoveType.STANDARD;
@@ -23,17 +24,21 @@ public class ChessMove implements Move, Comparable<ChessMove> {
     initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, subMove, moveType);
   }
 
+  public ChessMove(int fromRow, int fromCol, ChessPawn fromPiece, int toRow, int toCol, Piece promotionPiece, ChessMoveType chessMoveType) {
+    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, promotionPiece, null, chessMoveType);
+  }
+
   private void initializeMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, Move subMove, ChessMoveType moveType) throws NullPointerException {
       this.fromPiece = requireNonNull(fromPiece, "No piece to move specified.");
       this.fromRow = fromRow;
       this.fromCol = fromCol;
-      this.wasFirstMove = !fromPiece.hasMoved();
       this.toRow = toRow;
       this.toCol = toCol;
       this.toPiece = toPiece;
       this.subMove = subMove;
       this.moveType = moveType;
-    }
+      this.wasFirstMove = !fromPiece.hasMovedBefore();
+  }
 
   @Override
   public boolean collidesWith(Move other) {
@@ -98,9 +103,12 @@ public class ChessMove implements Move, Comparable<ChessMove> {
   }
 
   private String recToString(StringBuilder sb, Move move) {
-    String to = toPiece != null ? toPiece.toString() : "_";
+    String to = move.toPiece() != null ? move.toPiece().toString() : "_";
+
     sb.append(String.format("(%d, %d, %s) → (%d, %d, %s)",
-            fromRow, fromCol, fromPiece, toRow, toCol, to));
+        move.fromRow(), move.fromCol(), move.fromPiece(),
+        move.toRow(), move.toCol(), to));
+
     if (move.getSubMove() != null) {
       sb.append(" ==> ");
       return recToString(sb, getSubMove());

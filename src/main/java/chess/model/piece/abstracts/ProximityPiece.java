@@ -1,4 +1,4 @@
-package chess.model.piece;
+package chess.model.piece.abstracts;
 
 import chess.model.board.Board;
 import chess.model.move.ChessMove;
@@ -8,26 +8,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ProximityPiece extends ChessPiece {
-  protected ProximityPiece(PieceColor color, PieceType type) throws NullPointerException {
-    super(color, type);
+
+  protected ProximityPiece(PieceColor color, PieceType type, int row, int col) throws NullPointerException {
+    super(color, type, row, col);
   }
 
-  protected List<Move> computeMoves(int fromRow, int fromCol, int[][] distances, Board board) throws IndexOutOfBoundsException {
-    board.validateBounds(fromRow, fromCol);
+  protected List<Move> computeMoves(int[][] distances, Board board) throws IndexOutOfBoundsException {
     List<Move> moves = new ArrayList<>();
-
     for (int[] dist : distances) {
-      int toRow = fromRow + dist[0];
-      int toCol = fromCol + dist[1];
+      int toRow = this.row + dist[0];
+      int toCol = this.col + dist[1];
       if (board.isOutOfBounds(toRow, toCol)) continue;
 
       Piece toPiece = board.getPieceAt(toRow, toCol);
       if (toPiece == null || toPiece.getColor() != this.color) {
-        Move move = new ChessMove(fromRow, fromCol, this, toRow, toCol, toPiece);
+        Move move = new ChessMove(this.row, this.col, this, toRow, toCol, toPiece);
         moves.add(move);
       }
     }
-
     return moves;
   }
 }
