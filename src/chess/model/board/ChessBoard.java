@@ -13,7 +13,6 @@ import static chess.model.piece.abstracts.ChessPiece.createPiece;
 import static chess.model.piece.abstracts.PieceColor.BLACK;
 import static chess.model.piece.abstracts.PieceColor.WHITE;
 import static chess.model.piece.abstracts.PieceType.*;
-import static java.util.Objects.requireNonNull;
 
 public class ChessBoard implements Board {
   private final int boardSize;
