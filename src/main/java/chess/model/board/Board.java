@@ -1,7 +1,7 @@
 package chess.model.board;
 
 import chess.model.move.Move;
-import chess.model.piece.Piece;
+import chess.model.piece.abstracts.Piece;
 
 import java.util.List;
 import java.util.Stack;

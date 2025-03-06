@@ -1,7 +1,7 @@
 package chess.model.move;
 
-import chess.model.piece.Piece;
-import chess.model.piece.PieceType;
+import chess.model.piece.abstracts.Piece;
+import chess.model.piece.abstracts.PieceType;
 
 import java.util.Objects;
 

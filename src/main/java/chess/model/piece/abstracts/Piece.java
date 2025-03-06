@@ -1,4 +1,4 @@
-package chess.model.piece;
+package chess.model.piece.abstracts;
 
 import chess.model.board.Board;
 import chess.model.move.Move;
@@ -21,5 +21,7 @@ public interface Piece {
 
   void setHasMoved(boolean hasMoved);
 
-  List<Move> computeMoves(int row, int col, Board board);
+  void setPosition(int row, int col);
+
+  List<Move> computeMoves(Board board);
 }

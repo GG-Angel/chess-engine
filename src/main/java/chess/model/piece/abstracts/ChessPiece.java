@@ -1,7 +1,13 @@
-package chess.model.piece;
+package chess.model.piece.abstracts;
 
 import chess.model.move.Move;
 
+import chess.model.piece.impl.ChessBishop;
+import chess.model.piece.impl.ChessKing;
+import chess.model.piece.impl.ChessKnight;
+import chess.model.piece.impl.ChessPawn;
+import chess.model.piece.impl.ChessQueen;
+import chess.model.piece.impl.ChessRook;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,14 +15,14 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 
 public abstract class ChessPiece implements Piece {
-  public static ChessPiece createPiece(PieceColor color, PieceType type) throws NullPointerException {
+  public static ChessPiece createPiece(PieceColor color, PieceType type, int row, int col) throws NullPointerException {
     return switch (type) {
-      case PAWN -> new ChessPawn(color);
-      case BISHOP -> new ChessBishop(color);
-      case KNIGHT -> new ChessKnight(color);
-      case ROOK -> new ChessRook(color);
-      case QUEEN -> new ChessQueen(color);
-      case KING -> new ChessKing(color);
+      case PAWN -> new ChessPawn(color, row, col);
+      case BISHOP -> new ChessBishop(color, row, col);
+      case KNIGHT -> new ChessKnight(color, row, col);
+      case ROOK -> new ChessRook(color, row, col);
+      case QUEEN -> new ChessQueen(color, row, col);
+      case KING -> new ChessKing(color, row, col);
     };
   }
 
@@ -24,14 +30,17 @@ public abstract class ChessPiece implements Piece {
     return color == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
   }
 
+  protected int row, col;
   protected PieceColor color;
   protected PieceType type;
   protected List<Move> validMoves;
   protected boolean hasMoved;
 
-  protected ChessPiece(PieceColor color, PieceType type) throws NullPointerException {
+  protected ChessPiece(PieceColor color, PieceType type, int row, int col) throws NullPointerException {
     this.color = requireNonNull(color, "Must pass non-null Color to Piece.");
     this.type = requireNonNull(type, "Must pass non-null Type to Piece.");
+    this.row = row;
+    this.col = col;
     this.validMoves = new ArrayList<>();
     this.hasMoved = false;
   }
@@ -69,6 +78,12 @@ public abstract class ChessPiece implements Piece {
   @Override
   public void setHasMoved(boolean hasMoved) {
     this.hasMoved = hasMoved;
+  }
+
+  @Override
+  public void setPosition(int row, int col) {
+    this.row = row;
+    this.col = col;
   }
 
   @Override
