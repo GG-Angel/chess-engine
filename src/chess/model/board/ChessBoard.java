@@ -2,17 +2,17 @@ package chess.model.board;
 
 import chess.model.move.ChessMove;
 import chess.model.move.Move;
-import chess.model.piece.abstracts.ChessPiece;
-import chess.model.piece.abstracts.Piece;
-import chess.model.piece.abstracts.PieceColor;
-import chess.model.piece.abstracts.PieceType;
+import chess.model.piece.ChessPiece;
+import chess.model.piece.Piece;
+import chess.model.piece.PieceColor;
+import chess.model.piece.PieceType;
 
 import java.util.*;
 
-import static chess.model.piece.abstracts.ChessPiece.createPiece;
-import static chess.model.piece.abstracts.PieceColor.BLACK;
-import static chess.model.piece.abstracts.PieceColor.WHITE;
-import static chess.model.piece.abstracts.PieceType.*;
+import static chess.model.piece.ChessPiece.createPiece;
+import static chess.model.piece.PieceColor.BLACK;
+import static chess.model.piece.PieceColor.WHITE;
+import static chess.model.piece.PieceType.*;
 
 public class ChessBoard implements Board {
   private final int boardSize;

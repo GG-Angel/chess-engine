@@ -1,4 +1,4 @@
-package chess.model.piece.abstracts;
+package chess.model.piece;
 
 import chess.model.board.Board;
 import chess.model.move.Move;

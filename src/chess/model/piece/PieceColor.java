@@ -1,4 +1,4 @@
-package chess.model.piece.abstracts;
+package chess.model.piece;
 
 public enum PieceColor {
   WHITE,

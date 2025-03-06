@@ -4,38 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a72c35ea-934a-497c-8c25-4e8cdc3ccb4a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../.idea/chess-engine.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/chess-engine.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/discord.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/Chess.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/Chess.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/controller/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/controller/Controller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/board/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/board/Board.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/board/ChessBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/board/ChessBoard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/move/ChessMove.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/move/ChessMove.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/move/ChessMoveType.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/move/ChessMoveType.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/move/Move.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/move/Move.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/piece/abstracts/ChessPiece.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/piece/abstracts/ChessPiece.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/piece/abstracts/DirectionalPiece.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/piece/abstracts/DirectionalPiece.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/piece/abstracts/Piece.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/piece/abstracts/Piece.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/piece/abstracts/PieceColor.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/piece/abstracts/PieceColor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/piece/abstracts/PieceType.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/piece/abstracts/PieceType.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/piece/abstracts/ProximityPiece.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/piece/abstracts/ProximityPiece.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/piece/impl/ChessBishop.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/piece/impl/ChessBishop.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/piece/impl/ChessKing.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/piece/impl/ChessKing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/piece/impl/ChessKnight.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/piece/impl/ChessKnight.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/piece/impl/ChessPawn.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/piece/impl/ChessPawn.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/piece/impl/ChessQueen.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/piece/impl/ChessQueen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/model/piece/impl/ChessRook.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/model/piece/impl/ChessRook.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/view/ChessTextView.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/view/ChessTextView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/view/ChessView.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/view/ChessView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/chess/view/View.java" beforeDir="false" afterPath="$PROJECT_DIR$/chess/view/View.java" afterDir="false" />
-    </list>
+    <list default="true" id="a72c35ea-934a-497c-8c25-4e8cdc3ccb4a" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -44,28 +13,41 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 7
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 7
+}</component>
   <component name="ProjectId" id="2twMu1HAUMN92RkHzrNoKjkA3es" />
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="chess-engine" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="chess-engine" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

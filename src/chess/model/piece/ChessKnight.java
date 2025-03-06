@@ -1,11 +1,8 @@
-package chess.model.piece.impl;
+package chess.model.piece;
 
 import chess.model.board.Board;
 import chess.model.move.Move;
 
-import chess.model.piece.abstracts.PieceColor;
-import chess.model.piece.abstracts.PieceType;
-import chess.model.piece.abstracts.ProximityPiece;
 import java.util.List;
 
 public class ChessKnight extends ProximityPiece {

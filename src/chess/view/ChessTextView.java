@@ -1,7 +1,7 @@
 package chess.view;
 
 import chess.model.board.Board;
-import chess.model.piece.abstracts.Piece;
+import chess.model.piece.Piece;
 
 public class ChessTextView extends ChessView {
   private final char emptySlot = System.getProperty("os.name").equals("Mac OS X") ? '_' : '＿';

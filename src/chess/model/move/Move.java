@@ -1,6 +1,6 @@
 package chess.model.move;
 
-import chess.model.piece.abstracts.Piece;
+import chess.model.piece.Piece;
 
 public interface Move {
 

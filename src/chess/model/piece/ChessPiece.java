@@ -1,13 +1,7 @@
-package chess.model.piece.abstracts;
+package chess.model.piece;
 
 import chess.model.move.Move;
 
-import chess.model.piece.impl.ChessBishop;
-import chess.model.piece.impl.ChessKing;
-import chess.model.piece.impl.ChessKnight;
-import chess.model.piece.impl.ChessPawn;
-import chess.model.piece.impl.ChessQueen;
-import chess.model.piece.impl.ChessRook;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

@@ -1,14 +1,10 @@
-package chess.model.piece.impl;
+package chess.model.piece;
 
 import chess.model.board.Board;
 import chess.model.move.ChessMove;
 import chess.model.move.ChessMoveType;
 import chess.model.move.Move;
 
-import chess.model.piece.abstracts.Piece;
-import chess.model.piece.abstracts.PieceColor;
-import chess.model.piece.abstracts.PieceType;
-import chess.model.piece.abstracts.ProximityPiece;
 import java.util.ArrayList;
 import java.util.List;
 
