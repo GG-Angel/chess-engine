@@ -14,9 +14,7 @@ public abstract class DirectionalPiece extends ChessPiece {
   }
 
   protected List<Move> computeMoves(int[][] directions, Board board) throws IndexOutOfBoundsException {
-    board.validateBounds(this.row, this.col);
     List<Move> moves = new ArrayList<>();
-
     for (int[] dir : directions) {
       for (int dist = 1; dist < board.getBoardSize(); dist++) {
         int toRow = this.row + (dist * dir[0]);
@@ -37,7 +35,6 @@ public abstract class DirectionalPiece extends ChessPiece {
         }
       }
     }
-
     return moves;
   }
 }

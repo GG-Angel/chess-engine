@@ -84,7 +84,6 @@ public class ChessBoard implements Board {
           PieceType type = symbolToPieceType.get(Character.toLowerCase(symbol));
           PieceColor color = Character.isUpperCase(symbol) ? WHITE : BLACK;
           Piece piece = createPiece(color, type, row, col);
-          System.out.println(row + ", " + col);
           getFriendlyPieces(color).add(piece);
           this.board[row][col] = piece;
           col++;
@@ -202,7 +201,8 @@ public class ChessBoard implements Board {
   private void executeMakeMove(Move move) {
     // move the piece to new position on board
     this.board[move.fromRow()][move.fromCol()] = null;
-    this.board[move.toRow()][move.toCol()] = move.getMoveType() == PROMOTION ? move.toPiece() : move.fromPiece();
+    this.board[move.toRow()][move.toCol()] = move.getDestPiece();
+//    getFriendlyPieces(move.fromPiece().getColor()).remove(move.fromPiece());
 
     // update piece position
     move.fromPiece().setPosition(move.toRow(), move.toCol());
@@ -240,6 +240,7 @@ public class ChessBoard implements Board {
     // put pieces back in place
     this.board[move.fromRow()][move.fromCol()] = move.fromPiece();
     this.board[move.toRow()][move.toCol()] = move.toPiece();
+//    getFriendlyPieces(move.fromPiece().getColor()).add(move.fromPiece());
 
     // update piece to previous position
     move.fromPiece().setPosition(move.fromRow(), move.fromCol());

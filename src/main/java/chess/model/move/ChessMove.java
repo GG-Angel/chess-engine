@@ -6,12 +6,14 @@ import chess.model.piece.abstracts.PieceType;
 import chess.model.piece.impl.ChessPawn;
 import java.util.Objects;
 
+import static chess.model.move.ChessMoveType.PROMOTION;
 import static chess.model.move.ChessMoveType.STANDARD;
 import static java.util.Objects.requireNonNull;
 
 public class ChessMove implements Move, Comparable<ChessMove> {
   private int fromRow, fromCol, toRow, toCol;
   private Piece fromPiece, toPiece;
+  private Piece destPiece;
   private Move subMove;
   private ChessMoveType moveType;
   private boolean wasFirstMove;
@@ -36,6 +38,7 @@ public class ChessMove implements Move, Comparable<ChessMove> {
       this.toRow = toRow;
       this.toCol = toCol;
       this.toPiece = toPiece;
+      this.destPiece = moveType == PROMOTION ? toPiece : fromPiece;
       this.subMove = subMove;
       this.moveType = moveType;
     }
@@ -53,6 +56,11 @@ public class ChessMove implements Move, Comparable<ChessMove> {
   @Override
   public boolean wasFirstMove() {
     return this.wasFirstMove;
+  }
+
+  @Override
+  public Piece getDestPiece() {
+    return this.destPiece;
   }
 
   @Override

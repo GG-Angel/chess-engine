@@ -83,8 +83,7 @@ public class ChessPawn extends ChessPiece {
   private List<Move> computeEnPassant(Board board) {
     List<Move> moves = new ArrayList<>();
 
-    int toRow = this.row + direction;
-    if (!board.isOutOfBounds(toRow, this.col) && !board.getMoveStack().isEmpty()) {
+    if (!board.getMoveStack().isEmpty()) {
       // check that the last move was by an opposing pawn
       // that stepped twice and landed on an adjacent slot
       Move lastMove = board.getMoveStack().peek();
@@ -92,6 +91,7 @@ public class ChessPawn extends ChessPiece {
           (lastMove.toCol() == this.col - 1 || lastMove.toCol() == this.col + 1) &&
           lastMove.toRow() == this.row && Math.abs(lastMove.toRow() - lastMove.fromRow()) == 2
       ) {
+        int toRow = this.row + direction;
         int toCol = lastMove.toCol();
         Move forwardMove = new ChessMove(this.row, toCol, this, toRow, toCol, null);
         Move captureMove = new ChessMove(this.row, this.col, this, this.row, toCol, lastMove.fromPiece(), forwardMove, ChessMoveType.EN_PASSANT);
