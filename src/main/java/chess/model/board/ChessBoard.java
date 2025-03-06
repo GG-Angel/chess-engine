@@ -1,6 +1,7 @@
 package chess.model.board;
 
 import chess.model.move.ChessMove;
+import chess.model.move.ChessMoveType;
 import chess.model.move.Move;
 import chess.model.piece.abstracts.ChessPiece;
 import chess.model.piece.abstracts.Piece;
@@ -9,6 +10,8 @@ import chess.model.piece.abstracts.PieceType;
 
 import java.util.*;
 
+import static chess.model.move.ChessMoveType.EN_PASSANT;
+import static chess.model.move.ChessMoveType.PROMOTION;
 import static chess.model.piece.abstracts.ChessPiece.createPiece;
 import static chess.model.piece.abstracts.ChessPiece.getOpposingColor;
 import static chess.model.piece.abstracts.PieceColor.BLACK;
@@ -56,7 +59,7 @@ public class ChessBoard implements Board {
       initializeEnPassant(fenEnPassant);
 
       this.checkStack.push(isKingInCheck(turnColor));
-      generateLegalMoves();
+//      generateLegalMoves();
     } catch (Exception e) {
       throw new IllegalArgumentException("Invalid FEN string: " + e.getMessage());
     }
@@ -202,7 +205,10 @@ public class ChessBoard implements Board {
   private void executeMakeMove(Move move) {
     // move the piece to new position on board
     this.board[move.fromRow()][move.fromCol()] = null;
-    this.board[move.toRow()][move.toCol()] = move.fromPiece();
+    this.board[move.toRow()][move.toCol()] = move.getMoveType() == PROMOTION ? move.toPiece() : move.fromPiece();
+
+    // update piece position
+    move.fromPiece().setPosition(move.toRow(), move.toCol());
     move.fromPiece().setHasMoved(true);
 
     // check for move chains
@@ -237,6 +243,9 @@ public class ChessBoard implements Board {
     // put pieces back in place
     this.board[move.fromRow()][move.fromCol()] = move.fromPiece();
     this.board[move.toRow()][move.toCol()] = move.toPiece();
+
+    // update piece to previous position
+    move.fromPiece().setPosition(move.fromRow(), move.fromCol());
 
     // restore previous has moved state
     if (move.wasFirstMove()) {

@@ -12,8 +12,7 @@ import java.util.List;
 public class Chess {
 
   public static void main(String[] args) throws IOException {
-//    Board board = new ChessBoard();
-    Board board = new ChessBoard("8/P7/8/8/8/8/8/8 w - - 6 18");
+    Board board = new ChessBoard();
     View view = new ChessTextView(board);
 
     view.renderBoard();
@@ -24,7 +23,7 @@ public class Chess {
 
     long elapsedTime = timeEnd - timeStart;
 
-    view.renderMessage(board.generateLegalMoves().toString());
+    view.renderMessage(legalMoves.toString());
     view.renderMessage("TIME (ms): " + (elapsedTime / 1000000.0));
   }
 }

@@ -3,6 +3,7 @@ package chess.model.move;
 import chess.model.piece.abstracts.Piece;
 import chess.model.piece.abstracts.PieceType;
 
+import chess.model.piece.impl.ChessPawn;
 import java.util.Objects;
 
 import static chess.model.move.ChessMoveType.STANDARD;
@@ -21,6 +22,10 @@ public class ChessMove implements Move, Comparable<ChessMove> {
 
   public ChessMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, Move subMove, ChessMoveType moveType) {
     initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, subMove, moveType);
+  }
+
+  public ChessMove(int fromRow, int fromCol, ChessPawn fromPiece, int toRow, int toCol, Piece promotionPiece, ChessMoveType chessMoveType) {
+    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, promotionPiece, null, chessMoveType);
   }
 
   private void initializeMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, Move subMove, ChessMoveType moveType) throws NullPointerException {

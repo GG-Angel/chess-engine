@@ -50,9 +50,8 @@ public class ChessPawn extends ChessPiece {
           PieceType[] promotionTypes = new PieceType[] { KNIGHT, BISHOP, ROOK, QUEEN };
           for (PieceType type : promotionTypes) {
             Piece promotionPiece = createPiece(this.color, type, toRow, this.col);
-            Move promotionMove = new ChessMove(this.row, this.col, this, toRow, this.col, promotionPiece);
-            Move forwardMove = new ChessMove(this.row, this.col, this, toRow, this.col, null, promotionMove, ChessMoveType.PROMOTION);
-            moves.add(forwardMove);
+            Move promotionMove = new ChessMove(this.row, this.col, this, toRow, this.col, promotionPiece, ChessMoveType.PROMOTION);
+            moves.add(promotionMove);
           }
         } else {
           Move move = new ChessMove(this.row, this.col, this, toRow, this.col, null);
