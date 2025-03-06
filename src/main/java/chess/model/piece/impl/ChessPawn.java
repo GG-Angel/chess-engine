@@ -12,15 +12,18 @@ import chess.model.piece.abstracts.PieceType;
 import java.util.ArrayList;
 import java.util.List;
 
+import static chess.model.move.ChessMoveType.PROMOTION;
 import static chess.model.piece.abstracts.PieceType.*;
 
 public class ChessPawn extends ChessPiece {
 
-  private final int direction;
+  private final int direction, homeRow, promotionRow;
 
   public ChessPawn(PieceColor color, int row, int col) {
     super(color, PieceType.PAWN, row, col);
     this.direction = this.color == PieceColor.WHITE ? -1 : 1;
+    this.homeRow = this.color == PieceColor.WHITE ? 6 : 1;
+    this.promotionRow = this.color == PieceColor.WHITE ? 0 : 7;
   }
 
   @Override
@@ -28,16 +31,14 @@ public class ChessPawn extends ChessPiece {
     board.validateBounds(this.row, this.col);
 
     List<Move> moves = new ArrayList<>();
-    moves.addAll(computeForwardMovesAndPromotions(board));
+    moves.addAll(computeForwardMoves(board));
     moves.addAll(computeDiagonalCaptures(board));
     moves.addAll(computeEnPassant(board));
     return moves;
   }
 
-  private List<Move> computeForwardMovesAndPromotions(Board board) {
+  private List<Move> computeForwardMoves(Board board) {
     List<Move> moves = new ArrayList<>();
-    int homeRow = this.color == PieceColor.WHITE ? 6 : 1;
-    int promotionRow = this.color == PieceColor.WHITE ? 0 : 7;
 
     for (int distance = 1; distance <= 2; distance++) {
       int toRow = this.row + (direction * distance);
@@ -46,15 +47,10 @@ public class ChessPawn extends ChessPiece {
       }
 
       if (distance == 1 || (distance == 2 && this.row == homeRow)) {
+        Move move = new ChessMove(this.row, this.col, this, toRow, this.col, null);
         if (toRow == promotionRow) {
-          PieceType[] promotionTypes = new PieceType[] { KNIGHT, BISHOP, ROOK, QUEEN };
-          for (PieceType type : promotionTypes) {
-            Piece promotionPiece = createPiece(this.color, type, toRow, this.col);
-            Move promotionMove = new ChessMove(this.row, this.col, this, toRow, this.col, promotionPiece, ChessMoveType.PROMOTION);
-            moves.add(promotionMove);
-          }
+          moves.addAll(computePromotions(move, board));
         } else {
-          Move move = new ChessMove(this.row, this.col, this, toRow, this.col, null);
           moves.add(move);
         }
       }
@@ -73,7 +69,11 @@ public class ChessPawn extends ChessPiece {
       Piece destPiece = board.getPieceAt(toRow, toCol);
       Move move = new ChessMove(this.row, this.col, this, toRow, toCol, destPiece);
       if (isOpposingPiece(destPiece)) {
-        moves.add(move);
+        if (toRow == promotionRow) {
+          moves.addAll(computePromotions(move, board));
+        } else {
+          moves.add(move);
+        }
       }
     }
 
@@ -100,6 +100,21 @@ public class ChessPawn extends ChessPiece {
     }
 
     return moves;
+  }
+
+  private List<Move> computePromotions(Move originalMove, Board board) {
+    List<Move> promotionMoves = new ArrayList<>();
+    PieceType[] promotionTypes = new PieceType[] { KNIGHT, BISHOP, ROOK, QUEEN };
+    for (PieceType type : promotionTypes) {
+      Piece promotionPiece = createPiece(this.color, type, promotionRow, originalMove.toCol());
+      Move promotionMove = new ChessMove(promotionRow, originalMove.toCol(), promotionPiece, promotionRow, originalMove.toCol(), this);
+      promotionMoves.add(new ChessMove(
+          originalMove.fromRow(), originalMove.fromCol(), this,
+          promotionRow, originalMove.toCol(), originalMove.toPiece(),
+          promotionMove, PROMOTION
+      ));
+    }
+    return promotionMoves;
   }
 
   @Override

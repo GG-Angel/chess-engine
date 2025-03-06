@@ -10,8 +10,6 @@ public interface Move {
 
   boolean wasFirstMove();
 
-  Piece getDestPiece();
-
   Move getSubMove();
 
   ChessMoveType getMoveType();

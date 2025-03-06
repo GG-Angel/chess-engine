@@ -199,14 +199,19 @@ public class ChessBoard implements Board {
   }
 
   private void executeMakeMove(Move move) {
+    Piece fromPiece = move.fromPiece();
+    Piece toPiece = move.toPiece();
+
     // move the piece to new position on board
     this.board[move.fromRow()][move.fromCol()] = null;
-    this.board[move.toRow()][move.toCol()] = move.getDestPiece();
-//    getFriendlyPieces(move.fromPiece().getColor()).remove(move.fromPiece());
+    this.board[move.toRow()][move.toCol()] = fromPiece;
+    if (toPiece != null) {
+      toPiece.setIsAlive(false);
+    }
 
     // update piece position
-    move.fromPiece().setPosition(move.toRow(), move.toCol());
-    move.fromPiece().setHasMoved(true);
+    fromPiece.setPosition(move.toRow(), move.toCol());
+    fromPiece.setHasMoved(true);
 
     // check for move chains
     if (move.getSubMove() != null) {
@@ -237,13 +242,18 @@ public class ChessBoard implements Board {
       executeUndoMove(move.getSubMove());
     }
 
+    Piece fromPiece = move.fromPiece();
+    Piece toPiece = move.toPiece();
+
     // put pieces back in place
-    this.board[move.fromRow()][move.fromCol()] = move.fromPiece();
-    this.board[move.toRow()][move.toCol()] = move.toPiece();
-//    getFriendlyPieces(move.fromPiece().getColor()).add(move.fromPiece());
+    this.board[move.fromRow()][move.fromCol()] = fromPiece;
+    this.board[move.toRow()][move.toCol()] = toPiece;
+    if (toPiece != null) {
+      toPiece.setIsAlive(true);
+    }
 
     // update piece to previous position
-    move.fromPiece().setPosition(move.fromRow(), move.fromCol());
+    fromPiece.setPosition(move.fromRow(), move.fromCol());
 
     // restore previous has moved state
     if (move.wasFirstMove()) {

@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface Piece {
 
-  boolean hasMoved();
+  boolean getIsAlive();
+
+  boolean getHasMoved();
 
   boolean isOpposingPiece(Piece other);
 
@@ -20,6 +22,8 @@ public interface Piece {
   void setValidMoves(List<Move> newValidMoves);
 
   void setHasMoved(boolean hasMoved);
+
+  void setIsAlive(boolean isAlive);
 
   void setPosition(int row, int col);
 
