@@ -10,10 +10,10 @@ import java.io.IOException;
 public class Chess {
 
   public static void main(String[] args) throws IOException {
-    Board board = new ChessBoard("rnb1kbnr/pppp1ppp/8/4p3/4P2q/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 3");
+    Board board = new ChessBoard("rn3r2/pbppq1p1/1p2pN2/8/3P2NP/6P1/PPPKBP1R/R5k1 b - - 6 18");
     View view = new ChessTextView(board);
 
     view.renderBoard();
-    view.renderMessage(board.getPieceAt(6, 5).getValidMoves().toString());
+    view.renderMessage(board.generateLegalMoves().toString());
   }
 }

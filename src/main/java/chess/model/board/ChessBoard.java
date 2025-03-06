@@ -1,5 +1,6 @@
 package chess.model.board;
 
+import chess.model.move.ChessMove;
 import chess.model.move.Move;
 import chess.model.piece.ChessPiece;
 import chess.model.piece.Piece;
@@ -40,58 +41,86 @@ public class ChessBoard implements Board {
 
   private void initializeBoard(String fen) {
     try {
-      Map<Character, PieceType> symbolToPieceType = new HashMap<>();
-      symbolToPieceType.put('p', PAWN);
-      symbolToPieceType.put('b', BISHOP);
-      symbolToPieceType.put('n', KNIGHT);
-      symbolToPieceType.put('r', ROOK);
-      symbolToPieceType.put('q', QUEEN);
-      symbolToPieceType.put('k', KING);
-
       String[] fenFields = fen.split(" ");
+
       this.turnColor = fenFields[1].equals("w") ? WHITE : BLACK;
       this.halfMoveClock.push(Integer.parseInt(fenFields[4]));
       this.fullMoveClock = Integer.parseInt(fenFields[5]);
-      // missing en passant target square, can make one move in stack for it and its done!
 
-      char[] fenBoard = fenFields[0].toCharArray();
+      String fenBoard = fenFields[0];
       String fenCastling = fenFields[2];
+      String fenEnPassant = fenFields[3];
 
-      // place pieces on board
-      int row = 0; int col = 0;
-      for (char symbol : fenBoard) {
-        if (symbol == '/') {
-          row++;
-          col = 0;
-        } else {
-          if (Character.isDigit(symbol)) {
-            col += Character.getNumericValue(symbol);
-          } else {
-            PieceType type = symbolToPieceType.get(Character.toLowerCase(symbol));
-            PieceColor color = Character.isUpperCase(symbol) ? WHITE : BLACK;
-            this.board[row][col] = createPiece(color, type);
-            col++;
-          }
-        }
-      }
-
-      // assign castling permissions
-      if (!fenCastling.equals("-")) {
-        char[] cannotCastle = "KQkq".replaceAll("[" + fenCastling + "]", "").toCharArray();
-        for (char symbol : cannotCastle) {
-          int rank = Character.isUpperCase(symbol) ? 7 : 0;
-          int rookCol = Character.toLowerCase(symbol) == 'k' ? 7 : 0;
-          Piece piece = this.board[rank][rookCol];
-          if (piece != null && piece.getType() == ROOK) {
-            piece.setHasMoved(true);
-          }
-        }
-      }
+      initializeBoardPieces(fenBoard);
+      initializeCastling(fenCastling);
+      initializeEnPassant(fenEnPassant);
 
       this.checkStack.push(isKingInCheck(turnColor));
       generateLegalMoves();
     } catch (Exception e) {
       throw new IllegalArgumentException("Invalid FEN string: " + e.getMessage());
+    }
+  }
+
+  private void initializeBoardPieces(String fenBoard) {
+    Map<Character, PieceType> symbolToPieceType = new HashMap<>();
+    symbolToPieceType.put('p', PAWN);
+    symbolToPieceType.put('b', BISHOP);
+    symbolToPieceType.put('n', KNIGHT);
+    symbolToPieceType.put('r', ROOK);
+    symbolToPieceType.put('q', QUEEN);
+    symbolToPieceType.put('k', KING);
+
+    char[] fenBoardChars = fenBoard.toCharArray();
+    int row = 0; int col = 0;
+    for (char symbol : fenBoardChars) {
+      if (symbol == '/') {
+        row++;
+        col = 0;
+      } else {
+        if (Character.isDigit(symbol)) {
+          col += Character.getNumericValue(symbol);
+        } else {
+          PieceType type = symbolToPieceType.get(Character.toLowerCase(symbol));
+          PieceColor color = Character.isUpperCase(symbol) ? WHITE : BLACK;
+          this.board[row][col] = createPiece(color, type);
+          col++;
+        }
+      }
+    }
+  }
+
+  private void initializeCastling(String fenCastling) throws IllegalArgumentException {
+    if (!fenCastling.equals("-")) {
+      char[] cannotCastle = "KQkq".replaceAll("[" + fenCastling + "]", "").toCharArray();
+      for (char symbol : cannotCastle) {
+        int rank = Character.isUpperCase(symbol) ? 7 : 0;
+        int rookCol = Character.toLowerCase(symbol) == 'k' ? 7 : 0;
+        Piece piece = this.board[rank][rookCol];
+        if (piece != null && piece.getType() == ROOK) {
+          piece.setHasMoved(true);
+        }
+      }
+    }
+  }
+
+  private void initializeEnPassant(String fenEnPassant) throws IllegalArgumentException {
+    if (!fenEnPassant.equals("-")) {
+      int targetRow = 9 - Integer.parseInt(String.valueOf(fenEnPassant.charAt(1)));
+      int pawnCol = ((int) fenEnPassant.charAt(0)) - 97;
+
+      if (isOutOfBounds(targetRow, pawnCol)) {
+        throw new IllegalArgumentException("En passant target square is out of bounds.");
+      }
+
+      Piece targetPawn = this.board[targetRow][pawnCol];
+      if (targetPawn != null && targetPawn.getType() == PAWN && (targetRow == 3 || targetRow == 4)) {
+        int homeRow = targetPawn.getColor() == WHITE ? 6 : 1;
+        Move pawnMove = new ChessMove(homeRow, pawnCol, targetPawn, targetRow, pawnCol, null);
+        moveStack.add(pawnMove);
+      } else {
+        throw new IllegalArgumentException("En passant target square does not point to a valid pawn.");
+      }
     }
   }
 
