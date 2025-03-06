@@ -27,8 +27,13 @@ public class Chess {
     view.renderMessage("TIME (ms): " + (elapsedTime / 1000000.0));
 
     board.makeMove(board.getPieceAt(1, 1).getValidMoves().getFirst());
+
+    view.renderBoard();
+    view.renderMessage(board.generateLegalMoves().toString());
+    
     board.undoMove();
 
     view.renderBoard();
+    view.renderMessage(board.generateLegalMoves().toString());
   }
 }

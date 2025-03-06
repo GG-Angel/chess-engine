@@ -30,7 +30,7 @@ public abstract class ChessPiece implements Piece {
   protected PieceColor color;
   protected PieceType type;
   protected List<Move> validMoves;
-  protected boolean isAlive, hasMoved;
+  protected boolean isAlive, hasMovedBefore;
 
   protected ChessPiece(PieceColor color, PieceType type, int row, int col) throws NullPointerException {
     this.color = requireNonNull(color, "Must pass non-null Color to Piece.");
@@ -39,17 +39,17 @@ public abstract class ChessPiece implements Piece {
     this.col = col;
     this.validMoves = new ArrayList<>();
     this.isAlive = true;
-    this.hasMoved = false;
+    this.hasMovedBefore = false;
   }
 
   @Override
-  public boolean getIsAlive() {
+  public boolean isAlive() {
     return this.isAlive;
   }
 
   @Override
-  public boolean getHasMoved() {
-    return this.hasMoved;
+  public boolean hasMovedBefore() {
+    return this.hasMovedBefore;
   }
 
   @Override
@@ -83,8 +83,8 @@ public abstract class ChessPiece implements Piece {
   }
 
   @Override
-  public void setHasMoved(boolean hasMoved) {
-    this.hasMoved = hasMoved;
+  public void setHasMovedBefore(boolean hasMovedBefore) {
+    this.hasMovedBefore = hasMovedBefore;
   }
 
   @Override

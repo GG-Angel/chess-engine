@@ -9,7 +9,6 @@ import chess.model.piece.abstracts.PieceType;
 
 import java.util.*;
 
-import static chess.model.move.ChessMoveType.PROMOTION;
 import static chess.model.piece.abstracts.ChessPiece.createPiece;
 import static chess.model.piece.abstracts.PieceColor.BLACK;
 import static chess.model.piece.abstracts.PieceColor.WHITE;
@@ -100,7 +99,7 @@ public class ChessBoard implements Board {
         int rookCol = Character.toLowerCase(symbol) == 'k' ? 7 : 0;
         Piece piece = this.board[rank][rookCol];
         if (piece != null && piece.getType() == ROOK) {
-          piece.setHasMoved(true);
+          piece.setHasMovedBefore(true);
         }
       }
     }
@@ -141,8 +140,10 @@ public class ChessBoard implements Board {
   private List<Move> generateMoves() {
     List<Move> generatedMoves = new ArrayList<>();
     for (Piece piece : getFriendlyPieces(turnColor)) {
-      piece.setValidMoves(piece.computeMoves(this));
-      generatedMoves.addAll(piece.getValidMoves());
+      if (piece.isAlive()) {
+        piece.setValidMoves(piece.computeMoves(this));
+        generatedMoves.addAll(piece.getValidMoves());
+      }
     }
     return generatedMoves;
   }
@@ -211,7 +212,7 @@ public class ChessBoard implements Board {
 
     // update piece position
     fromPiece.setPosition(move.toRow(), move.toCol());
-    fromPiece.setHasMoved(true);
+    fromPiece.setHasMovedBefore(true);
 
     // check for move chains
     if (move.getSubMove() != null) {
@@ -257,7 +258,7 @@ public class ChessBoard implements Board {
 
     // restore previous has moved state
     if (move.wasFirstMove()) {
-      move.fromPiece().setHasMoved(false);
+      move.fromPiece().setHasMovedBefore(false);
     }
   }
 

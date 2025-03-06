@@ -30,7 +30,7 @@ public class ChessKing extends ProximityPiece {
 
   private List<Move> computeCastling(Board board) {
     List<Move> moves = new ArrayList<>();
-    if (hasMoved || board.isCurrentKingInCheck()) return moves;
+    if (hasMovedBefore || board.isCurrentKingInCheck()) return moves;
 
     checkCastling(board, 7, 6, 5, moves); // king-side castling
     checkCastling(board, 0, 2, 3, moves); // queen-side castling
@@ -40,7 +40,7 @@ public class ChessKing extends ProximityPiece {
 
   private void checkCastling(Board board, int rookCol, int kingTargetCol, int rookTargetCol, List<Move> moves) {
     Piece rook = board.getPieceAt(this.row, rookCol);
-    if (rook == null || rook.getType() != PieceType.ROOK || isOpposingPiece(rook) || rook.getHasMoved()) return;
+    if (rook == null || rook.getType() != PieceType.ROOK || isOpposingPiece(rook) || rook.hasMovedBefore()) return;
 
     int step = (rookCol == 7) ? 1 : -1;
     for (int col = this.col + step; col != rookCol; col += step) {

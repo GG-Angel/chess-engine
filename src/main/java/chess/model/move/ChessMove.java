@@ -37,7 +37,7 @@ public class ChessMove implements Move, Comparable<ChessMove> {
       this.toPiece = toPiece;
       this.subMove = subMove;
       this.moveType = moveType;
-      this.wasFirstMove = !fromPiece.getHasMoved();
+      this.wasFirstMove = !fromPiece.hasMovedBefore();
   }
 
   @Override
