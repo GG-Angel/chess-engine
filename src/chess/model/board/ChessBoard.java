@@ -167,6 +167,24 @@ public class ChessBoard implements Board {
   }
 
   @Override
+  public long performanceTest(int depth) {
+    if (depth == 0) {
+      return 1;
+    }
+
+    long nodes = 0;
+    List<Move> legalMoves = generateLegalMoves();
+
+    for (Move move : legalMoves) {
+      makeMove(move);
+      nodes += performanceTest(depth - 1);
+      undoMove();
+    }
+
+    return nodes;
+  }
+
+  @Override
   public boolean isValidMove(Move move) {
     return move != null && move.fromPiece().getValidMoves().contains(move);
   }

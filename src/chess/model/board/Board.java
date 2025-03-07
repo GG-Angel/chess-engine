@@ -10,6 +10,8 @@ public interface Board {
 
     List<Move> generateLegalMoves();
 
+    long performanceTest(int depth);
+
     boolean isValidMove(Move move);
 
     void validateMove(Move move);
