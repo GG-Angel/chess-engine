@@ -16,10 +16,17 @@ public class Chess {
     Board board = new ChessBoard("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8");
     View view = new ChessTextView(board);
 
-    view.renderBoard();
     List<Move> moves = board.generateLegalMoves(PieceColor.WHITE);
+    board.makeMove(moves.get(2));
+    moves = board.generateLegalMoves(PieceColor.BLACK);
+
+    view.renderBoard();
     for (Move move : moves) {
-      view.renderMessage(move.toString());
+      System.out.print(move.toString() + ": ");
+      board.makeMove(move);
+      List<Move> nodes = board.generateLegalMoves(PieceColor.WHITE);
+      System.out.print(nodes.size() + "\n");
+      board.undoMove();
     }
   }
 }

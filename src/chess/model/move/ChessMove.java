@@ -6,6 +6,8 @@ import chess.model.piece.PieceType;
 import chess.model.piece.ChessPawn;
 import java.util.Objects;
 
+import static chess.model.move.ChessMoveType.CASTLE;
+import static chess.model.move.ChessMoveType.PROMOTION;
 import static chess.model.move.ChessMoveType.STANDARD;
 import static java.util.Objects.requireNonNull;
 
@@ -121,13 +123,22 @@ public class ChessMove implements Move, Comparable<ChessMove> {
   public String toString() {
     StringBuilder sb = new StringBuilder();
 
-    sb.append(this.fromPiece).append(": ");
+//    sb.append(this.fromPiece).append(": ");
     sb.append((char) ('a' + this.fromCol)).append(8 - this.fromRow);
-    Move move = this;
-    while (move.getSubMove() != null) {
-      move = move.getSubMove();
+    if (this.moveType == CASTLE) {
+      sb.append((char) ('a' + this.toCol())).append(8 - this.toRow());
+    } else {
+      Move move = this;
+      while (move.getSubMove() != null) {
+        move = move.getSubMove();
+      }
+      sb.append((char) ('a' + move.toCol())).append(8 - move.toRow());
+      if (this.moveType == PROMOTION) {
+        PieceType type = move.fromPiece().getType();
+        int charIdx = type == PieceType.KNIGHT ? 1 : 0;
+        sb.append(type.toString().toLowerCase().charAt(charIdx));
+      }
     }
-    sb.append((char) ('a' + move.toCol())).append(8 - move.toRow());
 
     return sb.toString();
   }
