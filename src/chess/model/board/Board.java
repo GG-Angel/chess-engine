@@ -3,7 +3,10 @@ package chess.model.board;
 import chess.model.move.Move;
 import chess.model.piece.Piece;
 
+import chess.model.piece.PieceColor;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 public interface Board {
@@ -19,6 +22,12 @@ public interface Board {
     void makeMove(Move move);
 
     void undoMove();
+
+    Map<PieceColor, Set<Piece>> getPieces();
+
+    Map<PieceColor, List<Move>> getMoves();
+
+    PieceColor getOpposingColor(PieceColor color);
 
     boolean isCurrentKingInCheck();
 

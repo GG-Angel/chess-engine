@@ -5,6 +5,7 @@ import chess.model.move.ChessMove;
 import chess.model.move.ChessMoveType;
 import chess.model.move.Move;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,10 +39,20 @@ public class ChessKing extends ProximityPiece {
     Piece rook = board.getPieceAt(this.row, rookCol);
     if (rook == null || rook.getType() != PieceType.ROOK || isOpposingPiece(rook) || rook.hasMovedBefore()) return;
 
-
+    List<Integer> columns = new ArrayList<>();
     int step = (rookCol == 7) ? 1 : -1;
     for (int col = this.col + step; col != rookCol; col += step) {
       if (board.getPieceAt(this.row, col) != null) return; // collision detected
+      columns.add(col);
+    }
+
+    List<Move> opponentMoves = board.getMoves().get(board.getOpposingColor(this.color));
+    for (Move opponentMove : opponentMoves) {
+      for (int betweenCol : columns) {
+        if (opponentMove.toRow() == this.row && opponentMove.toCol() == betweenCol) {
+          return;
+        }
+      }
     }
 
     Move rookMove = new ChessMove(this.row, rookCol, rook, this.row, rookTargetCol, null);
