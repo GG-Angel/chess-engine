@@ -38,6 +38,7 @@ public class ChessKing extends ProximityPiece {
     Piece rook = board.getPieceAt(this.row, rookCol);
     if (rook == null || rook.getType() != PieceType.ROOK || isOpposingPiece(rook) || rook.hasMovedBefore()) return;
 
+
     int step = (rookCol == 7) ? 1 : -1;
     for (int col = this.col + step; col != rookCol; col += step) {
       if (board.getPieceAt(this.row, col) != null) return; // collision detected

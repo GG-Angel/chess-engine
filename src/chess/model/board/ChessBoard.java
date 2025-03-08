@@ -17,8 +17,8 @@ import static chess.model.piece.PieceType.*;
 public class ChessBoard implements Board {
   private final int boardSize;
   private final Piece[][] board;
-  private final Set<Piece> whitePieces;
-  private final Set<Piece> blackPieces;
+  private final Map<PieceColor, Set<Piece>> pieces;
+  private final Map<PieceColor, List<Move>> moves;
 
   private PieceColor turnColor;
   private final Stack<Move> moveStack;
@@ -33,11 +33,17 @@ public class ChessBoard implements Board {
   public ChessBoard(String fen) {
     this.boardSize = 8;
     this.board = new ChessPiece[boardSize][boardSize];
-    this.whitePieces = new HashSet<>();
-    this.blackPieces = new HashSet<>();
+    this.pieces = new HashMap<>();
+    this.moves = new HashMap<>();
     this.moveStack = new Stack<>();
     this.checkStack = new Stack<>();
     this.halfMoveClock = new Stack<>();
+
+    this.pieces.put(WHITE, new HashSet<>());
+    this.pieces.put(BLACK, new HashSet<>());
+    this.moves.put(WHITE, new ArrayList<>());
+    this.moves.put(BLACK, new ArrayList<>());
+
     initializeBoard(fen);
   }
 
@@ -82,7 +88,7 @@ public class ChessBoard implements Board {
           PieceType type = symbolToPieceType.get(Character.toLowerCase(symbol));
           PieceColor color = Character.isUpperCase(symbol) ? WHITE : BLACK;
           Piece piece = createPiece(color, type, row, col);
-          getFriendlyPieces(color).add(piece);
+          pieces.get(color).add(piece);
           this.board[row][col] = piece;
           col++;
         }
@@ -124,21 +130,9 @@ public class ChessBoard implements Board {
     }
   }
 
-  private boolean isKingInCheck(PieceColor side) {
-    for (Piece opponentPiece : getOpposingPieces(side)) {
-      if (opponentPiece.getType() != KING) {
-        List<Move> potentialNextMoves = opponentPiece.computeMoves(this);
-        if (potentialNextMoves.stream().anyMatch(Move::threatensKing)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   private List<Move> generateMoves() {
     List<Move> generatedMoves = new ArrayList<>();
-    for (Piece piece : getFriendlyPieces(turnColor)) {
+    for (Piece piece : pieces.get(turnColor)) {
       if (piece.isAlive()) {
         piece.setValidMoves(piece.computeMoves(this));
         generatedMoves.addAll(piece.getValidMoves());
@@ -163,11 +157,35 @@ public class ChessBoard implements Board {
       undoMove();
     }
 
+    moves.put(turnColor, legalMoves);
     return legalMoves;
   }
 
   @Override
-  public long performanceTest(int depth) {
+  private void updateMoves(PieceColor side) {
+
+  }
+
+  @Override
+  private void isKingInCheck(PieceColor side) {
+    List<Move> opponentMoves =
+  }
+
+//  private boolean isKingInCheck(PieceColor side) {
+//    PieceColor opponentColor = getOpposingColor(side);
+//    for (Piece opponentPiece : getPieces(opponentColor)) {
+//      if (opponentPiece.getType() != KING) {
+//        List<Move> potentialNextMoves = opponentPiece.computeMoves(this);
+//        if (potentialNextMoves.stream().anyMatch(Move::threatensKing)) {
+//          return true;
+//        }
+//      }
+//    }
+//    return false;
+//  }
+
+  @Override
+  public long legalMovesPerft(int depth) {
     if (depth == 0) {
       return 1;
     }
@@ -177,7 +195,7 @@ public class ChessBoard implements Board {
 
     for (Move move : legalMoves) {
       makeMove(move);
-      nodes += performanceTest(depth - 1);
+      nodes += legalMovesPerft(depth - 1);
       undoMove();
     }
 
@@ -283,13 +301,21 @@ public class ChessBoard implements Board {
     this.turnColor = this.turnColor == WHITE ? BLACK : WHITE;
   }
 
-  private Set<Piece> getFriendlyPieces(PieceColor color) {
-    return color == WHITE ? whitePieces : blackPieces;
+  private PieceColor getOpposingColor(PieceColor color) {
+    return color == WHITE ? BLACK : WHITE;
   }
 
-  private Set<Piece> getOpposingPieces(PieceColor color) {
-    return color == BLACK ? whitePieces : blackPieces;
-  }
+//  private Set<Piece> getPieces(PieceColor color) {
+//    return color == WHITE ? whitePieces : blackPieces;
+//  }
+//
+//  private void setMoves(PieceColor color, List<Move> moves) {
+//    if (color == WHITE) {
+//      whiteMoves = moves;
+//    } else {
+//      blackMoves = moves;
+//    }
+//  }
 
   @Override
   public boolean isCurrentKingInCheck() {

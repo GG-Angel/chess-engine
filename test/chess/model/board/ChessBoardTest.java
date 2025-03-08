@@ -1,7 +1,5 @@
 package chess.model.board;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,7 +19,7 @@ class ChessBoardTest {
   })
   void testGenerateLegalMovesPerformance(int depth, long expectedNodes) {
     Board board = new ChessBoard();
-    long actualNodes = board.performanceTest(depth);
+    long actualNodes = board.legalMovesPerft(depth);
     Assertions.assertEquals(expectedNodes, actualNodes);
   }
 }
