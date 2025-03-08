@@ -20,7 +20,7 @@ public class ChessBoard implements Board {
   private final Map<PieceColor, Set<Piece>> pieces;
   private final Map<PieceColor, List<Move>> moves;
 
-  private PieceColor turnColor;
+  private PieceColor turn;
   private final Stack<Move> moveStack;
   private final Stack<Boolean> checkStack;;
   private final Stack<Integer> halfMoveClock;
@@ -43,6 +43,7 @@ public class ChessBoard implements Board {
     this.pieces.put(BLACK, new HashSet<>());
     this.moves.put(WHITE, new ArrayList<>());
     this.moves.put(BLACK, new ArrayList<>());
+    this.checkStack.push(false);
 
     initializeBoard(fen);
   }
@@ -51,7 +52,7 @@ public class ChessBoard implements Board {
     try {
       String[] fenFields = fen.split(" ");
 
-      this.turnColor = fenFields[1].equals("w") ? WHITE : BLACK;
+      this.turn = fenFields[1].equals("w") ? WHITE : BLACK;
       this.halfMoveClock.push(Integer.parseInt(fenFields[4]));
       this.fullMoveClock = Integer.parseInt(fenFields[5]);
 
@@ -59,10 +60,12 @@ public class ChessBoard implements Board {
       initializeCastling(fenFields[2]);
       initializeEnPassant(fenFields[3]);
 
-      this.checkStack.push(isKingInCheck(turnColor));
-      generateLegalMoves();
+      generateKingCheck(turn);
+      generateMoves(getOpposingColor(this.turn));
+      generateLegalMoves(this.turn);
     } catch (Exception e) {
-      throw new IllegalArgumentException("Invalid FEN string: " + e.getMessage());
+      throw e;
+//      throw new IllegalArgumentException("Invalid FEN string: " + e.getMessage());
     }
   }
 
@@ -130,50 +133,62 @@ public class ChessBoard implements Board {
     }
   }
 
-  private List<Move> generateMoves() {
+  private List<Move> generateMoves(PieceColor side) {
     List<Move> generatedMoves = new ArrayList<>();
-    for (Piece piece : pieces.get(turnColor)) {
+    for (Piece piece : pieces.get(side)) {
       if (piece.isAlive()) {
         piece.setValidMoves(piece.computeMoves(this));
         generatedMoves.addAll(piece.getValidMoves());
       }
     }
+    moves.put(side, generatedMoves);
     return generatedMoves;
   }
 
   @Override
-  public List<Move> generateLegalMoves() {
-    List<Move> pseudoLegalMoves = generateMoves();
-    List<Move> legalMoves = new ArrayList<>();
-    PieceColor currentTurnColor = turnColor;
+  public List<Move> generateLegalMoves(PieceColor side) {
+    List<Move> pseudoLegalMoves = generateMoves(side);
+    Map<Piece, List<Move>> legalMoves = new HashMap<>();
 
+    // set up legal moves map
+    for (Piece piece : pieces.get(side)) {
+      if (piece.isAlive()) {
+        legalMoves.put(piece, new ArrayList<>());
+      }
+    }
+
+    // if this move is valid, store it for its associated piece
     for (Move moveToVerify : pseudoLegalMoves) {
       makeMove(moveToVerify);
-      if (!isKingInCheck(currentTurnColor)) {
-        legalMoves.add(moveToVerify);
-      } else {
-        moveToVerify.fromPiece().getValidMoves().remove(moveToVerify);
+      if (!checkKingCheck(side)) {
+        Piece piece = moveToVerify.fromPiece();
+        legalMoves.get(piece).add(moveToVerify);
       }
       undoMove();
     }
 
-    moves.put(turnColor, legalMoves);
-    return legalMoves;
-  }
-
-  private void updateMoves(PieceColor side) {
-    List<Move> updatedMoves = new ArrayList<>();
-    for (Piece piece : pieces.get(side)) {
-      if (piece.isAlive() && piece.getType() != KING) {
-        List<Move> pieceMoves = piece.computeMoves(this);
-        updatedMoves.addAll(pieceMoves);
-      }
+    // set the legal moves for each piece
+    List<Move> allLegalMoves = new ArrayList<>();
+    for (Map.Entry<Piece, List<Move>> entry : legalMoves.entrySet()) {
+      Piece piece = entry.getKey();
+      List<Move> legalPieceMoves = entry.getValue();
+      piece.setValidMoves(legalPieceMoves);
+      allLegalMoves.addAll(legalPieceMoves);
     }
-    this.moves.put(side, updatedMoves);
+
+    moves.put(side, allLegalMoves);
+    return allLegalMoves;
   }
 
-  private boolean isKingInCheck(PieceColor side) {
-    List<Move> opponentMoves = moves.get(getOpposingColor(side));
+  private boolean generateKingCheck(PieceColor side) {
+    boolean isKingInCheck = checkKingCheck(side);
+    this.checkStack.push(isKingInCheck);
+    return isKingInCheck;
+  }
+
+  private boolean checkKingCheck(PieceColor side) {
+    PieceColor opponentColor = getOpposingColor(side);
+    List<Move> opponentMoves = moves.get(opponentColor);
     return opponentMoves.stream().anyMatch(Move::threatensKing);
   }
 
@@ -184,7 +199,7 @@ public class ChessBoard implements Board {
     }
 
     long nodes = 0;
-    List<Move> legalMoves = generateLegalMoves();
+    List<Move> legalMoves = generateLegalMoves(turn);
 
     for (Move move : legalMoves) {
       makeMove(move);
@@ -219,13 +234,12 @@ public class ChessBoard implements Board {
       this.halfMoveClock.push(this.halfMoveClock.peek() + 1);
     }
 
-    if (turnColor == BLACK) {
+    if (turn == BLACK) {
       this.fullMoveClock++;
     }
 
-    updateMoves(turnColor);
     switchTurn();
-    this.checkStack.push(isKingInCheck(turnColor));
+    generateKingCheck(turn);
   }
 
   private void executeMakeMove(Move move) {
@@ -259,7 +273,7 @@ public class ChessBoard implements Board {
     executeUndoMove(lastMove);
 
     this.halfMoveClock.pop();
-    if (turnColor == WHITE) {
+    if (turn == WHITE) {
       this.fullMoveClock--;
     }
 
@@ -292,7 +306,7 @@ public class ChessBoard implements Board {
   }
 
   private void switchTurn() {
-    this.turnColor = this.turnColor == WHITE ? BLACK : WHITE;
+    this.turn = this.turn == WHITE ? BLACK : WHITE;
   }
 
   @Override
@@ -311,7 +325,7 @@ public class ChessBoard implements Board {
   }
 
   @Override
-  public boolean isCurrentKingInCheck() {
+  public boolean isKingInCheck() {
     return this.checkStack.peek();
   }
 

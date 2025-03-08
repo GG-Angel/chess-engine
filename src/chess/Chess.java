@@ -12,18 +12,12 @@ import java.util.List;
 public class Chess {
 
   public static void main(String[] args) throws IOException {
+//    Board board = new ChessBoard("rnbqkbnr/pppppppp/8/8/5q2/8/PPPPP1PP/RNBQK2R w KQkq - 0 1");
+//    View view = new ChessTextView(board);
+//
+//    view.renderBoard();
+//    view.renderMessage(board.getPieceAt(7, 4).computeMoves(board).toString());
+
     Board board = new ChessBoard();
-    View view = new ChessTextView(board);
-
-    view.renderBoard();
-
-    long timeStart = System.nanoTime();
-    List<Move> legalMoves = board.generateLegalMoves();
-    long timeEnd = System.nanoTime();
-
-    long elapsedTime = timeEnd - timeStart;
-
-    view.renderMessage(legalMoves.toString());
-    view.renderMessage("TIME (ms): " + (elapsedTime / 1000000.0));
   }
 }

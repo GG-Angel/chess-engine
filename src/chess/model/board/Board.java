@@ -11,7 +11,7 @@ import java.util.Stack;
 
 public interface Board {
 
-    List<Move> generateLegalMoves();
+    List<Move> generateLegalMoves(PieceColor side);
 
     long legalMovesPerft(int depth);
 
@@ -29,7 +29,7 @@ public interface Board {
 
     PieceColor getOpposingColor(PieceColor color);
 
-    boolean isCurrentKingInCheck();
+    boolean isKingInCheck();
 
     Stack<Move> getMoveStack();
 
