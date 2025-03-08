@@ -28,5 +28,12 @@ public class Chess {
       System.out.print(nodes.size() + "\n");
       board.undoMove();
     }
+
+    // 20
+
+    board.makeMove(moves.get(20));
+
+    view.renderBoard();
+    view.renderMessage("" + board.checkKingCheck(PieceColor.BLACK));
   }
 }
