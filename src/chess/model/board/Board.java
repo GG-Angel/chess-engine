@@ -11,7 +11,13 @@ import java.util.Stack;
 
 public interface Board {
 
+    List<Move> generateMoves(PieceColor side);
+
     List<Move> generateLegalMoves(PieceColor side);
+
+    boolean generateKingCheck(PieceColor side);
+
+    boolean checkKingCheck(PieceColor side);
 
     long legalMovesPerft(int depth);
 

@@ -95,26 +95,41 @@ public class ChessMove implements Move, Comparable<ChessMove> {
     return this.toPiece;
   }
 
+//  @Override
+//  public String toString() {
+//    StringBuilder sb = new StringBuilder();
+//    sb.append(moveType).append(": ");
+//    return recToString(sb, this);
+//  }
+//
+//  private String recToString(StringBuilder sb, Move move) {
+//    String to = move.toPiece() != null ? move.toPiece().toString() : "_";
+//
+//    sb.append(String.format("(%d, %d, %s) → (%d, %d, %s)",
+//        move.fromRow(), move.fromCol(), move.fromPiece(),
+//        move.toRow(), move.toCol(), to));
+//
+//    if (move.getSubMove() != null) {
+//      sb.append(" ==> ");
+//      return recToString(sb, getSubMove());
+//    } else {
+//      return sb.toString();
+//    }
+//  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append(moveType).append(": ");
-    return recToString(sb, this);
-  }
 
-  private String recToString(StringBuilder sb, Move move) {
-    String to = move.toPiece() != null ? move.toPiece().toString() : "_";
-
-    sb.append(String.format("(%d, %d, %s) → (%d, %d, %s)",
-        move.fromRow(), move.fromCol(), move.fromPiece(),
-        move.toRow(), move.toCol(), to));
-
-    if (move.getSubMove() != null) {
-      sb.append(" ==> ");
-      return recToString(sb, getSubMove());
-    } else {
-      return sb.toString();
+    sb.append(this.fromPiece).append(": ");
+    sb.append((char) ('a' + this.fromCol)).append(8 - this.fromRow);
+    Move move = this;
+    while (move.getSubMove() != null) {
+      move = move.getSubMove();
     }
+    sb.append((char) ('a' + move.toCol())).append(8 - move.toRow());
+
+    return sb.toString();
   }
 
   @Override

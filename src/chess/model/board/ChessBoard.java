@@ -132,12 +132,12 @@ public class ChessBoard implements Board {
     }
   }
 
-  private List<Move> generateMoves(PieceColor side) {
+  @Override
+  public List<Move> generateMoves(PieceColor side) {
     List<Move> generatedMoves = new ArrayList<>();
     for (Piece piece : pieces.get(side)) {
       if (piece.isAlive()) {
-        piece.setValidMoves(piece.computeMoves(this));
-        generatedMoves.addAll(piece.getValidMoves());
+        generatedMoves.addAll(piece.computeMoves(this));
       }
     }
     moves.put(side, generatedMoves);
@@ -179,15 +179,17 @@ public class ChessBoard implements Board {
     return allLegalMoves;
   }
 
-  private boolean generateKingCheck(PieceColor side) {
+  @Override
+  public boolean generateKingCheck(PieceColor side) {
     boolean isKingInCheck = checkKingCheck(side);
     this.checkStack.push(isKingInCheck);
     return isKingInCheck;
   }
 
-  private boolean checkKingCheck(PieceColor side) {
+  @Override
+  public boolean checkKingCheck(PieceColor side) {
     PieceColor opponentColor = getOpposingColor(side);
-    List<Move> opponentMoves = moves.get(opponentColor);
+    List<Move> opponentMoves = generateMoves(opponentColor);
     return opponentMoves.stream().anyMatch(Move::threatensKing);
   }
 
