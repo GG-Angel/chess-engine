@@ -9,6 +9,8 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 
 public abstract class ChessPiece implements Piece {
+  private static int nextId = 0;
+
   public static ChessPiece createPiece(PieceColor color, PieceType type, int row, int col) throws NullPointerException {
     return switch (type) {
       case PAWN -> new ChessPawn(color, row, col);
@@ -20,6 +22,7 @@ public abstract class ChessPiece implements Piece {
     };
   }
 
+  private final int id;
   protected int row, col;
   protected PieceColor color;
   protected PieceType type;
@@ -29,6 +32,7 @@ public abstract class ChessPiece implements Piece {
   protected ChessPiece(PieceColor color, PieceType type, int row, int col) throws NullPointerException {
     this.color = requireNonNull(color, "Must pass non-null Color to Piece.");
     this.type = requireNonNull(type, "Must pass non-null Type to Piece.");
+    this.id = nextId++;
     this.row = row;
     this.col = col;
     this.validMoves = new ArrayList<>();
@@ -97,6 +101,6 @@ public abstract class ChessPiece implements Piece {
 
   @Override
   public int hashCode() {
-    return Objects.hash(row, col, color, type);
+    return Objects.hash(id, color, type);
   }
 }

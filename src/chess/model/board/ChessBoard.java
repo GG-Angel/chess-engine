@@ -64,8 +64,7 @@ public class ChessBoard implements Board {
       generateMoves(getOpposingColor(this.turn));
       generateLegalMoves(this.turn);
     } catch (Exception e) {
-      throw e;
-//      throw new IllegalArgumentException("Invalid FEN string: " + e.getMessage());
+      throw new IllegalArgumentException("Invalid FEN string: " + e.getMessage());
     }
   }
 
