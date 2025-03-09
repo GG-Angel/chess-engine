@@ -44,13 +44,17 @@ public class Chess {
 
     view.renderBoard();
 
-    for (Move move : moves) {
-      System.out.print(move.toString() + ": ");
-      board.makeMove(move);
-      List<Move> nodes = board.generateLegalMoves(PieceColor.WHITE);
-      System.out.print(nodes.size() + "\n");
-//      System.out.println(board.legalMovesPerft(1));
-      board.undoMove();
-    }
+    System.out.println(moves.toString());
+
+    System.out.println(board.getPieceAt(1, 4).computeMoves(board).toString());
+
+//    for (Move move : moves) {
+//      System.out.print(move.toString() + ": ");
+//      board.makeMove(move);
+//      List<Move> nodes = board.generateLegalMoves(PieceColor.WHITE);
+//      System.out.print(nodes.size() + "\n");
+////      System.out.println(board.legalMovesPerft(1));
+//      board.undoMove();
+//    }
   }
 }
