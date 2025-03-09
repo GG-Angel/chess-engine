@@ -190,6 +190,7 @@ public class ChessBoard implements Board {
   public boolean checkKingCheck(PieceColor side) {
     PieceColor opponentColor = getOpposingColor(side);
     List<Move> opponentMoves = generateMoves(opponentColor);
+    System.out.println("CHECKING: " + opponentMoves);
     return opponentMoves.stream().anyMatch(Move::threatensKing);
   }
 
