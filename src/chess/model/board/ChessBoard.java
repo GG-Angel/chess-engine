@@ -160,12 +160,11 @@ public class ChessBoard implements Board {
 
     // if this move is valid, store it for its associated piece
     for (Move moveToVerify : pseudoLegalMoves) {
-      makeMove(moveToVerify);
+      executeMakeMove(moveToVerify);
       if (!isKingInCheck(side)) {
-        Piece piece = moveToVerify.fromPiece();
-        legalMoves.get(piece).add(moveToVerify);
+        legalMoves.get(moveToVerify.fromPiece()).add(moveToVerify);
       }
-      undoMove();
+      executeUndoMove(moveToVerify);
     }
 
     // set the legal moves for each piece
@@ -241,12 +240,6 @@ public class ChessBoard implements Board {
       this.fullMoveClock++;
     }
 
-    if (move.getMoveType() == PROMOTION) {
-      PieceColor color = move.fromPiece().getColor();
-      pieces.get(color).add(move.getSubMove().fromPiece());
-      move.getSubMove().fromPiece().setIsAlive(true);
-    }
-
     switchTurn();
     generateKingCheck(turn);
   }
@@ -258,7 +251,11 @@ public class ChessBoard implements Board {
     this.board[move.fromRow()][move.fromCol()] = null;
     this.board[move.toRow()][move.toCol()] = fromPiece;
     if (move.toPiece() != null) {
-      move.toPiece().setIsAlive(false);
+      Piece capturedPiece = move.toPiece();
+      PieceColor color = capturedPiece.getColor();
+      pieces.get(color).remove(capturedPiece);
+      move.toPiece().setIsAlive(false); // TODO: CHANGE
+
     }
 
     // update piece position
@@ -267,6 +264,12 @@ public class ChessBoard implements Board {
 
     // check for move chains
     if (move.getSubMove() != null) {
+      if (move.getMoveType() == PROMOTION) {
+        Piece promotionPiece = move.getSubMove().fromPiece();
+        PieceColor color = promotionPiece.getColor();
+        pieces.get(color).add(promotionPiece);
+        promotionPiece.setIsAlive(true); // TODO: CHANGE
+      }
       executeMakeMove(move.getSubMove());
     }
   }
@@ -285,23 +288,23 @@ public class ChessBoard implements Board {
       this.fullMoveClock--;
     }
 
-    if (lastMove.toPiece() != null) {
-      lastMove.toPiece().setIsAlive(true);
-    }
-
-    if (lastMove.getMoveType() == PROMOTION) {
-      Piece pieceBeforePromotion = lastMove.fromPiece();
-      Piece pieceAfterPromotion = lastMove.getSubMove().fromPiece();
-      pieceBeforePromotion.setIsAlive(true);
-      pieceAfterPromotion.setIsAlive(false);
-    }
-
     switchTurn();
     checkStack.pop();
   }
 
   private void executeUndoMove(Move move) {
     if (move.getSubMove() != null) {
+      if (move.getMoveType() == PROMOTION) {
+        Piece pieceBeforePromotion = move.fromPiece();
+        Piece pieceAfterPromotion = move.getSubMove().fromPiece();
+        PieceColor color = pieceBeforePromotion.getColor();
+        Set<Piece> piecesRef = pieces.get(color);
+        piecesRef.add(pieceBeforePromotion);
+        piecesRef.remove(pieceAfterPromotion); // TODO: CHANGE
+
+        pieceBeforePromotion.setIsAlive(true);
+        pieceAfterPromotion.setIsAlive(false);
+      }
       executeUndoMove(move.getSubMove());
     }
 
@@ -311,6 +314,12 @@ public class ChessBoard implements Board {
     // put pieces back in place
     this.board[move.fromRow()][move.fromCol()] = fromPiece;
     this.board[move.toRow()][move.toCol()] = toPiece;
+    if (move.toPiece() != null) {
+      Piece capturedPiece = move.toPiece();
+      PieceColor color = capturedPiece.getColor();
+      pieces.get(color).add(capturedPiece);
+      move.toPiece().setIsAlive(true); // TODO: CHANGE
+    }
 
     // update piece to previous position
     fromPiece.setPosition(move.fromRow(), move.fromCol());

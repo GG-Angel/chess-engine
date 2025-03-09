@@ -3,6 +3,7 @@ package chess.model.board;
 import chess.model.piece.PieceColor;
 import java.io.IOException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -94,5 +95,18 @@ class PerftTest {
     Board board = new ChessBoard("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10");
     long actualNodes = board.legalMovesPerft(depth);
     Assertions.assertEquals(expectedNodes, actualNodes);
+  }
+
+  @Test
+  void testComputeMoves() {
+    Board board = new ChessBoard("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10");
+    long start = System.nanoTime();
+
+//    board.generateKingCheck(PieceColor.WHITE);
+//    board.generateMoves(PieceColor.WHITE);
+    board.generateLegalMoves(PieceColor.WHITE);
+
+    long end = System.nanoTime();
+    System.out.println(((end - start) / 1000000.0) + " ms");
   }
 }
