@@ -32,10 +32,14 @@ public class Chess {
     // d7c8q
     for (Move move : moves) {
       if (move.toString().equals("d7c8q")) {
+        System.out.println(move.fromPiece() + " -> " + move.toPiece());
+        System.out.println(move.getSubMove().fromPiece() + " -> " + move.getSubMove().toPiece());
         board.makeMove(move);
         break;
       }
     }
+
+    System.out.println("PROMOTED!");
 
     moves = board.generateLegalMoves(PieceColor.BLACK);
 

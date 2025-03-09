@@ -161,20 +161,20 @@ public class ChessBoard implements Board {
     // if this move is valid, store it for its associated piece
     for (Move moveToVerify : pseudoLegalMoves) {
       // TODO: REMOVE
-      System.out.println(moveToVerify);
-      System.out.println("QUEEN ALIVE AT START? " + getPieceAt(0, 2).toString() + ", " + getPieceAt(0, 2).isAlive());
-      if (moveToVerify.toString().equals("d8d5")) {
-        makeMove(moveToVerify);
-        boolean kingCheck = checkKingCheck(side);
-        System.out.println("CHECK RESULT: " + kingCheck);
-        System.out.println("QUEEN ALIVE? " + getPieceAt(0, 2).isAlive());
-        if (!kingCheck) {
-          Piece piece = moveToVerify.fromPiece();
-          legalMoves.get(piece).add(moveToVerify);
-        }
-        undoMove();
-        continue;
-      }
+//      System.out.println(moveToVerify);
+//      System.out.println("QUEEN ALIVE AT START? " + getPieceAt(0, 2).toString() + ", " + getPieceAt(0, 2).isAlive());
+//      if (moveToVerify.toString().equals("d8d5")) {
+//        makeMove(moveToVerify);
+//        boolean kingCheck = checkKingCheck(side);
+//        System.out.println("CHECK RESULT: " + kingCheck);
+//        System.out.println("QUEEN ALIVE? " + getPieceAt(0, 2).isAlive());
+//        if (!kingCheck) {
+//          Piece piece = moveToVerify.fromPiece();
+//          legalMoves.get(piece).add(moveToVerify);
+//        }
+//        undoMove();
+//        continue;
+//      }
 
       makeMove(moveToVerify);
       if (!checkKingCheck(side)) {
@@ -257,9 +257,17 @@ public class ChessBoard implements Board {
       this.fullMoveClock++;
     }
 
+    if (move.toPiece() != null) {
+//      System.out.println("KILLING " + move.toPiece() + "...");
+      move.toPiece().setIsAlive(false);
+    }
+
     if (move.getMoveType() == PROMOTION) {
       PieceColor color = move.fromPiece().getColor();
       pieces.get(color).add(move.getSubMove().fromPiece());
+      move.getSubMove().fromPiece().setIsAlive(true);
+      move.getSubMove().toPiece().setIsAlive(false);
+//      System.out.println("STORING " + move.getSubMove().fromPiece() + "...");
     }
 
     switchTurn();
@@ -268,14 +276,10 @@ public class ChessBoard implements Board {
 
   private void executeMakeMove(Move move) {
     Piece fromPiece = move.fromPiece();
-    Piece toPiece = move.toPiece();
 
     // move the piece to new position on board
     this.board[move.fromRow()][move.fromCol()] = null;
     this.board[move.toRow()][move.toCol()] = fromPiece;
-    if (toPiece != null) {
-      toPiece.setIsAlive(false);
-    }
 
     // update piece position
     fromPiece.setPosition(move.toRow(), move.toCol());
@@ -308,7 +312,6 @@ public class ChessBoard implements Board {
     if (lastMove.getMoveType() == PROMOTION) {
       Piece pieceBeforePromotion = lastMove.fromPiece();
       Piece pieceAfterPromotion = lastMove.getSubMove().fromPiece();
-
       pieceBeforePromotion.setIsAlive(true);
       pieceAfterPromotion.setIsAlive(false);
     }
