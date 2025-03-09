@@ -15,7 +15,7 @@ import java.util.List;
 public class Chess {
 
   public static void main(String[] args) throws IOException {
-    Board board = new ChessBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
+    Board board = new ChessBoard("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8");
     View view = new ChessTextView(board);
 
     List<Move> moves = board.generateLegalMoves(PieceColor.WHITE);
@@ -29,9 +29,9 @@ public class Chess {
 //      board.undoMove();
 //    }
 
-    // e5d7
+    // d7c8q
     for (Move move : moves) {
-      if (move.toString().equals("e5d7")) {
+      if (move.toString().equals("d7c8q")) {
         board.makeMove(move);
         break;
       }
@@ -48,28 +48,29 @@ public class Chess {
 //      board.undoMove();
 //    }
 
-    // a6e2
+    view.renderMessage(board.getPieceAt(0, 3).getValidMoves().toString());
+
+    // d8d5
     for (Move move : moves) {
-      if (move.toString().equals("a6e2")) {
+      if (move.toString().equals("d8d5")) {
         board.makeMove(move);
         break;
       }
     }
 
+//    view.renderMessage("KING CHECK? " + board.checkKingCheck(PieceColor.BLACK));
+//    view.renderMessage("QUEEN ALIVE? " + board.getPieceAt(0, 2).isAlive());
+
     moves = board.generateLegalMoves(PieceColor.WHITE);
-    List<Move> oppMoves = board.generateMoves(PieceColor.BLACK);
 
     view.renderBoard();
-    view.renderMessage(board.getPieceAt(7, 4).getValidMoves().toString());
-    view.renderMessage(oppMoves.toString());
+    for (Move move : moves) {
+      System.out.print(move.toString() + ": ");
+      board.makeMove(move);
+      List<Move> nodes = board.generateLegalMoves(PieceColor.BLACK);
+      System.out.print(nodes.size() + "\n");
+      board.undoMove();
+    }
 
-//    view.renderBoard();
-//    for (Move move : moves) {
-//      System.out.print(move.toString() + ": ");
-//      board.makeMove(move);
-//      List<Move> nodes = board.generateLegalMoves(PieceColor.BLACK);
-//      System.out.print(nodes.size() + "\n");
-//      board.undoMove();
-//    }
   }
 }

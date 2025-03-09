@@ -160,6 +160,22 @@ public class ChessBoard implements Board {
 
     // if this move is valid, store it for its associated piece
     for (Move moveToVerify : pseudoLegalMoves) {
+      // TODO: REMOVE
+      System.out.println(moveToVerify);
+      System.out.println("QUEEN ALIVE AT START? " + getPieceAt(0, 2).toString() + ", " + getPieceAt(0, 2).isAlive());
+      if (moveToVerify.toString().equals("d8d5")) {
+        makeMove(moveToVerify);
+        boolean kingCheck = checkKingCheck(side);
+        System.out.println("CHECK RESULT: " + kingCheck);
+        System.out.println("QUEEN ALIVE? " + getPieceAt(0, 2).isAlive());
+        if (!kingCheck) {
+          Piece piece = moveToVerify.fromPiece();
+          legalMoves.get(piece).add(moveToVerify);
+        }
+        undoMove();
+        continue;
+      }
+
       makeMove(moveToVerify);
       if (!checkKingCheck(side)) {
         Piece piece = moveToVerify.fromPiece();
