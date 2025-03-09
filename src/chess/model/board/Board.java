@@ -19,6 +19,8 @@ public interface Board {
 
     boolean isKingInCheck(PieceColor side);
 
+    boolean isKingInCheck();
+
     long legalMovesPerft(int depth);
 
     boolean isValidMove(Move move);
@@ -34,8 +36,6 @@ public interface Board {
     Map<PieceColor, List<Move>> getMoves();
 
     PieceColor getOpposingColor(PieceColor color);
-
-    boolean isTurnKingInCheck();
 
     Stack<Move> getMoveStack();
 

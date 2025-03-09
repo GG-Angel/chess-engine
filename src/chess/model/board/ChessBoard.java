@@ -65,8 +65,7 @@ public class ChessBoard implements Board {
       generateMoves(getOpposingColor(this.turn));
       generateLegalMoves(this.turn);
     } catch (Exception e) {
-      throw e;
-//      throw new IllegalArgumentException("Invalid FEN string: " + e.getMessage());
+      throw new IllegalArgumentException("Invalid FEN string: " + e.getMessage());
     }
   }
 
@@ -139,7 +138,8 @@ public class ChessBoard implements Board {
     List<Move> generatedMoves = new ArrayList<>();
     for (Piece piece : pieces.get(side)) {
       if (piece.isAlive()) {
-        generatedMoves.addAll(piece.computeMoves(this));
+        List<Move> pieceMoves = piece.computeMoves(this);
+        generatedMoves.addAll(pieceMoves);
       }
     }
     moves.put(side, generatedMoves);
@@ -341,7 +341,7 @@ public class ChessBoard implements Board {
   }
 
   @Override
-  public boolean isTurnKingInCheck() {
+  public boolean isKingInCheck() {
     return this.checkStack.peek();
   }
 
