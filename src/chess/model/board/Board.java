@@ -17,7 +17,7 @@ public interface Board {
 
     boolean generateKingCheck(PieceColor side);
 
-    boolean isTurnKingInCheck(PieceColor side);
+    boolean isKingInCheck(PieceColor side);
 
     long legalMovesPerft(int depth);
 

@@ -12,7 +12,7 @@ public class ChessKnight extends ProximityPiece {
   }
 
   @Override
-  public List<Move> computeMoves(Board board) throws IndexOutOfBoundsException {
+  public List<Move> computeMoves(Board board) {
     int[][] distances = new int[][] {
         {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
         {1, 2}, {1, -2}, {-1, 2}, {-1, -2}

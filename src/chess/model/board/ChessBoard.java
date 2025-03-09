@@ -161,7 +161,7 @@ public class ChessBoard implements Board {
     // if this move is valid, store it for its associated piece
     for (Move moveToVerify : pseudoLegalMoves) {
       makeMove(moveToVerify);
-      if (!isTurnKingInCheck(side)) {
+      if (!isKingInCheck(side)) {
         Piece piece = moveToVerify.fromPiece();
         legalMoves.get(piece).add(moveToVerify);
       }
@@ -183,13 +183,13 @@ public class ChessBoard implements Board {
 
   @Override
   public boolean generateKingCheck(PieceColor side) {
-    boolean isKingInCheck = isTurnKingInCheck(side);
+    boolean isKingInCheck = isKingInCheck(side);
     this.checkStack.push(isKingInCheck);
     return isKingInCheck;
   }
 
   @Override
-  public boolean isTurnKingInCheck(PieceColor side) {
+  public boolean isKingInCheck(PieceColor side) {
     PieceColor opponentColor = getOpposingColor(side);
     List<Move> opponentMoves = generateMoves(opponentColor);
     return opponentMoves.stream().anyMatch(Move::threatensKing);
