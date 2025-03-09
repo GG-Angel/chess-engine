@@ -1,23 +1,23 @@
 package chess.model.board;
 
 import chess.model.move.ChessMove;
-import chess.model.move.ChessMoveType;
 import chess.model.move.Move;
 import chess.model.piece.ChessPiece;
 import chess.model.piece.Piece;
 import chess.model.piece.PieceColor;
+import chess.model.piece.PieceFactory;
 import chess.model.piece.PieceType;
 
 import java.util.*;
 
 import static chess.model.move.ChessMoveType.PROMOTION;
-import static chess.model.piece.ChessPiece.createPiece;
 import static chess.model.piece.PieceColor.BLACK;
 import static chess.model.piece.PieceColor.WHITE;
 import static chess.model.piece.PieceType.*;
 
 public class ChessBoard implements Board {
-  private final int boardSize;
+  public static final int BOARD_SIZE = 8;
+
   private final Piece[][] board;
   private final Map<PieceColor, Set<Piece>> pieces;
   private final Map<PieceColor, List<Move>> moves;
@@ -33,8 +33,7 @@ public class ChessBoard implements Board {
   }
 
   public ChessBoard(String fen) {
-    this.boardSize = 8;
-    this.board = new ChessPiece[boardSize][boardSize];
+    this.board = new ChessPiece[BOARD_SIZE][BOARD_SIZE];
     this.pieces = new HashMap<>();
     this.moves = new HashMap<>();
     this.moveStack = new Stack<>();
@@ -66,7 +65,8 @@ public class ChessBoard implements Board {
       generateMoves(getOpposingColor(this.turn));
       generateLegalMoves(this.turn);
     } catch (Exception e) {
-      throw new IllegalArgumentException("Invalid FEN string: " + e.getMessage());
+      throw e;
+//      throw new IllegalArgumentException("Invalid FEN string: " + e.getMessage());
     }
   }
 
@@ -91,7 +91,7 @@ public class ChessBoard implements Board {
         } else {
           PieceType type = symbolToPieceType.get(Character.toLowerCase(symbol));
           PieceColor color = Character.isUpperCase(symbol) ? WHITE : BLACK;
-          Piece piece = createPiece(color, type, row, col);
+          Piece piece = PieceFactory.createPiece(color, type, row, col);
           pieces.get(color).add(piece);
           this.board[row][col] = piece;
           col++;
@@ -160,24 +160,8 @@ public class ChessBoard implements Board {
 
     // if this move is valid, store it for its associated piece
     for (Move moveToVerify : pseudoLegalMoves) {
-      // TODO: REMOVE
-//      System.out.println(moveToVerify);
-//      System.out.println("QUEEN ALIVE AT START? " + getPieceAt(0, 2).toString() + ", " + getPieceAt(0, 2).isAlive());
-//      if (moveToVerify.toString().equals("d8d5")) {
-//        makeMove(moveToVerify);
-//        boolean kingCheck = checkKingCheck(side);
-//        System.out.println("CHECK RESULT: " + kingCheck);
-//        System.out.println("QUEEN ALIVE? " + getPieceAt(0, 2).isAlive());
-//        if (!kingCheck) {
-//          Piece piece = moveToVerify.fromPiece();
-//          legalMoves.get(piece).add(moveToVerify);
-//        }
-//        undoMove();
-//        continue;
-//      }
-
       makeMove(moveToVerify);
-      if (!checkKingCheck(side)) {
+      if (!isTurnKingInCheck(side)) {
         Piece piece = moveToVerify.fromPiece();
         legalMoves.get(piece).add(moveToVerify);
       }
@@ -199,13 +183,13 @@ public class ChessBoard implements Board {
 
   @Override
   public boolean generateKingCheck(PieceColor side) {
-    boolean isKingInCheck = checkKingCheck(side);
+    boolean isKingInCheck = isTurnKingInCheck(side);
     this.checkStack.push(isKingInCheck);
     return isKingInCheck;
   }
 
   @Override
-  public boolean checkKingCheck(PieceColor side) {
+  public boolean isTurnKingInCheck(PieceColor side) {
     PieceColor opponentColor = getOpposingColor(side);
     List<Move> opponentMoves = generateMoves(opponentColor);
     return opponentMoves.stream().anyMatch(Move::threatensKing);
@@ -257,17 +241,10 @@ public class ChessBoard implements Board {
       this.fullMoveClock++;
     }
 
-    if (move.toPiece() != null) {
-//      System.out.println("KILLING " + move.toPiece() + "...");
-      move.toPiece().setIsAlive(false);
-    }
-
     if (move.getMoveType() == PROMOTION) {
       PieceColor color = move.fromPiece().getColor();
       pieces.get(color).add(move.getSubMove().fromPiece());
       move.getSubMove().fromPiece().setIsAlive(true);
-      move.getSubMove().toPiece().setIsAlive(false);
-//      System.out.println("STORING " + move.getSubMove().fromPiece() + "...");
     }
 
     switchTurn();
@@ -280,6 +257,9 @@ public class ChessBoard implements Board {
     // move the piece to new position on board
     this.board[move.fromRow()][move.fromCol()] = null;
     this.board[move.toRow()][move.toCol()] = fromPiece;
+    if (move.toPiece() != null) {
+      move.toPiece().setIsAlive(false);
+    }
 
     // update piece position
     fromPiece.setPosition(move.toRow(), move.toCol());
@@ -361,18 +341,13 @@ public class ChessBoard implements Board {
   }
 
   @Override
-  public boolean isKingInCheck() {
+  public boolean isTurnKingInCheck() {
     return this.checkStack.peek();
   }
 
   @Override
   public Stack<Move> getMoveStack() {
     return this.moveStack;
-  }
-
-  @Override
-  public int getBoardSize() {
-    return this.boardSize;
   }
 
   @Override
@@ -393,7 +368,7 @@ public class ChessBoard implements Board {
 
   @Override
   public boolean isOutOfBounds(int row, int col) {
-    return row < 0 || row >= getBoardSize() || col < 0 || col >= getBoardSize();
+    return row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE;
   }
 
   @Override

@@ -10,19 +10,8 @@ import static java.util.Objects.requireNonNull;
 
 public abstract class ChessPiece implements Piece {
   private static int nextId = 0;
-
-  public static ChessPiece createPiece(PieceColor color, PieceType type, int row, int col) throws NullPointerException {
-    return switch (type) {
-      case PAWN -> new ChessPawn(color, row, col);
-      case BISHOP -> new ChessBishop(color, row, col);
-      case KNIGHT -> new ChessKnight(color, row, col);
-      case ROOK -> new ChessRook(color, row, col);
-      case QUEEN -> new ChessQueen(color, row, col);
-      case KING -> new ChessKing(color, row, col);
-    };
-  }
-
   private final int id;
+
   protected int row, col;
   protected PieceColor color;
   protected PieceType type;
@@ -40,6 +29,10 @@ public abstract class ChessPiece implements Piece {
     this.hasMovedBefore = false;
   }
 
+  protected boolean isOpposingPiece(Piece other) {
+    return other != null && this.color != other.getColor();
+  }
+
   @Override
   public boolean isAlive() {
     return this.isAlive;
@@ -48,11 +41,6 @@ public abstract class ChessPiece implements Piece {
   @Override
   public boolean hasMovedBefore() {
     return this.hasMovedBefore;
-  }
-
-  @Override
-  public boolean isOpposingPiece(Piece other) {
-    return other != null && this.color != other.getColor();
   }
 
   @Override
@@ -96,11 +84,11 @@ public abstract class ChessPiece implements Piece {
     if (this == obj) return true;
     if (obj == null || getClass() != obj.getClass()) return false;
     ChessPiece that = (ChessPiece) obj;
-    return row == that.row && col == that.col && color == that.color && type == that.type;
+    return id == that.id;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, color, type);
+    return Objects.hash(id);
   }
 }

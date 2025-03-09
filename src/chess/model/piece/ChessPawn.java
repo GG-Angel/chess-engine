@@ -101,7 +101,7 @@ public class ChessPawn extends ChessPiece {
     List<Move> promotionMoves = new ArrayList<>();
     PieceType[] promotionTypes = new PieceType[] { KNIGHT, BISHOP, ROOK, QUEEN };
     for (PieceType type : promotionTypes) {
-      Piece promotionPiece = createPiece(this.color, type, promotionRow, ogMove.toCol());
+      Piece promotionPiece = PieceFactory.createPiece(this.color, type, promotionRow, ogMove.toCol());
       Move promotionMove = new ChessMove(promotionRow, ogMove.toCol(), promotionPiece, promotionRow, ogMove.toCol(), this, ChessMoveType.PROMOTION);
       Move originalWithPromotion = new ChessMove(
           ogMove.fromRow(), ogMove.fromCol(), this,

@@ -28,7 +28,7 @@ public class ChessKing extends ProximityPiece {
 
   private List<Move> computeCastling(Board board) {
     List<Move> moves = new ArrayList<>();
-    if (hasMovedBefore || this.row != homeRow || board.isKingInCheck()) return moves;
+    if (hasMovedBefore || this.row != homeRow || board.isTurnKingInCheck()) return moves;
 
     checkCastling(board, 7, 6, 5, moves); // king-side castling
     checkCastling(board, 0, 2, 3, moves); // queen-side castling

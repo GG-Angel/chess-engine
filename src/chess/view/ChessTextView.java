@@ -1,5 +1,7 @@
 package chess.view;
 
+import static chess.model.board.ChessBoard.BOARD_SIZE;
+
 import chess.model.board.Board;
 import chess.model.piece.Piece;
 
@@ -17,18 +19,17 @@ public class ChessTextView extends ChessView {
   @Override
   public String toString() {
     StringBuilder boardSB = new StringBuilder();
-    int size = board.getBoardSize();
-    for (int row = 0; row < size; row++) {
+    for (int row = 0; row < BOARD_SIZE; row++) {
       StringBuilder rowSB = new StringBuilder();
-      for (int col = 0; col < size; col++) {
+      for (int col = 0; col < BOARD_SIZE; col++) {
         Piece piece = board.getPieceAt(row, col);
         rowSB.append(piece != null ? piece.toString() : emptySlot);
-        if (col < size - 1) {
+        if (col < BOARD_SIZE - 1) {
           rowSB.append(' ');
         }
       }
       boardSB.append(rowSB);
-      if (row < size - 1) {
+      if (row < BOARD_SIZE - 1) {
         boardSB.append('\n');
       }
     }

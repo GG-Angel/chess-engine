@@ -13,7 +13,7 @@ class PerftTest {
     "1, 20",
     "2, 400",
     "3, 8902",
-//    "4, 197281",
+    "4, 197281",
 //    "5, 4865609",
   })
   void testInitialPosition(int depth, long expectedNodes) {
@@ -41,7 +41,7 @@ class PerftTest {
       "1, 14",
       "2, 191",
       "3, 2812",
-//      "4, 43238",
+      "4, 43238",
 //      "5, 674624"
   })
   void testPositionThree(int depth, long expectedNodes) throws IOException {
