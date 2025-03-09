@@ -20,14 +20,14 @@ public class Chess {
 
     List<Move> moves = board.generateLegalMoves(PieceColor.WHITE);
 
-    view.renderBoard();
-    for (Move move : moves) {
-      System.out.print(move.toString() + ": ");
-      board.makeMove(move);
-      List<Move> nodes = board.generateLegalMoves(PieceColor.BLACK);
-      System.out.print(nodes.size() + "\n");
-      board.undoMove();
-    }
+//    view.renderBoard();
+//    for (Move move : moves) {
+//      System.out.print(move.toString() + ": ");
+//      board.makeMove(move);
+//      List<Move> nodes = board.generateLegalMoves(PieceColor.BLACK);
+//      System.out.print(nodes.size() + "\n");
+//      board.undoMove();
+//    }
 
     // e5d7
     for (Move move : moves) {
@@ -39,13 +39,37 @@ public class Chess {
 
     moves = board.generateLegalMoves(PieceColor.BLACK);
 
-    view.renderBoard();
+//    view.renderBoard();
+//    for (Move move : moves) {
+//      System.out.print(move.toString() + ": ");
+//      board.makeMove(move);
+//      List<Move> nodes = board.generateLegalMoves(PieceColor.WHITE);
+//      System.out.print(nodes.size() + "\n");
+//      board.undoMove();
+//    }
+
+    // a6e2
     for (Move move : moves) {
-      System.out.print(move.toString() + ": ");
-      board.makeMove(move);
-      List<Move> nodes = board.generateLegalMoves(PieceColor.WHITE);
-      System.out.print(nodes.size() + "\n");
-      board.undoMove();
+      if (move.toString().equals("a6e2")) {
+        board.makeMove(move);
+        break;
+      }
     }
+
+    moves = board.generateLegalMoves(PieceColor.WHITE);
+    List<Move> oppMoves = board.generateMoves(PieceColor.BLACK);
+
+    view.renderBoard();
+    view.renderMessage(board.getPieceAt(7, 4).getValidMoves().toString());
+    view.renderMessage(oppMoves.toString());
+
+//    view.renderBoard();
+//    for (Move move : moves) {
+//      System.out.print(move.toString() + ": ");
+//      board.makeMove(move);
+//      List<Move> nodes = board.generateLegalMoves(PieceColor.BLACK);
+//      System.out.print(nodes.size() + "\n");
+//      board.undoMove();
+//    }
   }
 }
