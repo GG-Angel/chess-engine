@@ -53,7 +53,7 @@ public class ChessKing extends ProximityPiece {
     List<Move> opponentMoves = board.getMoves().get(opponentColor);
     for (Move opponentMove : opponentMoves) {
       if (opponentMove.toRow() == homeRow) {
-        for (int col = this.col + step; col != rookCol; col += step) {
+        for (int col = this.col + step; col <= this.col + (step * 2); col += step) {
           if (opponentMove.toCol() == col) {
             return;
           }
