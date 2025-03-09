@@ -8,7 +8,6 @@ import chess.model.move.Move;
 import java.util.ArrayList;
 import java.util.List;
 
-import static chess.model.move.ChessMoveType.PROMOTION;
 import static chess.model.piece.PieceType.*;
 
 public class ChessPawn extends ChessPiece {
@@ -45,7 +44,7 @@ public class ChessPawn extends ChessPiece {
       if (distance == 1 || (distance == 2 && this.row == homeRow)) {
         Move move = new ChessMove(this.row, this.col, this, toRow, this.col, null);
         if (toRow == promotionRow) {
-          moves.addAll(computePromotions(move, board));
+          moves.addAll(computePromotions(move));
         } else {
           moves.add(move);
         }
@@ -66,7 +65,7 @@ public class ChessPawn extends ChessPiece {
       Move move = new ChessMove(this.row, this.col, this, toRow, toCol, destPiece);
       if (isOpposingPiece(destPiece)) {
         if (toRow == promotionRow) {
-          moves.addAll(computePromotions(move, board));
+          moves.addAll(computePromotions(move));
         } else {
           moves.add(move);
         }
@@ -89,7 +88,7 @@ public class ChessPawn extends ChessPiece {
       ) {
         int toRow = this.row + direction;
         int toCol = lastMove.toCol();
-        Move forwardMove = new ChessMove(this.row, toCol, this, toRow, toCol, null);
+        Move forwardMove = new ChessMove(this.row, toCol, this, toRow, toCol, null, ChessMoveType.EN_PASSANT);
         Move captureMove = new ChessMove(this.row, this.col, this, this.row, toCol, lastMove.fromPiece(), forwardMove, ChessMoveType.EN_PASSANT);
         moves.add(captureMove);
       }
@@ -98,17 +97,18 @@ public class ChessPawn extends ChessPiece {
     return moves;
   }
 
-  private List<Move> computePromotions(Move originalMove, Board board) {
+  private List<Move> computePromotions(Move ogMove) {
     List<Move> promotionMoves = new ArrayList<>();
     PieceType[] promotionTypes = new PieceType[] { KNIGHT, BISHOP, ROOK, QUEEN };
     for (PieceType type : promotionTypes) {
-      Piece promotionPiece = createPiece(this.color, type, promotionRow, originalMove.toCol());
-      Move promotionMove = new ChessMove(promotionRow, originalMove.toCol(), promotionPiece, promotionRow, originalMove.toCol(), this);
-      promotionMoves.add(new ChessMove(
-          originalMove.fromRow(), originalMove.fromCol(), this,
-          promotionRow, originalMove.toCol(), originalMove.toPiece(),
-          promotionMove, PROMOTION
-      ));
+      Piece promotionPiece = createPiece(this.color, type, promotionRow, ogMove.toCol());
+      Move promotionMove = new ChessMove(promotionRow, ogMove.toCol(), promotionPiece, promotionRow, ogMove.toCol(), this, ChessMoveType.PROMOTION);
+      Move originalWithPromotion = new ChessMove(
+          ogMove.fromRow(), ogMove.fromCol(), this,
+          promotionRow, ogMove.toCol(), ogMove.toPiece(),
+          promotionMove, ChessMoveType.PROMOTION
+      );
+      promotionMoves.add(originalWithPromotion);
     }
     return promotionMoves;
   }

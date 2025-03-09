@@ -3,7 +3,9 @@ package chess;
 import chess.model.board.Board;
 import chess.model.board.ChessBoard;
 import chess.model.move.Move;
+import chess.model.piece.Piece;
 import chess.model.piece.PieceColor;
+import chess.model.piece.PieceType;
 import chess.view.ChessTextView;
 import chess.view.View;
 
@@ -13,11 +15,28 @@ import java.util.List;
 public class Chess {
 
   public static void main(String[] args) throws IOException {
-    Board board = new ChessBoard("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8");
+    Board board = new ChessBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
     View view = new ChessTextView(board);
 
     List<Move> moves = board.generateLegalMoves(PieceColor.WHITE);
-    board.makeMove(moves.get(2));
+
+    view.renderBoard();
+    for (Move move : moves) {
+      System.out.print(move.toString() + ": ");
+      board.makeMove(move);
+      List<Move> nodes = board.generateLegalMoves(PieceColor.BLACK);
+      System.out.print(nodes.size() + "\n");
+      board.undoMove();
+    }
+
+    // e5d7
+    for (Move move : moves) {
+      if (move.toString().equals("e5d7")) {
+        board.makeMove(move);
+        break;
+      }
+    }
+
     moves = board.generateLegalMoves(PieceColor.BLACK);
 
     view.renderBoard();
@@ -28,16 +47,5 @@ public class Chess {
       System.out.print(nodes.size() + "\n");
       board.undoMove();
     }
-
-    // 20
-
-    board.makeMove(moves.get(20));
-
-    view.renderBoard();
-    view.renderMessage("" + board.checkKingCheck(PieceColor.BLACK));
-    view.renderMessage(board.getPieceAt(0, 2).computeMoves(board).toString());
-    view.renderMessage(board.getPieceAt(0, 2).computeMoves(board).get(4).threatensKing() + "");
-    view.renderMessage(board.checkKingCheck(PieceColor.BLACK) + "");
-    view.renderMessage(board.getPieceAt(0, 2).isAlive() + "");
   }
 }

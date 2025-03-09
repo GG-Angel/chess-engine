@@ -1,6 +1,7 @@
 package chess.model.board;
 
 import chess.model.move.ChessMove;
+import chess.model.move.ChessMoveType;
 import chess.model.move.Move;
 import chess.model.piece.ChessPiece;
 import chess.model.piece.Piece;
@@ -9,6 +10,7 @@ import chess.model.piece.PieceType;
 
 import java.util.*;
 
+import static chess.model.move.ChessMoveType.PROMOTION;
 import static chess.model.piece.ChessPiece.createPiece;
 import static chess.model.piece.PieceColor.BLACK;
 import static chess.model.piece.PieceColor.WHITE;
@@ -190,7 +192,6 @@ public class ChessBoard implements Board {
   public boolean checkKingCheck(PieceColor side) {
     PieceColor opponentColor = getOpposingColor(side);
     List<Move> opponentMoves = generateMoves(opponentColor);
-    System.out.println("CHECKING: " + opponentMoves);
     return opponentMoves.stream().anyMatch(Move::threatensKing);
   }
 
@@ -240,6 +241,11 @@ public class ChessBoard implements Board {
       this.fullMoveClock++;
     }
 
+    if (move.getMoveType() == PROMOTION) {
+      PieceColor color = move.fromPiece().getColor();
+      pieces.get(color).add(move.getSubMove().fromPiece());
+    }
+
     switchTurn();
     generateKingCheck(turn);
   }
@@ -279,6 +285,18 @@ public class ChessBoard implements Board {
       this.fullMoveClock--;
     }
 
+    if (lastMove.toPiece() != null) {
+      lastMove.toPiece().setIsAlive(true);
+    }
+
+    if (lastMove.getMoveType() == PROMOTION) {
+      Piece pieceBeforePromotion = lastMove.fromPiece();
+      Piece pieceAfterPromotion = lastMove.getSubMove().fromPiece();
+
+      pieceBeforePromotion.setIsAlive(true);
+      pieceAfterPromotion.setIsAlive(false);
+    }
+
     switchTurn();
     checkStack.pop();
   }
@@ -294,9 +312,6 @@ public class ChessBoard implements Board {
     // put pieces back in place
     this.board[move.fromRow()][move.fromCol()] = fromPiece;
     this.board[move.toRow()][move.toCol()] = toPiece;
-    if (toPiece != null) {
-      toPiece.setIsAlive(true);
-    }
 
     // update piece to previous position
     fromPiece.setPosition(move.fromRow(), move.fromCol());

@@ -61,7 +61,7 @@ public class ChessKing extends ProximityPiece {
       }
     }
 
-    Move rookMove = new ChessMove(this.row, rookCol, rook, this.row, rookTargetCol, null);
+    Move rookMove = new ChessMove(this.row, rookCol, rook, this.row, rookTargetCol, null, ChessMoveType.CASTLE);
     Move kingMove = new ChessMove(this.row, this.col, this, this.row, kingTargetCol, null, rookMove, ChessMoveType.CASTLE);
     moves.add(kingMove);
   }

@@ -26,8 +26,8 @@ public class ChessMove implements Move, Comparable<ChessMove> {
     initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, subMove, moveType);
   }
 
-  public ChessMove(int fromRow, int fromCol, ChessPawn fromPiece, int toRow, int toCol, Piece promotionPiece, ChessMoveType chessMoveType) {
-    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, promotionPiece, null, chessMoveType);
+  public ChessMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, ChessMoveType chessMoveType) {
+    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, null, chessMoveType);
   }
 
   private void initializeMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, Move subMove, ChessMoveType moveType) throws NullPointerException {
