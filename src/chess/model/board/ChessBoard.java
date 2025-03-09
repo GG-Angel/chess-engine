@@ -137,10 +137,10 @@ public class ChessBoard implements Board {
   public List<Move> generateMoves(PieceColor side) {
     List<Move> generatedMoves = new ArrayList<>();
     for (Piece piece : pieces.get(side)) {
-      if (piece.isAlive()) {
+//      if (piece.isAlive()) {
         List<Move> pieceMoves = piece.computeMoves(this);
         generatedMoves.addAll(pieceMoves);
-      }
+//      }
     }
     moves.put(side, generatedMoves);
     return generatedMoves;
@@ -153,9 +153,9 @@ public class ChessBoard implements Board {
 
     // set up legal moves map
     for (Piece piece : pieces.get(side)) {
-      if (piece.isAlive()) {
+//      if (piece.isAlive()) {
         legalMoves.put(piece, new ArrayList<>());
-      }
+//      }
     }
 
     // if this move is valid, store it for its associated piece
@@ -254,8 +254,7 @@ public class ChessBoard implements Board {
       Piece capturedPiece = move.toPiece();
       PieceColor color = capturedPiece.getColor();
       pieces.get(color).remove(capturedPiece);
-      move.toPiece().setIsAlive(false); // TODO: CHANGE
-
+//      move.toPiece().setIsAlive(false); // TODO: CHANGE
     }
 
     // update piece position
@@ -268,7 +267,7 @@ public class ChessBoard implements Board {
         Piece promotionPiece = move.getSubMove().fromPiece();
         PieceColor color = promotionPiece.getColor();
         pieces.get(color).add(promotionPiece);
-        promotionPiece.setIsAlive(true); // TODO: CHANGE
+//        promotionPiece.setIsAlive(true); // TODO: CHANGE
       }
       executeMakeMove(move.getSubMove());
     }
@@ -299,11 +298,11 @@ public class ChessBoard implements Board {
         Piece pieceAfterPromotion = move.getSubMove().fromPiece();
         PieceColor color = pieceBeforePromotion.getColor();
         Set<Piece> piecesRef = pieces.get(color);
-        piecesRef.add(pieceBeforePromotion);
+//        piecesRef.add(pieceBeforePromotion);
         piecesRef.remove(pieceAfterPromotion); // TODO: CHANGE
 
-        pieceBeforePromotion.setIsAlive(true);
-        pieceAfterPromotion.setIsAlive(false);
+//        pieceBeforePromotion.setIsAlive(true);
+//        pieceAfterPromotion.setIsAlive(false);
       }
       executeUndoMove(move.getSubMove());
     }
@@ -318,7 +317,7 @@ public class ChessBoard implements Board {
       Piece capturedPiece = move.toPiece();
       PieceColor color = capturedPiece.getColor();
       pieces.get(color).add(capturedPiece);
-      move.toPiece().setIsAlive(true); // TODO: CHANGE
+//      capturedPiece.setIsAlive(true); // TODO: CHANGE
     }
 
     // update piece to previous position

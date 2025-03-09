@@ -13,13 +13,44 @@ import java.util.List;
 public class Chess {
 
   public static void main(String[] args) throws IOException {
-    Board board = new ChessBoard("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10");
+    Board board = new ChessBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
     View view = new ChessTextView(board);
-    view.renderBoard();
 
     List<Move> moves = board.generateLegalMoves(PieceColor.WHITE);
+
     for (Move move : moves) {
-      System.out.println(move + ": 1");
+      if (move.toString().equals("d5d6")) {
+        board.makeMove(move);
+      }
+    }
+
+    moves = board.generateLegalMoves(PieceColor.BLACK);
+
+    for (Move move : moves) {
+      if (move.toString().equals("f6d5")) {
+        board.makeMove(move);
+      }
+    }
+
+    moves = board.generateLegalMoves(PieceColor.WHITE);
+
+    for (Move move : moves) {
+      if (move.toString().equals("d6e7")) {
+        board.makeMove(move);
+      }
+    }
+
+    moves = board.generateLegalMoves(PieceColor.BLACK);
+
+    view.renderBoard();
+
+    for (Move move : moves) {
+      System.out.print(move.toString() + ": ");
+      board.makeMove(move);
+      List<Move> nodes = board.generateLegalMoves(PieceColor.WHITE);
+      System.out.print(nodes.size() + "\n");
+//      System.out.println(board.legalMovesPerft(1));
+      board.undoMove();
     }
   }
 }
