@@ -3,7 +3,6 @@ package chess.model.move;
 import chess.model.piece.Piece;
 import chess.model.piece.PieceType;
 
-import chess.model.piece.ChessPawn;
 import java.util.Objects;
 
 import static chess.model.move.ChessMoveType.CASTLE;
@@ -19,27 +18,27 @@ public class ChessMove implements Move, Comparable<ChessMove> {
   private boolean wasFirstMove;
 
   public ChessMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece) {
-    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, null, STANDARD);
+    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, STANDARD, null);
   }
 
   public ChessMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, ChessMoveType moveType) {
-    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, null, moveType);
+    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, moveType, null);
   }
 
   public ChessMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, ChessMoveType moveType, Move subMove) {
     initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, moveType, subMove);
   }
 
-  private void initializeMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, Move subMove, ChessMoveType moveType) throws NullPointerException {
-      this.fromPiece = requireNonNull(fromPiece, "No piece to move specified.");
-      this.fromRow = fromRow;
-      this.fromCol = fromCol;
-      this.toRow = toRow;
-      this.toCol = toCol;
-      this.toPiece = toPiece;
-      this.subMove = subMove;
-      this.moveType = moveType;
-      this.wasFirstMove = !fromPiece.hasMovedBefore();
+  private void initializeMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, ChessMoveType moveType, Move subMove) throws NullPointerException {
+    this.fromPiece = requireNonNull(fromPiece, "No piece to move specified.");
+    this.fromRow = fromRow;
+    this.fromCol = fromCol;
+    this.toRow = toRow;
+    this.toCol = toCol;
+    this.toPiece = toPiece;
+    this.moveType = moveType;
+    this.subMove = subMove;
+    this.wasFirstMove = !fromPiece.hasMovedBefore();
   }
 
   @Override
