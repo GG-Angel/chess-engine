@@ -3,9 +3,10 @@ package chess.model.move;
 import chess.model.piece.Piece;
 import chess.model.piece.PieceType;
 
-import chess.model.piece.ChessPawn;
 import java.util.Objects;
 
+import static chess.model.move.ChessMoveType.CASTLE;
+import static chess.model.move.ChessMoveType.PROMOTION;
 import static chess.model.move.ChessMoveType.STANDARD;
 import static java.util.Objects.requireNonNull;
 
@@ -17,27 +18,27 @@ public class ChessMove implements Move, Comparable<ChessMove> {
   private boolean wasFirstMove;
 
   public ChessMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece) {
-    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, null, STANDARD);
+    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, STANDARD, null);
   }
 
-  public ChessMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, Move subMove, ChessMoveType moveType) {
-    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, subMove, moveType);
+  public ChessMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, ChessMoveType moveType) {
+    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, moveType, null);
   }
 
-  public ChessMove(int fromRow, int fromCol, ChessPawn fromPiece, int toRow, int toCol, Piece promotionPiece, ChessMoveType chessMoveType) {
-    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, promotionPiece, null, chessMoveType);
+  public ChessMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, ChessMoveType moveType, Move subMove) {
+    initializeMove(fromRow, fromCol, fromPiece, toRow, toCol, toPiece, moveType, subMove);
   }
 
-  private void initializeMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, Move subMove, ChessMoveType moveType) throws NullPointerException {
-      this.fromPiece = requireNonNull(fromPiece, "No piece to move specified.");
-      this.fromRow = fromRow;
-      this.fromCol = fromCol;
-      this.toRow = toRow;
-      this.toCol = toCol;
-      this.toPiece = toPiece;
-      this.subMove = subMove;
-      this.moveType = moveType;
-      this.wasFirstMove = !fromPiece.hasMovedBefore();
+  private void initializeMove(int fromRow, int fromCol, Piece fromPiece, int toRow, int toCol, Piece toPiece, ChessMoveType moveType, Move subMove) throws NullPointerException {
+    this.fromPiece = requireNonNull(fromPiece, "No piece to move specified.");
+    this.fromRow = fromRow;
+    this.fromCol = fromCol;
+    this.toRow = toRow;
+    this.toCol = toCol;
+    this.toPiece = toPiece;
+    this.moveType = moveType;
+    this.subMove = subMove;
+    this.wasFirstMove = !fromPiece.hasMovedBefore();
   }
 
   @Override
@@ -95,26 +96,50 @@ public class ChessMove implements Move, Comparable<ChessMove> {
     return this.toPiece;
   }
 
+//  @Override
+//  public String toString() {
+//    StringBuilder sb = new StringBuilder();
+//    sb.append(moveType).append(": ");
+//    return recToString(sb, this);
+//  }
+//
+//  private String recToString(StringBuilder sb, Move move) {
+//    String to = move.toPiece() != null ? move.toPiece().toString() : "_";
+//
+//    sb.append(String.format("(%d, %d, %s) → (%d, %d, %s)",
+//        move.fromRow(), move.fromCol(), move.fromPiece(),
+//        move.toRow(), move.toCol(), to));
+//
+//    if (move.getSubMove() != null) {
+//      sb.append(" ==> ");
+//      return recToString(sb, getSubMove());
+//    } else {
+//      return sb.toString();
+//    }
+//  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append(moveType).append(": ");
-    return recToString(sb, this);
-  }
 
-  private String recToString(StringBuilder sb, Move move) {
-    String to = move.toPiece() != null ? move.toPiece().toString() : "_";
-
-    sb.append(String.format("(%d, %d, %s) → (%d, %d, %s)",
-        move.fromRow(), move.fromCol(), move.fromPiece(),
-        move.toRow(), move.toCol(), to));
-
-    if (move.getSubMove() != null) {
-      sb.append(" ==> ");
-      return recToString(sb, getSubMove());
+//    sb.append(this.fromPiece).append(": ");
+    sb.append((char) ('a' + this.fromCol)).append(8 - this.fromRow);
+    if (this.moveType == CASTLE) {
+      sb.append((char) ('a' + this.toCol())).append(8 - this.toRow());
     } else {
-      return sb.toString();
+      Move move = this;
+      while (move.getSubMove() != null) {
+        move = move.getSubMove();
+      }
+      sb.append((char) ('a' + move.toCol())).append(8 - move.toRow());
+      if (this.moveType == PROMOTION) {
+        PieceType type = move.fromPiece().getType();
+        int charIdx = type == PieceType.KNIGHT ? 1 : 0;
+        sb.append(type.toString().toLowerCase().charAt(charIdx));
+      }
     }
+
+    return sb.toString();
   }
 
   @Override

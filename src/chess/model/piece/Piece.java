@@ -11,11 +11,11 @@ public interface Piece {
 
   boolean hasMovedBefore();
 
-  boolean isOpposingPiece(Piece other);
-
   PieceColor getColor();
 
   PieceType getType();
+
+  List<Move> computeMoves(Board board);
 
   List<Move> getValidMoves();
 
@@ -27,5 +27,4 @@ public interface Piece {
 
   void setPosition(int row, int col);
 
-  List<Move> computeMoves(Board board);
 }

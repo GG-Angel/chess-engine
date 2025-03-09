@@ -9,16 +9,8 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 
 public abstract class ChessPiece implements Piece {
-  public static ChessPiece createPiece(PieceColor color, PieceType type, int row, int col) throws NullPointerException {
-    return switch (type) {
-      case PAWN -> new ChessPawn(color, row, col);
-      case BISHOP -> new ChessBishop(color, row, col);
-      case KNIGHT -> new ChessKnight(color, row, col);
-      case ROOK -> new ChessRook(color, row, col);
-      case QUEEN -> new ChessQueen(color, row, col);
-      case KING -> new ChessKing(color, row, col);
-    };
-  }
+  private static int nextId = 0;
+  private final int id;
 
   protected int row, col;
   protected PieceColor color;
@@ -29,11 +21,16 @@ public abstract class ChessPiece implements Piece {
   protected ChessPiece(PieceColor color, PieceType type, int row, int col) throws NullPointerException {
     this.color = requireNonNull(color, "Must pass non-null Color to Piece.");
     this.type = requireNonNull(type, "Must pass non-null Type to Piece.");
+    this.id = nextId++;
     this.row = row;
     this.col = col;
     this.validMoves = new ArrayList<>();
     this.isAlive = true;
     this.hasMovedBefore = false;
+  }
+
+  protected boolean isOpposingPiece(Piece other) {
+    return other != null && this.color != other.getColor();
   }
 
   @Override
@@ -44,11 +41,6 @@ public abstract class ChessPiece implements Piece {
   @Override
   public boolean hasMovedBefore() {
     return this.hasMovedBefore;
-  }
-
-  @Override
-  public boolean isOpposingPiece(Piece other) {
-    return other != null && this.color != other.getColor();
   }
 
   @Override
@@ -92,11 +84,11 @@ public abstract class ChessPiece implements Piece {
     if (this == obj) return true;
     if (obj == null || getClass() != obj.getClass()) return false;
     ChessPiece that = (ChessPiece) obj;
-    return row == that.row && col == that.col && color == that.color && type == that.type;
+    return id == that.id;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(row, col, color, type);
+    return Objects.hash(id);
   }
 }
