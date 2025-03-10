@@ -1,4 +1,4 @@
-package chess.model;
+package chess.model.piece;
 
 import java.util.Objects;
 
@@ -8,14 +8,13 @@ public abstract class ChessPiece implements Piece {
 
   private final PieceColor color;
   private final PieceType type;
-  private int x, y;
+  private int position;
 
-  public ChessPiece(PieceColor color, PieceType type, int x, int y) {
+  public ChessPiece(PieceColor color, PieceType type, int position) {
     this.id = nextId++;
     this.color = color;
     this.type = type;
-    this.x = x;
-    this.y = y;
+    this.position = position;
   }
 
   @Override
@@ -29,19 +28,13 @@ public abstract class ChessPiece implements Piece {
   }
 
   @Override
-  public int getX() {
-    return x;
+  public int getPosition() {
+    return position;
   }
 
   @Override
-  public int getY() {
-    return y;
-  }
-
-  @Override
-  public void setPosition(int x, int y) {
-    this.x = x;
-    this.y = y;
+  public void setPosition(int position) {
+    this.position = position;
   }
 
   @Override
@@ -54,7 +47,10 @@ public abstract class ChessPiece implements Piece {
     if (this == obj) return true;
     if (obj == null || getClass() != obj.getClass()) return false;
     Piece other = (Piece) obj;
-    return this.x == other.getX() && this.y == other.getY() && this.color == other.getColor() && this.type == other.getType();
+    return
+        this.position == other.getPosition() &&
+        this.color == other.getColor() &&
+        this.type == other.getType();
   }
 
   @Override

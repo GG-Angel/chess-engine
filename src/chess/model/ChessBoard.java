@@ -1,6 +1,12 @@
 package chess.model;
 
-import static chess.model.PieceColor.*;
+import static chess.model.piece.PieceColor.*;
+
+import chess.model.piece.Piece;
+import chess.model.piece.PieceColor;
+import chess.model.piece.PieceFactory;
+import chess.model.piece.PieceLookup;
+import chess.model.piece.PieceType;
 
 public class ChessBoard implements Board {
   public static int BOARD_SIZE = 8;
@@ -32,18 +38,14 @@ public class ChessBoard implements Board {
       } else if (Character.isDigit(symbol)) {
         x += Character.getNumericValue(symbol);
       } else {
+        int position = to1D(x, y);
         PieceColor color = Character.isUpperCase(symbol) ? WHITE : BLACK;
         PieceType type = PieceLookup.getType(symbol);
-        Piece piece = PieceFactory.createPiece(color, type, x, y);
-        this.board[to1D(x, y)] = piece;
+        Piece piece = PieceFactory.createPiece(color, type, position);
+        board[position] = piece;
         x++;
       }
     }
-  }
-
-  @Override
-  public Piece getPieceAtPosition(int x, int y) {
-    return getPieceAtPosition(to1D(x, y));
   }
 
   @Override

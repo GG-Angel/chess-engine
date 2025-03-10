@@ -1,6 +1,6 @@
-package chess.model;
+package chess.model.piece;
 
-import static chess.model.PieceType.*;
+import static chess.model.piece.PieceType.*;
 
 import java.util.HashMap;
 import java.util.Map;
