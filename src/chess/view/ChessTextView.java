@@ -19,17 +19,17 @@ public class ChessTextView extends ChessView {
   @Override
   public String toString() {
     StringBuilder boardSB = new StringBuilder();
-    for (int row = 0; row < BOARD_SIZE; row++) {
+    for (int y = 0; y < BOARD_SIZE; y++) { // iterate over rows
       StringBuilder rowSB = new StringBuilder();
-      for (int col = 0; col < BOARD_SIZE; col++) {
-        Piece piece = board.getPieceAtPosition(row, col);
+      for (int x = 0; x < BOARD_SIZE; x++) { // iterate over columns
+        Piece piece = board.getPieceAtPosition(x, y);
         rowSB.append(piece != null ? piece.toString() : emptySlot);
-        if (col < BOARD_SIZE - 1) {
+        if (x < BOARD_SIZE - 1) {
           rowSB.append(' ');
         }
       }
       boardSB.append(rowSB);
-      if (row < BOARD_SIZE - 1) {
+      if (y < BOARD_SIZE - 1) {
         boardSB.append('\n');
       }
     }
