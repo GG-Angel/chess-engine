@@ -6,11 +6,14 @@ import java.util.List;
 import java.util.Objects;
 
 public abstract class ChessPiece implements Piece {
+  public static boolean isEmpty(Piece piece) {
+    return piece == null;
+  }
   public static boolean isType(Piece piece, PieceType type) {
-    return piece != null && piece.getType() == type;
+    return piece.getType() == type;
   }
   public static boolean isColor(Piece piece, PieceColor color) {
-    return piece != null && piece.getColor() == color;
+    return piece.getColor() == color;
   }
 
   private static int nextId = 0;

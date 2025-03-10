@@ -8,7 +8,6 @@ import chess.model.piece.PieceColor;
 import chess.model.piece.PieceFactory;
 import chess.model.piece.PieceLookup;
 import chess.model.piece.PieceType;
-import java.util.Arrays;
 
 public class ChessBoard implements Board {
   public static int BOARD_SIZE = 8;
