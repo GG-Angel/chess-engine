@@ -1,6 +1,7 @@
 package chess.model;
 
 import static chess.model.piece.PieceColor.*;
+import static utilities.Utils.to1D;
 
 import chess.model.piece.Piece;
 import chess.model.piece.PieceColor;
@@ -10,9 +11,6 @@ import chess.model.piece.PieceType;
 
 public class ChessBoard implements Board {
   public static int BOARD_SIZE = 8;
-  public static int to1D(int x, int y) {
-    return y * 8 + x;
-  }
 
   private final Piece[] board;
 
@@ -22,7 +20,6 @@ public class ChessBoard implements Board {
 
   public ChessBoard(String fen) {
     this.board = new Piece[64];
-
     initializeBoardFromFen(fen);
   }
 

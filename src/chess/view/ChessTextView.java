@@ -1,7 +1,7 @@
 package chess.view;
 
 import static chess.model.ChessBoard.BOARD_SIZE;
-import static chess.model.ChessBoard.to1D;
+import static utilities.Utils.to1D;
 
 import chess.model.Board;
 import chess.model.piece.Piece;
