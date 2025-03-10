@@ -10,10 +10,10 @@ public class Utils {
   }
 
   public static int getPositionRank(int position) {
-    return position / 8;
+    return 8 - (position / 8);
   }
 
   public static char getPositionFile(int position) {
-    return (char) ('a' + position);
+    return (char) ('a' + (position % 8));
   }
 }

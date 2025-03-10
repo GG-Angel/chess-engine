@@ -7,20 +7,20 @@ import java.util.Objects;
 
 public abstract class ChessPiece implements Piece {
   public static boolean isType(Piece piece, PieceType type) {
-    return piece.getType() == type;
+    return piece != null && piece.getType() == type;
   }
   public static boolean isColor(Piece piece, PieceColor color) {
-    return piece.getColor() == color;
+    return piece != null && piece.getColor() == color;
   }
 
   private static int nextId = 0;
   private final int id;
-  private final PieceColor color;
-  private final PieceType type;
-  private int position;
 
-  private List<Move> pseudoLegalMoves;
-  private List<Integer> attackingPositions;
+  protected final PieceColor color;
+  protected final PieceType type;
+  protected int position;
+  protected List<Move> pseudoLegalMoves;
+  protected List<Integer> attackingPositions;
 
   public ChessPiece(PieceColor color, PieceType type, int position) {
     this.id = nextId++;

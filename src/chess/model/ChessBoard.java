@@ -22,7 +22,6 @@ public class ChessBoard implements Board {
   public ChessBoard(String fen) {
     this.board = new Piece[64];
     initializeBoardFromFen(fen);
-    System.out.println(Arrays.toString(board));
   }
 
   private void initializeBoardFromFen(String fen) {
