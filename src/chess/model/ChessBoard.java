@@ -8,6 +8,7 @@ import chess.model.piece.PieceColor;
 import chess.model.piece.PieceFactory;
 import chess.model.piece.PieceLookup;
 import chess.model.piece.PieceType;
+import java.util.Arrays;
 
 public class ChessBoard implements Board {
   public static int BOARD_SIZE = 8;
@@ -21,6 +22,7 @@ public class ChessBoard implements Board {
   public ChessBoard(String fen) {
     this.board = new Piece[64];
     initializeBoardFromFen(fen);
+    System.out.println(Arrays.toString(board));
   }
 
   private void initializeBoardFromFen(String fen) {

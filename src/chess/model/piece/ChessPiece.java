@@ -1,20 +1,39 @@
 package chess.model.piece;
 
+import chess.model.Move;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 public abstract class ChessPiece implements Piece {
+  public static boolean isType(Piece piece, PieceType type) {
+    return piece.getType() == type;
+  }
+  public static boolean isColor(Piece piece, PieceColor color) {
+    return piece.getColor() == color;
+  }
+
   private static int nextId = 0;
   private final int id;
-
   private final PieceColor color;
   private final PieceType type;
   private int position;
+
+  private List<Move> pseudoLegalMoves;
+  private List<Integer> attackingPositions;
 
   public ChessPiece(PieceColor color, PieceType type, int position) {
     this.id = nextId++;
     this.color = color;
     this.type = type;
     this.position = position;
+    this.pseudoLegalMoves = new LinkedList<>();
+    this.attackingPositions = new LinkedList<>();
+  }
+
+  @Override
+  public List<Integer> getAttackingPositions() {
+    return attackingPositions;
   }
 
   @Override
