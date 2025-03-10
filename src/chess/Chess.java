@@ -12,6 +12,7 @@ public class Chess {
   public static void main(String[] args) throws IOException {
     Board board = new ChessBoard("8/3k4/5r2/6Q1/8/8/3K4/8 w - - 0 1");
     TextView view = new ChessTextView(board);
+
     view.renderBoard();
     view.renderMessage(board.getPieceAtPosition(Utils.to1D(6, 3)).calculatePseudoLegalMoves(board).toString());
   }

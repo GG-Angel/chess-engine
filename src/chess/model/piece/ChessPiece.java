@@ -61,7 +61,7 @@ public abstract class ChessPiece implements Piece {
 
   @Override
   public String toString() {
-    return PieceLookup.getSymbol(this.color, this.type);
+    return PieceLookup.getPieceSymbol(this.color, this.type);
   }
 
   @Override

@@ -5,7 +5,7 @@ import static chess.model.MoveType.EN_PASSANT;
 import static chess.model.MoveType.NORMAL;
 import static chess.model.MoveType.PROMOTION;
 import static chess.model.piece.PieceColor.BLACK;
-import static chess.model.piece.PieceLookup.getSymbol;
+import static chess.model.piece.PieceLookup.getPieceSymbol;
 import static utilities.Utils.getRankAndFile;
 
 import chess.model.piece.Piece;
@@ -99,7 +99,7 @@ public class ChessMove implements Move {
     return String.format(
         "%s%s%s",
         getRankAndFile(from), getRankAndFile(to),
-        moveType == PROMOTION ? getSymbol(BLACK, promotionPieceType) : ""
+        moveType == PROMOTION ? getPieceSymbol(BLACK, promotionPieceType) : ""
     );
   }
 
