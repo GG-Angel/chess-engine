@@ -22,7 +22,7 @@ public class ChessTextView extends ChessView {
     for (int row = 0; row < BOARD_SIZE; row++) {
       StringBuilder rowSB = new StringBuilder();
       for (int col = 0; col < BOARD_SIZE; col++) {
-        Piece piece = board.getPieceAt(row, col);
+        Piece piece = board.getPieceAtPosition(row, col);
         rowSB.append(piece != null ? piece.toString() : emptySlot);
         if (col < BOARD_SIZE - 1) {
           rowSB.append(' ');
