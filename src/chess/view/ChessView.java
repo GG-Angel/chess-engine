@@ -1,7 +1,6 @@
 package chess.view;
 
-import chess.model.board.Board;
-
+import chess.model.Board;
 import java.io.IOException;
 
 import static java.util.Objects.requireNonNull;

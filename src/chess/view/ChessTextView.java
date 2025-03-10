@@ -1,9 +1,9 @@
 package chess.view;
 
-import static chess.model.board.ChessBoard.BOARD_SIZE;
+import static chess.model.ChessBoard.BOARD_SIZE;
 
-import chess.model.board.Board;
-import chess.model.piece.Piece;
+import chess.model.Board;
+import chess.model.Piece;
 
 public class ChessTextView extends ChessView {
   private final char emptySlot = System.getProperty("os.name").equals("Mac OS X") ? '_' : '＿';
