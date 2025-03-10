@@ -1,8 +1,6 @@
 package utilities;
 
 public class Utils {
-
-
   public static int to1D(int x, int y) {
     return y * 8 + x;
   }
