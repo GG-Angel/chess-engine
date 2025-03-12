@@ -9,15 +9,18 @@ import chess.model.ChessBoard;
 import chess.model.piece.ChessPiece;
 import chess.model.piece.Piece;
 import chess.model.piece.PieceLookup;
-import com.sun.javafx.iio.ImageStorageException;
 import javafx.application.Application;
-import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.control.Label;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class ChessGUIView extends Application {
@@ -39,17 +42,30 @@ public class ChessGUIView extends Application {
     // create 8x8 grid
     for (int y = 0; y < BOARD_SIZE; y++) {
       for (int x = 0; x < BOARD_SIZE; x++) {
+        StackPane stackPane = new StackPane();
+
         Rectangle square = new Rectangle(squareSize, squareSize);
 
         // alternate square colors
-        if ((y + x) % 2 == 0) {
-          square.setFill(Color.web("#f0dab5")); // beige
+        boolean isLightSquare = (y + x) % 2 == 0;
+        Color beige = Color.web("#f0dab5");
+        Color brown = Color.web("#b58763");
+        if (isLightSquare) {
+          square.setFill(beige); // beige
         } else {
-          square.setFill(Color.web("#b58763")); // brown
+          square.setFill(brown); // brown
         }
 
-        // add square to board
-        chessBoard.add(square, x, y);
+        // add square color
+        stackPane.getChildren().add(square);
+
+        // add coordinate to square
+        Label coordinateLabel = new Label(to1D(x, y) + "");
+        coordinateLabel.setFont(new Font(12));
+        coordinateLabel.setTextFill(isLightSquare ? brown : beige);
+        coordinateLabel.setPadding(new Insets(2, 0, 0, 2));
+        stackPane.setAlignment(coordinateLabel, Pos.TOP_LEFT);
+        stackPane.getChildren().add(coordinateLabel);
 
         Piece pieceAtSquare = board.getPieceAtPosition(to1D(x, y));
         if (!ChessPiece.isEmpty(pieceAtSquare)) {
@@ -62,9 +78,12 @@ public class ChessGUIView extends Application {
           pieceImageView.setFitWidth(squareSize);
           pieceImageView.setFitHeight(squareSize);
 
-          // add piece image onto square
-          chessBoard.add(pieceImageView, x, y);
+          // add piece on top of square
+          stackPane.getChildren().add(pieceImageView);
         }
+
+        // add square to board
+        chessBoard.add(stackPane, x, y);
       }
     }
 
