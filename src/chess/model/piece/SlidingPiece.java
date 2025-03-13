@@ -17,6 +17,7 @@ public class SlidingPiece extends ChessPiece {
   @Override
   public List<Move> calculatePseudoLegalMoves(Board board) {
     List<Move> moves = new LinkedList<>();
+    List<Integer> attacking = new LinkedList<>();
 
     int startDirIndex = isType(this, PieceType.BISHOP) ? 4 : 0;
     int endDirIndex = isType(this, PieceType.ROOK) ? 4 : 8;
@@ -30,12 +31,14 @@ public class SlidingPiece extends ChessPiece {
         if (!isEmpty(targetPiece) && isColor(targetPiece, this.color)) break;
 
         moves.add(new ChessMove(this.position, targetPosition, this));
+        attacking.add(targetPosition);
 
         // can't move further in this direction after capturing enemy piece
         if (!isEmpty(targetPiece) && !isColor(targetPiece, this.color)) break;
       }
     }
 
+    this.attackingPositions = attacking;
     return moves;
   }
 }

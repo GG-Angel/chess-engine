@@ -14,12 +14,15 @@ public class ChessBoard implements Board {
 
   private final Piece[] board;
 
+  private int enPassantTarget;
+
   public ChessBoard() {
     this("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
   }
 
   public ChessBoard(String fen) {
     this.board = new Piece[64];
+    this.enPassantTarget = -1;
     initializeBoardFromFen(fen);
   }
 
@@ -48,5 +51,15 @@ public class ChessBoard implements Board {
   @Override
   public Piece getPieceAtPosition(int position) {
     return this.board[position];
+  }
+
+  @Override
+  public int getEnPassantTarget() {
+    return enPassantTarget;
+  }
+
+  @Override
+  public void setEnPassantTarget(int position) {
+    enPassantTarget = position;
   }
 }

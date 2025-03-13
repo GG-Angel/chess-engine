@@ -20,6 +20,7 @@ public class ChessKnight extends ChessPiece {
   @Override
   public List<Move> calculatePseudoLegalMoves(Board board) {
     List<Move> moves = new LinkedList<>();
+    List<Integer> attacking = new LinkedList<>();
 
     int edgeLeftDistance = NUM_SQUARES_FROM_EDGE[this.position][1];
     int edgeRightDistance = NUM_SQUARES_FROM_EDGE[this.position][2];
@@ -37,9 +38,11 @@ public class ChessKnight extends ChessPiece {
       Piece targetPiece = board.getPieceAtPosition(targetPosition);
       if (isEmpty(targetPiece) || !isColor(targetPiece, this.color)) {
         moves.add(new ChessMove(this.position, targetPosition, this));
+        attacking.add(targetPosition);
       }
     }
 
+    this.attackingPositions = attacking;
     return moves;
   }
 }
