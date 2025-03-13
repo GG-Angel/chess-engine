@@ -23,13 +23,13 @@ public class SlidingPiece extends ChessPiece {
 
     for (int dirIndex = startDirIndex; dirIndex < endDirIndex; dirIndex++) {
       for (int dist = 0; dist < NUM_SQUARES_FROM_EDGE[position][dirIndex]; dist++) {
-        int targetPosition = position + DIRECTION_OFFSETS[dirIndex] * (dist + 1);
+        int targetPosition = this.position + DIRECTION_OFFSETS[dirIndex] * (dist + 1);
         Piece targetPiece = board.getPieceAtPosition(targetPosition);
 
         // blocked by friendly piece, stop moving in this direction
         if (!isEmpty(targetPiece) && isColor(targetPiece, this.color)) break;
 
-        moves.add(new ChessMove(position, targetPosition, targetPiece));
+        moves.add(new ChessMove(this.position, targetPosition, this));
 
         // can't move further in this direction after capturing enemy piece
         if (!isEmpty(targetPiece) && !isColor(targetPiece, this.color)) break;

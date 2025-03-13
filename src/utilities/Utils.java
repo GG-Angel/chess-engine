@@ -5,6 +5,12 @@ public class Utils {
     return y * 8 + x;
   }
 
+  public static int[] to2D(int position) {
+    int x = position % 8;
+    int y = position / 8;
+    return new int[] { x, y };
+  }
+
   public static String getRankAndFile(int position) {
     return String.format("%c%d", getPositionFile(position), getPositionRank(position));
   }

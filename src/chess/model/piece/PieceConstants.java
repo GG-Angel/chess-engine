@@ -1,7 +1,7 @@
 package chess.model.piece;
 
 public class PieceConstants {
-  // 0:4 are straights, 4:8 are diagonals
+  // 0:4 are straights: up, left, right, down | 4:8 are diagonals: nw, ne, sw, se
   public static int[] DIRECTION_OFFSETS = new int[] { -8, -1, 1, 8, -9, -7, 7, 9 };
 
   // access by position -> direction offset
