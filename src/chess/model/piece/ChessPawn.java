@@ -25,6 +25,7 @@ public class ChessPawn extends ChessPiece {
   public ChessPawn(PieceColor color, int position) {
     super(color, PieceType.PAWN, position);
     this.isWhite = isColor(this, WHITE);
+    this.hasMoved = isWhite ? position / 8 != 6 : position / 8 != 1;
     this.homeRow = isWhite ? 6 : 1;
     this.promotionRow = isWhite ? 0 : 7;
     this.direction = isWhite ? -1 : 1;

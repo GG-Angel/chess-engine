@@ -14,6 +14,7 @@ public class ChessKnight extends ChessPiece {
 
   public ChessKnight(PieceColor color, int position) {
     super(color, PieceType.KNIGHT, position);
+    this.hasMoved = !isAtInitialPosition(57, 1) && !isAtInitialPosition(62, 6);
   }
 
   @Override

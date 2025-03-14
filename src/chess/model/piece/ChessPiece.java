@@ -1,5 +1,7 @@
 package chess.model.piece;
 
+import static chess.model.piece.PieceColor.WHITE;
+
 import chess.model.Move;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +33,12 @@ public abstract class ChessPiece implements Piece {
     this.color = color;
     this.type = type;
     this.position = position;
-    this.hasMoved = false;
     this.pseudoLegalMoves = new ArrayList<>();
     this.positionsControlled = new ArrayList<>();
+  }
+
+  protected boolean isAtInitialPosition(int whitePosition, int blackPosition) {
+    return isColor(this, WHITE) ? this.position == whitePosition : this.position == blackPosition;
   }
 
   @Override

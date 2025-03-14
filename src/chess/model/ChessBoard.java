@@ -43,6 +43,13 @@ public class ChessBoard implements Board {
     this.legalMoveCache.put(BLACK, new ArrayList<>());
 
     initializeBoardFromFen(fen);
+
+    // prepare move generation
+    generatePseudoLegalMoves(WHITE);
+    generatePseudoLegalMoves(BLACK);
+    for (Piece king : getKings()) {
+      king.calculatePseudoLegalMoves(this);
+    }
   }
 
   @Override
@@ -200,13 +207,6 @@ public class ChessBoard implements Board {
     // TODO: assign has moved based on if a piece's position is different from its initial position
 
     this.enPassantTarget = !fenParams[3].equals("-") ? convertRankFileToPosition(fenParams[3]) : -1;
-
-    // prepare move generation
-    generatePseudoLegalMoves(WHITE);
-    generatePseudoLegalMoves(BLACK);
-    for (Piece king : getKings()) {
-      king.calculatePseudoLegalMoves(this);
-    }
   }
 
   private List<Piece> getPieces(PieceColor color) {

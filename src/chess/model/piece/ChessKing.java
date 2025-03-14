@@ -18,6 +18,7 @@ public class ChessKing extends ChessPiece {
 
   public ChessKing(PieceColor color, int position) {
     super(color, PieceType.KING, position);
+    this.hasMoved = !isAtInitialPosition(60, 4);
   }
 
   @Override
