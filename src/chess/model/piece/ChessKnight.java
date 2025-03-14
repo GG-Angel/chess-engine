@@ -30,14 +30,15 @@ public class ChessKnight extends ChessPiece {
     for (int dirIndex = startDirIndex; dirIndex < endDirIndex; dirIndex++) {
       int targetPosition = this.position + directions[dirIndex];
 
-      if (targetPosition < 0 || targetPosition > 63) {
+      if (targetPosition < 0 || targetPosition >= 64) {
         continue;
       }
+
+      attacking.add(targetPosition);
 
       Piece targetPiece = board.getPieceAtPosition(targetPosition);
       if (isEmpty(targetPiece) || !isColor(targetPiece, this.color)) {
         moves.add(new ChessMove(this.position, targetPosition, this));
-        attacking.add(targetPosition);
       }
     }
 

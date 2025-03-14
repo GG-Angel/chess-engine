@@ -121,9 +121,14 @@ public class ChessGUIView extends Application {
 
       Piece piece = board.getPieceAtPosition(Integer.parseInt(square.getId()));
       if (piece != null) {
-        List<Move> moves = piece.calculatePseudoLegalMoves(board);
-        for (Move move : moves) {
-          squareMarkers[move.getTo()].setFill(colorMove);
+//        List<Move> moves = piece.calculatePseudoLegalMoves(board);
+//        for (Move move : moves) {
+//          squareMarkers[move.getTo()].setFill(colorMove);
+//        }
+        piece.calculatePseudoLegalMoves(board);
+        List<Integer> attacks = piece.getAttackingPositions();
+        for (int pos : attacks) {
+          squareMarkers[pos].setFill(colorMove);
         }
       }
     } else if (e.getButton() == MouseButton.SECONDARY) {
