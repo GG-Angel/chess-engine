@@ -9,7 +9,7 @@ import chess.model.Move;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SlidingPiece extends ChessPiece {
+public abstract class SlidingPiece extends ChessPiece {
 
   public SlidingPiece(PieceColor color, PieceType type, int position) {
     super(color, type, position);

@@ -13,18 +13,10 @@ import java.util.List;
 public class Chess {
 
   public static void main(String[] args) throws IOException {
-    Board board = new ChessBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
+    Board board = new ChessBoard();
     TextView view = new ChessTextView(board);
 
-    List<Move> whiteMoves = board.generatePseudoLegalMoves(PieceColor.WHITE);
-    List<Move> blackMoves = board.generatePseudoLegalMoves(PieceColor.BLACK);
-
-    for (Move move : whiteMoves) {
-      System.out.println(move);
-      if (move.toString().equals("e1g1")) {
-        board.makeMove(move);
-      }
-    }
+    System.out.println("Legal White Moves: " + board.generateLegalMoves(PieceColor.WHITE).size());
 
     view.renderBoard();
   }

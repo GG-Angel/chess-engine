@@ -9,9 +9,13 @@ public interface Board {
 
   List<Move> generatePseudoLegalMoves(PieceColor color);
 
+  List<Move> generateLegalMoves(PieceColor color);
+
   boolean isKingInCheck(PieceColor color) throws IllegalStateException;
 
   void makeMove(Move move);
+
+  void unmakeMove(Move move);
 
   Set<Integer> getPositionsControlled(PieceColor color);
 

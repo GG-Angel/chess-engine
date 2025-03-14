@@ -22,6 +22,7 @@ public class ChessBoard implements Board {
   private final Piece[] board;
   private final Map<PieceColor, List<Piece>> pieces;
   private final Map<PieceColor, Piece> kings;
+  private final Map<PieceColor, List<Move>> legalMoveCache;
 
   private int enPassantTarget;
 
@@ -33,10 +34,13 @@ public class ChessBoard implements Board {
     this.board = new Piece[64];
     this.pieces = new HashMap<>();
     this.kings = new HashMap<>();
+    this.legalMoveCache = new HashMap<>();
     this.enPassantTarget = -1;
 
     this.pieces.put(WHITE, new ArrayList<>());
     this.pieces.put(BLACK, new ArrayList<>());
+    this.legalMoveCache.put(WHITE, new ArrayList<>());
+    this.legalMoveCache.put(BLACK, new ArrayList<>());
 
     initializeBoardFromFen(fen);
   }
@@ -51,11 +55,27 @@ public class ChessBoard implements Board {
   }
 
   @Override
+  public List<Move> generateLegalMoves(PieceColor color) {
+    List<Move> pseudoLegalMoves = generatePseudoLegalMoves(color);
+    List<Move> legalMoves = new ArrayList<>();
+
+    // TODO: Improve
+    for (Move moveToVerify : pseudoLegalMoves) {
+      makeMove(moveToVerify);
+      generatePseudoLegalMoves(getEnemyColor(color));
+      if (!isKingInCheck(color)) {
+        legalMoves.add(moveToVerify);
+      }
+      unmakeMove(moveToVerify);
+    }
+
+    return legalMoves;
+  }
+
+  @Override
   public boolean isKingInCheck(PieceColor color) throws IllegalStateException {
     int kingPosition = getKing(color).getPosition();
-
     Set<Integer> enemyPositionsControlled = getPositionsControlled(getEnemyColor(color));
-
     return enemyPositionsControlled.contains(kingPosition);
   }
 
@@ -64,19 +84,47 @@ public class ChessBoard implements Board {
     switch (move.getMoveType()) {
       case NORMAL -> {
         movePiece(move.getFrom(), move.getTo(), move.getPiece());
+        move.getPiece().setHasMoved(true);
       }
       case CASTLING -> {
         Move rookMove = move.getCastlingMove();
         movePiece(move.getFrom(), move.getTo(), move.getPiece());
         movePiece(rookMove.getFrom(), rookMove.getTo(), rookMove.getPiece());
+        move.getPiece().setHasMoved(true);
+        rookMove.getPiece().setHasMoved(true);
       }
       case PROMOTION -> {
-        board[move.getTo()] = move.getPromotionPiece();
-        board[move.getFrom()] = null;
+        movePiece(move.getFrom(), move.getTo(), move.getPromotionPiece());
+        move.getPromotionPiece().setHasMoved(true);
       }
       case EN_PASSANT -> {
         movePiece(move.getFrom(), move.getTo(), move.getPiece());
         board[move.getEnPassantPawnPosition()] = null;
+        move.getPiece().setHasMoved(true);
+      }
+    }
+  }
+
+  @Override
+  public void unmakeMove(Move move) {
+    switch (move.getMoveType()) {
+      case NORMAL -> {
+        movePiece(move.getTo(), move.getFrom(), move.getPiece());
+        // TODO: bring captured piece back
+      }
+      case CASTLING -> {
+        Move rookMove = move.getCastlingMove();
+        movePiece(move.getTo(), move.getFrom(), move.getPiece());
+        movePiece(rookMove.getTo(), rookMove.getFrom(), rookMove.getPiece());
+      }
+      case PROMOTION -> {
+        movePiece(move.getTo(), move.getFrom(), move.getPiece());
+        removePiece(move.getPromotionPiece());
+        // TODO: bring captured piece back
+      }
+      case EN_PASSANT -> {
+        movePiece(move.getTo(), move.getFrom(), move.getPiece());
+        // TODO: bring captured pawn back
       }
     }
   }
@@ -85,7 +133,6 @@ public class ChessBoard implements Board {
     board[to] = piece;
     board[from] = null;
     piece.setPosition(to);
-    piece.setHasMoved(true);
   }
 
   @Override
