@@ -22,6 +22,7 @@ public abstract class ChessPiece implements Piece {
   protected final PieceColor color;
   protected final PieceType type;
   protected int position;
+  protected boolean hasMoved;
   protected List<Move> pseudoLegalMoves;
   protected List<Integer> positionsControlled;
 
@@ -30,6 +31,7 @@ public abstract class ChessPiece implements Piece {
     this.color = color;
     this.type = type;
     this.position = position;
+    this.hasMoved = false;
     this.pseudoLegalMoves = new ArrayList<>();
     this.positionsControlled = new ArrayList<>();
   }
@@ -62,6 +64,16 @@ public abstract class ChessPiece implements Piece {
   @Override
   public void setPosition(int position) {
     this.position = position;
+  }
+
+  @Override
+  public boolean hasMoved() {
+    return hasMoved;
+  }
+
+  @Override
+  public void setHasMoved(boolean hasMoved) {
+    this.hasMoved = hasMoved;
   }
 
   @Override

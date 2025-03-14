@@ -1,4 +1,4 @@
-package utilities;
+package chess.utilities;
 
 public class Utils {
   public static int to1D(int x, int y) {

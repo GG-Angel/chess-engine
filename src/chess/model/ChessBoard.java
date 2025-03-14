@@ -1,8 +1,8 @@
 package chess.model;
 
 import static chess.model.piece.PieceColor.*;
-import static utilities.Utils.convertRankFileToPosition;
-import static utilities.Utils.to1D;
+import static chess.utilities.Utils.convertRankFileToPosition;
+import static chess.utilities.Utils.to1D;
 
 import chess.model.piece.Piece;
 import chess.model.piece.PieceColor;
@@ -54,10 +54,7 @@ public class ChessBoard implements Board {
   public boolean isKingInCheck(PieceColor color) throws IllegalStateException {
     int kingPosition = getKing(color).getPosition();
 
-    Set<Integer> enemyPositionsControlled = new HashSet<>();
-    for (Piece enemyPiece : getPieces(getEnemyColor(color))) {
-      enemyPositionsControlled.addAll(enemyPiece.getPositionsControlled());
-    }
+    Set<Integer> enemyPositionsControlled = getPositionsControlled(getEnemyColor(color));
 
     return enemyPositionsControlled.contains(kingPosition);
   }
@@ -66,24 +63,38 @@ public class ChessBoard implements Board {
   public void makeMove(Move move) {
     switch (move.getMoveType()) {
       case NORMAL -> {
-        board[move.getTo()] = move.getPiece();
-        board[move.getFrom()] = null;
-        move.getPiece().setPosition(move.getTo());
+        movePiece(move.getFrom(), move.getTo(), move.getPiece());
       }
       case CASTLING -> {
-        // TODO: Implement make castling move
+        Move rookMove = move.getCastlingMove();
+        movePiece(move.getFrom(), move.getTo(), move.getPiece());
+        movePiece(rookMove.getFrom(), rookMove.getTo(), rookMove.getPiece());
       }
       case PROMOTION -> {
         board[move.getTo()] = move.getPromotionPiece();
         board[move.getFrom()] = null;
       }
       case EN_PASSANT -> {
-        board[move.getTo()] = move.getPiece();
-        board[move.getFrom()] = null;
+        movePiece(move.getFrom(), move.getTo(), move.getPiece());
         board[move.getEnPassantPawnPosition()] = null;
-        move.getPiece().setPosition(move.getTo());
       }
     }
+  }
+
+  private void movePiece(int from, int to, Piece piece) {
+    board[to] = piece;
+    board[from] = null;
+    piece.setPosition(to);
+    piece.setHasMoved(true);
+  }
+
+  @Override
+  public Set<Integer> getPositionsControlled(PieceColor color) {
+    Set<Integer> positionsControlled = new HashSet<>();
+    for (Piece piece : getPieces(color)) {
+      positionsControlled.addAll(piece.getPositionsControlled());
+    }
+    return positionsControlled;
   }
 
   @Override
@@ -121,7 +132,16 @@ public class ChessBoard implements Board {
       }
     }
 
+    // TODO: assign has moved based on if a piece's position is different from its initial position
+
     this.enPassantTarget = !fenParams[3].equals("-") ? convertRankFileToPosition(fenParams[3]) : -1;
+
+    // prepare move generation
+    generatePseudoLegalMoves(WHITE);
+    generatePseudoLegalMoves(BLACK);
+    for (Piece king : getKings()) {
+      king.calculatePseudoLegalMoves(this);
+    }
   }
 
   private List<Piece> getPieces(PieceColor color) {
@@ -138,5 +158,9 @@ public class ChessBoard implements Board {
 
   private Piece getKing(PieceColor color) {
     return kings.get(color);
+  }
+
+  private List<Piece> getKings() {
+    return kings.values().stream().toList();
   }
 }

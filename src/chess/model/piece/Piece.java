@@ -19,4 +19,8 @@ public interface Piece {
   int getPosition();
 
   void setPosition(int position);
+
+  boolean hasMoved();
+
+  void setHasMoved(boolean hasMoved);
 }

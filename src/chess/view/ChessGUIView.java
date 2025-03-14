@@ -1,20 +1,20 @@
 package chess.view;
 
 import static chess.model.ChessBoard.BOARD_SIZE;
+import static chess.utilities.Utils.getPositionFile;
+import static chess.utilities.Utils.getPositionRank;
 import static java.util.Objects.requireNonNull;
-import static utilities.Utils.to1D;
+import static chess.utilities.Utils.to1D;
 
-import chess.Chess;
 import chess.model.Board;
 import chess.model.ChessBoard;
 import chess.model.Move;
 import chess.model.piece.ChessPiece;
 import chess.model.piece.Piece;
 import chess.model.piece.PieceColor;
-import chess.model.piece.PieceConstants;
 import chess.model.piece.PieceLookup;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -29,6 +29,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.Label;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 public class ChessGUIView extends Application {
@@ -83,6 +84,25 @@ public class ChessGUIView extends Application {
         coordinate.setPadding(new Insets(2, 0, 0, 2));
         stackPane.getChildren().add(coordinate);
 
+        // add ranks and files to square if necessary
+        if (x == 0) {
+          Label rank = new Label(getPositionRank(position) + "");
+          StackPane.setAlignment(rank, Pos.BOTTOM_LEFT);
+          rank.setFont(Font.font("System", FontWeight.BOLD, 12));
+          rank.setTextFill(Color.BLACK);
+          rank.setPadding(new Insets(0, 0, 2, 2));
+          stackPane.getChildren().add(rank);
+        }
+
+        if (y == 7) {
+          Label rank = new Label(getPositionFile(position) + "");
+          StackPane.setAlignment(rank, Pos.BOTTOM_RIGHT);
+          rank.setFont(Font.font("System", FontWeight.BOLD, 12));
+          rank.setTextFill(Color.BLACK);
+          rank.setPadding(new Insets(0, 2, 2, 0));
+          stackPane.getChildren().add(rank);
+        }
+
         // create square marker
         Rectangle squareMark = new Rectangle(SQUARE_SIZE, SQUARE_SIZE);
         squareMark.setId(positionStr);
@@ -131,9 +151,9 @@ public class ChessGUIView extends Application {
 
   public static void main(String[] args) {
     board = new ChessBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
-    board.generatePseudoLegalMoves(PieceColor.WHITE);
-    board.generatePseudoLegalMoves(PieceColor.BLACK);
-    System.out.println(board.isKingInCheck(PieceColor.WHITE));
+    List<Move> whiteMoves = board.generatePseudoLegalMoves(PieceColor.WHITE);
+    List<Move> blackMoves = board.generatePseudoLegalMoves(PieceColor.BLACK);
+
     launch(args);
   }
 }

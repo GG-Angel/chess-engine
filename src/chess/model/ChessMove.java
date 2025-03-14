@@ -6,7 +6,7 @@ import static chess.model.MoveType.NORMAL;
 import static chess.model.MoveType.PROMOTION;
 import static chess.model.piece.PieceColor.BLACK;
 import static chess.model.piece.PieceLookup.getPieceSymbol;
-import static utilities.Utils.getRankAndFile;
+import static chess.utilities.Utils.getRankAndFile;
 
 import chess.model.piece.Piece;
 import chess.model.piece.PieceFactory;
