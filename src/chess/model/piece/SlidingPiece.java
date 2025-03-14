@@ -6,18 +6,19 @@ import static chess.model.piece.PieceConstants.NUM_SQUARES_FROM_EDGE;
 import chess.model.Board;
 import chess.model.ChessMove;
 import chess.model.Move;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SlidingPiece extends ChessPiece {
+
   public SlidingPiece(PieceColor color, PieceType type, int position) {
     super(color, type, position);
   }
 
   @Override
   public List<Move> calculatePseudoLegalMoves(Board board) {
-    List<Move> moves = new LinkedList<>();
-    List<Integer> attacking = new LinkedList<>();
+    List<Move> moves = new ArrayList<>();
+    List<Integer> attacking = new ArrayList<>();
 
     int startDirIndex = isType(this, PieceType.BISHOP) ? 4 : 0;
     int endDirIndex = isType(this, PieceType.ROOK) ? 4 : 8;

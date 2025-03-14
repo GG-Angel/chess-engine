@@ -11,7 +11,7 @@ import static chess.model.piece.PieceType.QUEEN;
 import chess.model.Board;
 import chess.model.ChessMove;
 import chess.model.Move;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChessPawn extends ChessPiece {
@@ -21,7 +21,6 @@ public class ChessPawn extends ChessPiece {
   private final int homeRow, promotionRow;
   private final int direction;
   private final int startCaptureDirIndex;
-
 
   public ChessPawn(PieceColor color, int position) {
     super(color, PieceType.PAWN, position);
@@ -34,10 +33,10 @@ public class ChessPawn extends ChessPiece {
 
   @Override
   public List<Move> calculatePseudoLegalMoves(Board board) {
-    List<Move> moves = new LinkedList<>();
-    List<Integer> attacking = new LinkedList<>();
+    List<Move> moves = new ArrayList<>();
+    List<Integer> attacking = new ArrayList<>();
 
-    // get distance from end of board
+    // ensure the pawn can move forward
     int distanceFromEnd = NUM_SQUARES_FROM_EDGE[this.position][isWhite ? 0 : 3];
     if (distanceFromEnd != 0) {
       calculateForwardMoves(board, moves);
@@ -49,19 +48,21 @@ public class ChessPawn extends ChessPiece {
   }
 
   private void calculateForwardMoves(Board board, List<Move> moves) {
-    for (int step = 1; step <= 2; step++) {
-      int targetPosition = this.position + (8 * direction * step);
-      if (targetPosition < 0 || targetPosition >= 64) {
-        break;
-      }
+    // step forward one square
+    int targetPosition = this.position + (8 * direction);
+    Piece targetPiece = board.getPieceAtPosition(targetPosition);
+    if (isEmpty(targetPiece)) {
+      handleCreateMove(targetPosition, moves);
+    } else {
+      return; // since collision prevents double pawn move
+    }
 
-      Piece targetPiece = board.getPieceAtPosition(targetPosition);
-      if (!isEmpty(targetPiece)) {
-        break;
-      }
-
-      if (step == 1 || this.position / 8 == homeRow) {
-        handleCreateMove(targetPosition, moves);
+    // step forward two squares from home row
+    if (this.position / 8 == homeRow) {
+      int targetJumpPosition = this.position + (8 * direction * 2);
+      Piece targetJumpPiece = board.getPieceAtPosition(targetJumpPosition);
+      if (isEmpty(targetJumpPiece)) {
+        handleCreateMove(targetJumpPosition, moves);
       }
     }
   }

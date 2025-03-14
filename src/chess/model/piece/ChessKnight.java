@@ -6,7 +6,6 @@ import chess.model.Board;
 import chess.model.ChessMove;
 import chess.model.Move;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class ChessKnight extends ChessPiece {
@@ -19,8 +18,8 @@ public class ChessKnight extends ChessPiece {
 
   @Override
   public List<Move> calculatePseudoLegalMoves(Board board) {
-    List<Move> moves = new LinkedList<>();
-    List<Integer> attacking = new LinkedList<>();
+    List<Move> moves = new ArrayList<>();
+    List<Integer> attacking = new ArrayList<>();
 
     int edgeLeftDistance = NUM_SQUARES_FROM_EDGE[this.position][1];
     int edgeRightDistance = NUM_SQUARES_FROM_EDGE[this.position][2];

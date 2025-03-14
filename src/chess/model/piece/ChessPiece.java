@@ -1,7 +1,7 @@
 package chess.model.piece;
 
 import chess.model.Move;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,8 +30,8 @@ public abstract class ChessPiece implements Piece {
     this.color = color;
     this.type = type;
     this.position = position;
-    this.pseudoLegalMoves = new LinkedList<>();
-    this.attackingPositions = new LinkedList<>();
+    this.pseudoLegalMoves = new ArrayList<>();
+    this.attackingPositions = new ArrayList<>();
   }
 
   @Override
