@@ -1,30 +1,26 @@
 package chess.model.piece;
 
-import chess.model.board.Board;
-import chess.model.move.Move;
-
+import chess.model.Board;
+import chess.model.Move;
 import java.util.List;
 
 public interface Piece {
 
-  boolean isAlive();
+  List<Move> calculatePseudoLegalMoves(Board board);
 
-  boolean hasMovedBefore();
+  List<Move> getPseudoLegalMoves();
+
+  List<Integer> getPositionsControlled();
 
   PieceColor getColor();
 
   PieceType getType();
 
-  List<Move> computeMoves(Board board);
+  int getPosition();
 
-  List<Move> getValidMoves();
+  void setPosition(int position);
 
-  void setValidMoves(List<Move> newValidMoves);
+  boolean hasMoved();
 
-  void setHasMovedBefore(boolean hasMovedBefore);
-
-  void setIsAlive(boolean isAlive);
-
-  void setPosition(int row, int col);
-
+  void setHasMoved(boolean hasMoved);
 }

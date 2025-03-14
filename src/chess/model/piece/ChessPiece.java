@@ -1,90 +1,95 @@
 package chess.model.piece;
 
-import chess.model.move.Move;
-
+import chess.model.Move;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static java.util.Objects.requireNonNull;
-
 public abstract class ChessPiece implements Piece {
+  public static boolean isEmpty(Piece piece) {
+    return piece == null;
+  }
+  public static boolean isType(Piece piece, PieceType type) {
+    return piece.getType() == type;
+  }
+  public static boolean isColor(Piece piece, PieceColor color) {
+    return piece.getColor() == color;
+  }
+
   private static int nextId = 0;
   private final int id;
 
-  protected int row, col;
-  protected PieceColor color;
-  protected PieceType type;
-  protected List<Move> validMoves;
-  protected boolean isAlive, hasMovedBefore;
+  protected final PieceColor color;
+  protected final PieceType type;
+  protected int position;
+  protected boolean hasMoved;
+  protected List<Move> pseudoLegalMoves;
+  protected List<Integer> positionsControlled;
 
-  protected ChessPiece(PieceColor color, PieceType type, int row, int col) throws NullPointerException {
-    this.color = requireNonNull(color, "Must pass non-null Color to Piece.");
-    this.type = requireNonNull(type, "Must pass non-null Type to Piece.");
+  public ChessPiece(PieceColor color, PieceType type, int position) {
     this.id = nextId++;
-    this.row = row;
-    this.col = col;
-    this.validMoves = new ArrayList<>();
-    this.isAlive = true;
-    this.hasMovedBefore = false;
-  }
-
-  protected boolean isOpposingPiece(Piece other) {
-    return other != null && this.color != other.getColor();
+    this.color = color;
+    this.type = type;
+    this.position = position;
+    this.hasMoved = false;
+    this.pseudoLegalMoves = new ArrayList<>();
+    this.positionsControlled = new ArrayList<>();
   }
 
   @Override
-  public boolean isAlive() {
-    return this.isAlive;
+  public List<Move> getPseudoLegalMoves() {
+    return pseudoLegalMoves;
   }
 
   @Override
-  public boolean hasMovedBefore() {
-    return this.hasMovedBefore;
+  public List<Integer> getPositionsControlled() {
+    return positionsControlled;
   }
 
   @Override
   public PieceColor getColor() {
-    return this.color;
+    return color;
   }
 
   @Override
   public PieceType getType() {
-    return this.type;
+    return type;
   }
 
   @Override
-  public List<Move> getValidMoves() {
-    return this.validMoves;
+  public int getPosition() {
+    return position;
   }
 
   @Override
-  public void setValidMoves(List<Move> newValidMoves) {
-    this.validMoves = newValidMoves;
+  public void setPosition(int position) {
+    this.position = position;
   }
 
   @Override
-  public void setIsAlive(boolean isAlive) {
-    this.isAlive = isAlive;
+  public boolean hasMoved() {
+    return hasMoved;
   }
 
   @Override
-  public void setHasMovedBefore(boolean hasMovedBefore) {
-    this.hasMovedBefore = hasMovedBefore;
+  public void setHasMoved(boolean hasMoved) {
+    this.hasMoved = hasMoved;
   }
 
   @Override
-  public void setPosition(int row, int col) {
-    this.row = row;
-    this.col = col;
+  public String toString() {
+    return PieceLookup.getPieceSymbol(this.color, this.type);
   }
 
   @Override
   public boolean equals(Object obj) {
     if (this == obj) return true;
     if (obj == null || getClass() != obj.getClass()) return false;
-    ChessPiece that = (ChessPiece) obj;
-    return id == that.id;
+    Piece other = (Piece) obj;
+    return
+        this.position == other.getPosition() &&
+        this.color == other.getColor() &&
+        this.type == other.getType();
   }
 
   @Override

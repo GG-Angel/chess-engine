@@ -1,115 +1,106 @@
 package chess.model.piece;
 
-import chess.model.board.Board;
-import chess.model.move.ChessMove;
-import chess.model.move.Move;
+import static chess.model.piece.PieceColor.WHITE;
+import static chess.model.piece.PieceConstants.DIRECTION_OFFSETS;
+import static chess.model.piece.PieceConstants.NUM_SQUARES_FROM_EDGE;
+import static chess.model.piece.PieceType.KNIGHT;
+import static chess.model.piece.PieceType.BISHOP;
+import static chess.model.piece.PieceType.ROOK;
+import static chess.model.piece.PieceType.QUEEN;
 
+import chess.model.Board;
+import chess.model.ChessMove;
+import chess.model.Move;
 import java.util.ArrayList;
 import java.util.List;
 
-import static chess.model.move.ChessMoveType.DOUBLE_STEP;
-import static chess.model.move.ChessMoveType.EN_PASSANT;
-import static chess.model.move.ChessMoveType.PROMOTION;
-import static chess.model.piece.PieceType.*;
-
 public class ChessPawn extends ChessPiece {
-  private final int direction, homeRow, promotionRow;
+  private static final PieceType[] promotionPieceTypes = new PieceType[] { KNIGHT, BISHOP, ROOK, QUEEN };
 
-  public ChessPawn(PieceColor color, int row, int col) {
-    super(color, PieceType.PAWN, row, col);
-    this.direction = this.color == PieceColor.WHITE ? -1 : 1;
-    this.homeRow = this.color == PieceColor.WHITE ? 6 : 1;
-    this.promotionRow = this.color == PieceColor.WHITE ? 0 : 7;
+  private final boolean isWhite;
+  private final int homeRow, promotionRow;
+  private final int direction;
+  private final int startCaptureDirIndex;
+
+  public ChessPawn(PieceColor color, int position) {
+    super(color, PieceType.PAWN, position);
+    this.isWhite = isColor(this, WHITE);
+    this.homeRow = isWhite ? 6 : 1;
+    this.promotionRow = isWhite ? 0 : 7;
+    this.direction = isWhite ? -1 : 1;
+    this.startCaptureDirIndex = isWhite ? 4 : 6;
   }
 
   @Override
-  public List<Move> computeMoves(Board board) {
+  public List<Move> calculatePseudoLegalMoves(Board board) {
     List<Move> moves = new ArrayList<>();
-    moves.addAll(computeForwardMoves(board));
-    moves.addAll(computeDiagonalCaptures(board));
-    moves.addAll(computeEnPassant(board));
+    List<Integer> controlled = new ArrayList<>();
+
+    // ensure the pawn can move forward
+    int distanceFromEnd = NUM_SQUARES_FROM_EDGE[this.position][isWhite ? 0 : 3];
+    if (distanceFromEnd != 0) {
+      calculateForwardMoves(board, moves);
+      calculateDiagonalCaptures(board, moves, controlled);
+    }
+
+    this.pseudoLegalMoves = moves;
+    this.positionsControlled = controlled;
     return moves;
   }
 
-  private List<Move> computeForwardMoves(Board board) {
-    List<Move> moves = new ArrayList<>();
+  private void calculateForwardMoves(Board board, List<Move> moves) {
+    // step forward one square
+    int targetPosition = this.position + (8 * direction);
+    Piece targetPiece = board.getPieceAtPosition(targetPosition);
+    if (isEmpty(targetPiece)) {
+      handleCreateMove(targetPosition, moves);
+    } else {
+      return; // since collision prevents double pawn move
+    }
 
-    for (int distance = 1; distance <= 2; distance++) {
-      if (distance == 2 && this.row != homeRow) break;
+    // step forward two squares from home row
+    if (this.position / 8 == homeRow) {
+      int targetJumpPosition = this.position + (8 * direction * 2);
+      Piece targetJumpPiece = board.getPieceAtPosition(targetJumpPosition);
+      if (isEmpty(targetJumpPiece)) {
+        handleCreateMove(targetJumpPosition, moves);
+      }
+    }
+  }
 
-      int toRow = this.row + (direction * distance);
-      if (board.isOutOfBounds(toRow, this.col) || (board.getPieceAt(toRow, this.col) != null)) break;
+  private void calculateDiagonalCaptures(Board board, List<Move> moves, List<Integer> attacking) {
+    int enPassantTargetPosition = board.getEnPassantTarget();
+    for (int i = 0; i <= 1; i++) {
+      // get distance from left or right board edges
+      int edgeDistance = NUM_SQUARES_FROM_EDGE[this.position][i + 1];
+      if (edgeDistance >= 1) {
+        // get the corresponding target position
+        int targetPosition = this.position + DIRECTION_OFFSETS[startCaptureDirIndex + i];
+        attacking.add(targetPosition);
 
-      if (distance == 1) {
-        Move move = new ChessMove(this.row, this.col, this, toRow, this.col, null);
-        if (toRow == promotionRow) {
-          moves.addAll(computePromotions(move));
+        if (enPassantTargetPosition == targetPosition) {
+          // handle en passant
+          int enPassantPawnPosition = targetPosition + (8 * -direction);
+          attacking.add(enPassantPawnPosition);
+          moves.add(new ChessMove(this.position, targetPosition, this, enPassantPawnPosition));
         } else {
-          moves.add(move);
-        }
-      } else {
-        moves.add(new ChessMove(this.row, this.col, this, toRow, this.col, null, DOUBLE_STEP));
-      }
-    }
-
-    return moves;
-  }
-
-  private List<Move> computeDiagonalCaptures(Board board) {
-    List<Move> moves = new ArrayList<>();
-    int toRow = this.row + direction;
-    for (int toCol = this.col - 1; toCol <= this.col + 1; toCol += 2) {
-      if (board.isOutOfBounds(toRow, toCol)) continue;
-      Piece toPiece = board.getPieceAt(toRow, toCol);
-      if (isOpposingPiece(toPiece)) {
-        Move move = new ChessMove(this.row, this.col, this, toRow, toCol, toPiece);
-        if (toRow == promotionRow) {
-          moves.addAll(computePromotions(move));
-        } else {
-          moves.add(move);
+          // handle regular captures
+          Piece targetPiece = board.getPieceAtPosition(targetPosition);
+          if (!isEmpty(targetPiece) && !isColor(targetPiece, this.color)) {
+            handleCreateMove(targetPosition, moves);
+          }
         }
       }
     }
-
-    return moves;
   }
 
-  private List<Move> computeEnPassant(Board board) {
-    List<Move> moves = new ArrayList<>();
-    if (!board.getMoveStack().isEmpty()) {
-      Move lastMove = board.getMoveStack().peek();
-      boolean isPawnAdjacent = lastMove.toRow() == this.row && (lastMove.toCol() == this.col - 1 || lastMove.toCol() == this.col + 1);
-      if (lastMove.getMoveType() == DOUBLE_STEP && isPawnAdjacent) {
-        int toRow = this.row + direction;
-        int toCol = lastMove.toCol();
-        Move forwardMove = new ChessMove(this.row, toCol, this, toRow, toCol, null, EN_PASSANT);
-        Move captureMove = new ChessMove(this.row, this.col, this, this.row, toCol, lastMove.fromPiece(), EN_PASSANT, forwardMove);
-        moves.add(captureMove);
+  private void handleCreateMove(int targetPosition, List<Move> moves) {
+    if (targetPosition / 8 == promotionRow) {
+      for (PieceType promotionPieceType : promotionPieceTypes) {
+        moves.add(new ChessMove(position, targetPosition, this, promotionPieceType));
       }
+    } else {
+      moves.add(new ChessMove(position, targetPosition, this));
     }
-    return moves;
-  }
-
-  private List<Move> computePromotions(Move originalMove) {
-    Piece capturedPiece = originalMove.toPiece();
-    int fromRow = originalMove.fromRow();
-    int fromCol = originalMove.fromCol();
-    int toCol = originalMove.toCol();
-
-    List<Move> promotionMoves = new ArrayList<>();
-    PieceType[] promotionTypes = new PieceType[] { KNIGHT, BISHOP, ROOK, QUEEN };
-
-    for (PieceType type : promotionTypes) {
-      Piece promotionPiece = PieceFactory.createPiece(this.color, type, promotionRow, toCol);
-      Move promotionMove = new ChessMove(promotionRow, toCol, promotionPiece, promotionRow, toCol, this, PROMOTION);
-      Move originalWithPromotion = new ChessMove(fromRow, fromCol, this, promotionRow, toCol, capturedPiece, PROMOTION, promotionMove);
-      promotionMoves.add(originalWithPromotion);
-    }
-    return promotionMoves;
-  }
-
-  @Override
-  public String toString() {
-    return this.color == PieceColor.WHITE ? "♙" : "♟";
   }
 }

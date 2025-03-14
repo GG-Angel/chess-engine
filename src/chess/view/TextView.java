@@ -2,7 +2,7 @@ package chess.view;
 
 import java.io.IOException;
 
-public interface View {
+public interface TextView {
 
   void renderBoard() throws IOException;
 
