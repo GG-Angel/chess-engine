@@ -34,17 +34,17 @@ public class ChessPawn extends ChessPiece {
   @Override
   public List<Move> calculatePseudoLegalMoves(Board board) {
     List<Move> moves = new ArrayList<>();
-    List<Integer> attacking = new ArrayList<>();
+    List<Integer> controlled = new ArrayList<>();
 
     // ensure the pawn can move forward
     int distanceFromEnd = NUM_SQUARES_FROM_EDGE[this.position][isWhite ? 0 : 3];
     if (distanceFromEnd != 0) {
       calculateForwardMoves(board, moves);
-      calculateDiagonalCaptures(board, moves, attacking);
+      calculateDiagonalCaptures(board, moves, controlled);
     }
 
     this.pseudoLegalMoves = moves;
-    this.attackingPositions = attacking;
+    this.positionsControlled = controlled;
     return moves;
   }
 

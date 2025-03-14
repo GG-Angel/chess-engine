@@ -10,7 +10,7 @@ public interface Piece {
 
   List<Move> getPseudoLegalMoves();
 
-  List<Integer> getAttackingPositions();
+  List<Integer> getPositionsControlled();
 
   PieceColor getColor();
 

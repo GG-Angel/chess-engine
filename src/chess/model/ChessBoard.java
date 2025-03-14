@@ -4,7 +4,6 @@ import static chess.model.piece.PieceColor.*;
 import static utilities.Utils.convertRankFileToPosition;
 import static utilities.Utils.to1D;
 
-import chess.model.piece.ChessPiece;
 import chess.model.piece.Piece;
 import chess.model.piece.PieceColor;
 import chess.model.piece.PieceFactory;
@@ -15,7 +14,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 public class ChessBoard implements Board {
@@ -56,12 +54,12 @@ public class ChessBoard implements Board {
   public boolean isKingInCheck(PieceColor color) throws IllegalStateException {
     int kingPosition = getKing(color).getPosition();
 
-    Set<Integer> enemyControlledPositions = new HashSet<>();
+    Set<Integer> enemyPositionsControlled = new HashSet<>();
     for (Piece enemyPiece : getPieces(getEnemyColor(color))) {
-      enemyControlledPositions.addAll(enemyPiece.getAttackingPositions());
+      enemyPositionsControlled.addAll(enemyPiece.getPositionsControlled());
     }
 
-    return enemyControlledPositions.contains(kingPosition);
+    return enemyPositionsControlled.contains(kingPosition);
   }
 
   @Override
@@ -96,11 +94,6 @@ public class ChessBoard implements Board {
   @Override
   public int getEnPassantTarget() {
     return enPassantTarget;
-  }
-
-  @Override
-  public void setEnPassantTarget(int position) {
-    enPassantTarget = position;
   }
 
   private void initializeBoardFromFen(String fen) {

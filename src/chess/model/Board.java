@@ -15,6 +15,4 @@ public interface Board {
   Piece getPieceAtPosition(int position);
 
   int getEnPassantTarget();
-
-  void setEnPassantTarget(int position);
 }

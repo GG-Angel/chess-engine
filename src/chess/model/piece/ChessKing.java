@@ -22,7 +22,7 @@ public class ChessKing extends ChessPiece {
   @Override
   public List<Move> calculatePseudoLegalMoves(Board board) {
     List<Move> moves = new ArrayList<>();
-    List<Integer> attacking = new ArrayList<>();
+    List<Integer> controlled = new ArrayList<>();
 
     int[] distancesFromEdges = NUM_SQUARES_FROM_EDGE[this.position];
 
@@ -34,7 +34,7 @@ public class ChessKing extends ChessPiece {
 
       int targetPosition = this.position + DIRECTION_OFFSETS[dirIndex];
       Piece targetPiece = board.getPieceAtPosition(targetPosition);
-      attacking.add(targetPosition);
+      controlled.add(targetPosition);
 
       if (isEmpty(targetPiece) || !isColor(targetPiece, this.color)) {
         moves.add(new ChessMove(this.position, targetPosition, this));
@@ -47,7 +47,7 @@ public class ChessKing extends ChessPiece {
     // TODO: Verify castling positions are not under attack
 
     this.pseudoLegalMoves = moves;
-    this.attackingPositions = attacking;
+    this.positionsControlled = controlled;
     return moves;
   }
 }
