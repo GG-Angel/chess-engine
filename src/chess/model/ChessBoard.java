@@ -136,6 +136,24 @@ public class ChessBoard implements Board {
   }
 
   @Override
+  public long legalMovesPerft(int depth, PieceColor startingColor) {
+    if (depth == 0) {
+      return 1;
+    }
+
+    long nodes = 0;
+    List<Move> legalMoves = generateLegalMoves(startingColor);
+
+    for (Move move : legalMoves) {
+      makeMove(move);
+      nodes += legalMovesPerft(depth - 1, getEnemyColor(startingColor));
+      unmakeMove(move);
+    }
+
+    return nodes;
+  }
+
+  @Override
   public Set<Integer> getPositionsControlled(PieceColor color) {
     Set<Integer> positionsControlled = new HashSet<>();
     for (Piece piece : getPieces(color)) {

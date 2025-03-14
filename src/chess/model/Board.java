@@ -17,6 +17,8 @@ public interface Board {
 
   void unmakeMove(Move move);
 
+  long legalMovesPerft(int depth, PieceColor startingColor);
+
   Set<Integer> getPositionsControlled(PieceColor color);
 
   Piece getPieceAtPosition(int position);
