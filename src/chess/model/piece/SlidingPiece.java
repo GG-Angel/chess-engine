@@ -39,6 +39,7 @@ public class SlidingPiece extends ChessPiece {
       }
     }
 
+    this.pseudoLegalMoves = moves;
     this.attackingPositions = attacking;
     return moves;
   }

@@ -43,6 +43,7 @@ public class ChessPawn extends ChessPiece {
       calculateDiagonalCaptures(board, moves, attacking);
     }
 
+    this.pseudoLegalMoves = moves;
     this.attackingPositions = attacking;
     return moves;
   }

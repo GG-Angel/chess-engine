@@ -42,6 +42,7 @@ public class ChessKnight extends ChessPiece {
       }
     }
 
+    this.pseudoLegalMoves = moves;
     this.attackingPositions = attacking;
     return moves;
   }

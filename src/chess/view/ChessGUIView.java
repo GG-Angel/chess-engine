@@ -9,6 +9,7 @@ import chess.model.ChessBoard;
 import chess.model.Move;
 import chess.model.piece.ChessPiece;
 import chess.model.piece.Piece;
+import chess.model.piece.PieceColor;
 import chess.model.piece.PieceConstants;
 import chess.model.piece.PieceLookup;
 import java.util.Arrays;
@@ -46,38 +47,32 @@ public class ChessGUIView extends Application {
   }
 
   @Override
-  public void start(Stage stage) throws Exception {
+  public void start(Stage stage) {
     if (board == null) {
       throw new IllegalStateException("Board must be set before starting the view.");
     }
 
-    // create 8x8 grid
+    refreshBoard();
+
+    Scene scene = new Scene(grid, SQUARE_SIZE * 8, SQUARE_SIZE * 8);
+    stage.setTitle("Chess Engine");
+    stage.setScene(scene);
+    stage.show();
+  }
+
+  private void refreshBoard() {
+    grid.getChildren().clear();
     for (int y = 0; y < BOARD_SIZE; y++) {
       for (int x = 0; x < BOARD_SIZE; x++) {
         int position = to1D(x, y);
         String positionStr = position + "";
-
         StackPane stackPane = new StackPane();
+
+        // create alternating squares
         Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE);
-
-        // alternate square colors
         boolean isLightSquare = (y + x) % 2 == 0;
-        if (isLightSquare) {
-          square.setFill(colorBeige); // beige
-        } else {
-          square.setFill(colorBrown); // brown
-        }
-
-        // add square color
+        square.setFill(isLightSquare ? colorBeige : colorBrown);
         stackPane.getChildren().add(square);
-
-        // add mark on right click
-        Rectangle squareMark = new Rectangle(SQUARE_SIZE, SQUARE_SIZE);
-        squareMark.setId(positionStr);
-        squareMark.setFill(Color.TRANSPARENT);
-        stackPane.setOnMouseClicked(e -> highlightOnClick(e, squareMark));
-        stackPane.getChildren().add(squareMark);
-        squareMarkers[position] = squareMark;
 
         // add coordinate to square
         Label coordinate = new Label(positionStr);
@@ -87,30 +82,29 @@ public class ChessGUIView extends Application {
         coordinate.setPadding(new Insets(2, 0, 0, 2));
         stackPane.getChildren().add(coordinate);
 
+        // create square marker
+        Rectangle squareMark = new Rectangle(SQUARE_SIZE, SQUARE_SIZE);
+        squareMark.setId(positionStr);
+        squareMark.setFill(Color.TRANSPARENT);
+        stackPane.setOnMouseClicked(event -> highlightOnClick(event, squareMark));
+        stackPane.getChildren().add(squareMark);
+        squareMarkers[position] = squareMark;
+
+        // add piece to square if it exists
         Piece pieceAtSquare = board.getPieceAtPosition(position);
         if (!ChessPiece.isEmpty(pieceAtSquare)) {
-          // load piece image
           String pieceImagePath = PieceLookup.getImage(pieceAtSquare.getColor(), pieceAtSquare.getType());
           Image pieceImage = new Image(pieceImagePath);
           ImageView pieceImageView = new ImageView(pieceImage);
-
-          // scale to fit square
           pieceImageView.setFitWidth(SQUARE_SIZE);
           pieceImageView.setFitHeight(SQUARE_SIZE);
-
-          // add piece on top of square
           stackPane.getChildren().add(pieceImageView);
         }
 
-        // add square to board and store reference
+        stackPane.setId(positionStr);
         grid.add(stackPane, x, y);
       }
     }
-
-    Scene scene = new Scene(grid, SQUARE_SIZE * 8, SQUARE_SIZE * 8);
-    stage.setTitle("Chess Engine");
-    stage.setScene(scene);
-    stage.show();
   }
 
   private void highlightOnClick(MouseEvent e, Rectangle square) {
@@ -120,16 +114,10 @@ public class ChessGUIView extends Application {
       }
 
       Piece piece = board.getPieceAtPosition(Integer.parseInt(square.getId()));
-      if (piece != null) {
-        List<Move> moves = piece.calculatePseudoLegalMoves(board);
-        for (Move move : moves) {
+      if (!ChessPiece.isEmpty(piece)) {
+        for (Move move : piece.getPseudoLegalMoves()) {
           squareMarkers[move.getTo()].setFill(colorMove);
         }
-//        piece.calculatePseudoLegalMoves(board);
-//        List<Integer> attacks = piece.getAttackingPositions();
-//        for (int pos : attacks) {
-//          squareMarkers[pos].setFill(colorMove);
-//        }
       }
     } else if (e.getButton() == MouseButton.SECONDARY) {
       if (square.getFill() == Color.TRANSPARENT) {
@@ -141,8 +129,9 @@ public class ChessGUIView extends Application {
   }
 
   public static void main(String[] args) {
-    board = new ChessBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -");
-    System.out.println(Arrays.toString(PieceConstants.NUM_SQUARES_FROM_EDGE[28]));
+    board = new ChessBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
+    board.generatePseudoLegalMoves(PieceColor.WHITE);
+    board.generatePseudoLegalMoves(PieceColor.BLACK);
     launch(args);
   }
 }

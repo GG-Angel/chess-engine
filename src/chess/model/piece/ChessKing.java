@@ -45,7 +45,8 @@ public class ChessKing extends ChessPiece {
     // TODO: Verify king and rooks haven't moved
     // TODO: Verify king is not in check
     // TODO: Verify castling positions are not under attack
-    
+
+    this.pseudoLegalMoves = moves;
     this.attackingPositions = attacking;
     return moves;
   }

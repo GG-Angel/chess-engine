@@ -1,18 +1,27 @@
 package chess.model;
 
 import static chess.model.piece.PieceColor.*;
+import static utilities.Utils.convertRankFileToPosition;
 import static utilities.Utils.to1D;
 
+import chess.model.piece.ChessPiece;
 import chess.model.piece.Piece;
 import chess.model.piece.PieceColor;
 import chess.model.piece.PieceFactory;
 import chess.model.piece.PieceLookup;
 import chess.model.piece.PieceType;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ChessBoard implements Board {
   public static int BOARD_SIZE = 8;
 
   private final Piece[] board;
+  private final Map<PieceColor, List<Piece>> pieces;
 
   private int enPassantTarget;
 
@@ -22,8 +31,61 @@ public class ChessBoard implements Board {
 
   public ChessBoard(String fen) {
     this.board = new Piece[64];
+    this.pieces = new HashMap<>();
     this.enPassantTarget = -1;
+
+    this.pieces.put(WHITE, new ArrayList<>());
+    this.pieces.put(BLACK, new ArrayList<>());
+
     initializeBoardFromFen(fen);
+  }
+
+  @Override
+  public List<Move> generatePseudoLegalMoves(PieceColor color) {
+    List<Move> pseudoLegalMoves = new ArrayList<>();
+    for (Piece piece : getPieces(color)) {
+      pseudoLegalMoves.addAll(piece.calculatePseudoLegalMoves(this));
+    }
+    return pseudoLegalMoves;
+  }
+
+  @Override
+  public void makeMove(Move move) {
+    switch (move.getMoveType()) {
+      case NORMAL -> {
+        board[move.getTo()] = move.getPiece();
+        board[move.getFrom()] = null;
+        move.getPiece().setPosition(move.getTo());
+      }
+      case CASTLING -> {
+        // TODO: Implement make castling move
+      }
+      case PROMOTION -> {
+        board[move.getTo()] = move.getPromotionPiece();
+        board[move.getFrom()] = null;
+      }
+      case EN_PASSANT -> {
+        board[move.getTo()] = move.getPiece();
+        board[move.getFrom()] = null;
+        board[move.getEnPassantPawnPosition()] = null;
+        move.getPiece().setPosition(move.getTo());
+      }
+    }
+  }
+
+  @Override
+  public Piece getPieceAtPosition(int position) {
+    return this.board[position];
+  }
+
+  @Override
+  public int getEnPassantTarget() {
+    return enPassantTarget;
+  }
+
+  @Override
+  public void setEnPassantTarget(int position) {
+    enPassantTarget = position;
   }
 
   private void initializeBoardFromFen(String fen) {
@@ -43,23 +105,23 @@ public class ChessBoard implements Board {
         PieceType type = PieceLookup.getType(symbol);
         Piece piece = PieceFactory.createPiece(color, type, position);
         board[position] = piece;
+        addPiece(piece);
         x++;
       }
     }
+
+    this.enPassantTarget = !fenParams[3].equals("-") ? convertRankFileToPosition(fenParams[3]) : -1;
   }
 
-  @Override
-  public Piece getPieceAtPosition(int position) {
-    return this.board[position];
+  private List<Piece> getPieces(PieceColor color) {
+    return pieces.get(color);
   }
 
-  @Override
-  public int getEnPassantTarget() {
-    return enPassantTarget;
+  private void addPiece(Piece piece) {
+    pieces.get(piece.getColor()).add(piece);
   }
 
-  @Override
-  public void setEnPassantTarget(int position) {
-    enPassantTarget = position;
+  private void removePiece(Piece piece) {
+    pieces.get(piece.getColor()).remove(piece);
   }
 }

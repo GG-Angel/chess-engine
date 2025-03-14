@@ -8,6 +8,8 @@ public interface Piece {
 
   List<Move> calculatePseudoLegalMoves(Board board);
 
+  List<Move> getPseudoLegalMoves();
+
   List<Integer> getAttackingPositions();
 
   PieceColor getColor();

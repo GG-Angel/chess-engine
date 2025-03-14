@@ -35,6 +35,11 @@ public abstract class ChessPiece implements Piece {
   }
 
   @Override
+  public List<Move> getPseudoLegalMoves() {
+    return pseudoLegalMoves;
+  }
+
+  @Override
   public List<Integer> getAttackingPositions() {
     return attackingPositions;
   }
