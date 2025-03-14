@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class ChessBoard implements Board {
@@ -22,6 +23,7 @@ public class ChessBoard implements Board {
 
   private final Piece[] board;
   private final Map<PieceColor, List<Piece>> pieces;
+  private final Map<PieceColor, Piece> kings;
 
   private int enPassantTarget;
 
@@ -32,6 +34,7 @@ public class ChessBoard implements Board {
   public ChessBoard(String fen) {
     this.board = new Piece[64];
     this.pieces = new HashMap<>();
+    this.kings = new HashMap<>();
     this.enPassantTarget = -1;
 
     this.pieces.put(WHITE, new ArrayList<>());
@@ -47,6 +50,18 @@ public class ChessBoard implements Board {
       pseudoLegalMoves.addAll(piece.calculatePseudoLegalMoves(this));
     }
     return pseudoLegalMoves;
+  }
+
+  @Override
+  public boolean isKingInCheck(PieceColor color) throws IllegalStateException {
+    int kingPosition = getKing(color).getPosition();
+
+    Set<Integer> enemyControlledPositions = new HashSet<>();
+    for (Piece enemyPiece : getPieces(getEnemyColor(color))) {
+      enemyControlledPositions.addAll(enemyPiece.getAttackingPositions());
+    }
+
+    return enemyControlledPositions.contains(kingPosition);
   }
 
   @Override
@@ -105,8 +120,11 @@ public class ChessBoard implements Board {
         PieceType type = PieceLookup.getType(symbol);
         Piece piece = PieceFactory.createPiece(color, type, position);
         board[position] = piece;
-        addPiece(piece);
         x++;
+
+        // store references for lookup
+        if (type == PieceType.KING) { kings.put(color, piece); }
+        addPiece(piece);
       }
     }
 
@@ -123,5 +141,9 @@ public class ChessBoard implements Board {
 
   private void removePiece(Piece piece) {
     pieces.get(piece.getColor()).remove(piece);
+  }
+
+  private Piece getKing(PieceColor color) {
+    return kings.get(color);
   }
 }

@@ -8,6 +8,8 @@ public interface Board {
 
   List<Move> generatePseudoLegalMoves(PieceColor color);
 
+  boolean isKingInCheck(PieceColor color) throws IllegalStateException;
+
   void makeMove(Move move);
 
   Piece getPieceAtPosition(int position);

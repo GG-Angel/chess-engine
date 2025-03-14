@@ -4,6 +4,7 @@ import static chess.model.ChessBoard.BOARD_SIZE;
 import static java.util.Objects.requireNonNull;
 import static utilities.Utils.to1D;
 
+import chess.Chess;
 import chess.model.Board;
 import chess.model.ChessBoard;
 import chess.model.Move;
@@ -132,6 +133,7 @@ public class ChessGUIView extends Application {
     board = new ChessBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
     board.generatePseudoLegalMoves(PieceColor.WHITE);
     board.generatePseudoLegalMoves(PieceColor.BLACK);
+    System.out.println(board.isKingInCheck(PieceColor.WHITE));
     launch(args);
   }
 }
