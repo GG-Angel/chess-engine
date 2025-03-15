@@ -11,6 +11,7 @@ import chess.model.piece.PieceFactory;
 import chess.model.piece.PieceLookup;
 import chess.model.piece.PieceType;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -206,8 +207,30 @@ public class ChessBoard implements Board {
     }
   }
 
+//  @Override
+//  public long legalMovesPerft(int depth, PieceColor startingColor) {
+//    if (depth == 0) {
+//      return 1;
+//    }
+//
+//    long nodes = 0;
+//    List<Move> legalMoves = generateLegalMoves(startingColor);
+//
+//    for (Move move : legalMoves) {
+//      makeMove(move);
+//      nodes += legalMovesPerft(depth - 1, getEnemyColor(startingColor));
+//      unMakeMove(move);
+//    }
+//
+//    return nodes;
+//  }
+
   @Override
   public long legalMovesPerft(int depth, PieceColor startingColor) {
+    return legalMovesPerft(depth, startingColor, depth);
+  }
+
+  private long legalMovesPerft(int depth, PieceColor startingColor, int initialDepth) {
     if (depth == 0) {
       return 1;
     }
@@ -215,10 +238,21 @@ public class ChessBoard implements Board {
     long nodes = 0;
     List<Move> legalMoves = generateLegalMoves(startingColor);
 
+    legalMoves.sort(Comparator.comparing(Move::toString));
+
     for (Move move : legalMoves) {
       makeMove(move);
-      nodes += legalMovesPerft(depth - 1, getEnemyColor(startingColor));
+      long childNodes = legalMovesPerft(depth - 1, getEnemyColor(startingColor), initialDepth);
+      nodes += childNodes;
       unMakeMove(move);
+
+      if (depth == initialDepth) {
+        System.out.println(move + ": " + childNodes);
+      }
+    }
+
+    if (depth == initialDepth) {
+      System.out.println("Nodes searched: " + nodes);
     }
 
     return nodes;

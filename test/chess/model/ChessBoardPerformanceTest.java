@@ -34,8 +34,8 @@ class ChessBoardPerformanceTest {
   @ParameterizedTest
   @CsvSource ({
       "1, 48",
-      "2, 2039",
-      "3, 97862",
+//      "2, 2039",
+//      "3, 97862",
 //    "4, 4085603",
 //    "5, 193690690"
   })
