@@ -25,7 +25,7 @@ public class ChessKnight extends ChessPiece {
     int edgeLeftDistance = NUM_SQUARES_FROM_EDGE[this.position][1];
     int edgeRightDistance = NUM_SQUARES_FROM_EDGE[this.position][2];
 
-    int startDirIndex = edgeLeftDistance >= 2 ? 0 : edgeLeftDistance == 1 ? 2 : 0;
+    int startDirIndex = edgeLeftDistance >= 2 ? 0 : edgeLeftDistance == 1 ? 2 : 4;
     int endDirIndex = edgeRightDistance >= 2 ? 8 : edgeRightDistance == 1 ? 6 : 4;
 
     for (int dirIndex = startDirIndex; dirIndex < endDirIndex; dirIndex++) {
