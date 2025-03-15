@@ -11,6 +11,8 @@ public interface Move {
 
   MoveType getMoveType();
 
+  boolean hasPieceMovedBefore();
+
   Piece getPromotionPiece() throws IllegalStateException;
 
   Move getCastlingMove() throws IllegalStateException;

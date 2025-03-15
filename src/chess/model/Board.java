@@ -15,7 +15,7 @@ public interface Board {
 
   void makeMove(Move move);
 
-  void unmakeMove(Move move);
+  void unMakeMove(Move move);
 
   long legalMovesPerft(int depth, PieceColor startingColor);
 

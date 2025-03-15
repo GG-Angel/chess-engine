@@ -18,6 +18,7 @@ public class ChessMove implements Move {
   private final int from, to;
   private final Piece piece;
   private final MoveType moveType;
+  private final boolean hasPieceMovedBefore;
 
   // presence is based on move type
   private final PieceType promotionPieceType;
@@ -48,6 +49,7 @@ public class ChessMove implements Move {
     this.castlingMove = castlingMove;
     this.enPassantPawnPosition = enPassantPawnPosition;
     this.moveType = movetype;
+    this.hasPieceMovedBefore = piece.hasMoved();
   }
 
   @Override
@@ -68,6 +70,11 @@ public class ChessMove implements Move {
   @Override
   public MoveType getMoveType() {
     return moveType;
+  }
+
+  @Override
+  public boolean hasPieceMovedBefore() {
+    return hasPieceMovedBefore;
   }
 
   @Override

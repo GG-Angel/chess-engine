@@ -73,7 +73,7 @@ public class ChessBoard implements Board {
       if (!isKingInCheck(color)) {
         legalMoves.add(moveToVerify);
       }
-      unmakeMove(moveToVerify);
+      unMakeMove(moveToVerify);
     }
 
     return legalMoves;
@@ -140,16 +140,18 @@ public class ChessBoard implements Board {
   }
 
   @Override
-  public void unmakeMove(Move move) {
+  public void unMakeMove(Move move) {
     int from = move.getFrom();
     int to = move.getTo();
     Piece piece = move.getPiece();
     MoveType moveType = move.getMoveType();
+    boolean hasPieceMovedBefore = move.hasPieceMovedBefore();
 
-    // move piece back to its original position
+    // move the piece back to its original position
     switch (moveType) {
       case NORMAL -> {
         movePiece(to, from, piece);
+        piece.setHasMoved(hasPieceMovedBefore);
       }
 
       case CASTLING -> {
@@ -158,6 +160,9 @@ public class ChessBoard implements Board {
 
         movePiece(to, from, piece);
         movePiece(rookMove.getTo(), rookMove.getFrom(), rook);
+
+        piece.setHasMoved(false);
+        rook.setHasMoved(false);
       }
 
       case PROMOTION -> {
@@ -194,7 +199,7 @@ public class ChessBoard implements Board {
     for (Move move : legalMoves) {
       makeMove(move);
       nodes += legalMovesPerft(depth - 1, getEnemyColor(startingColor));
-      unmakeMove(move);
+      unMakeMove(move);
     }
 
     return nodes;
@@ -243,8 +248,6 @@ public class ChessBoard implements Board {
         addPieceToLookup(piece);
       }
     }
-
-    // TODO: assign has moved based on if a piece's position is different from its initial position
 
     this.enPassantTarget = !fenParams[3].equals("-") ? convertRankFileToPosition(fenParams[3]) : -1;
   }
