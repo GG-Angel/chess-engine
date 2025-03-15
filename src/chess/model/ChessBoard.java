@@ -102,7 +102,6 @@ public class ChessBoard implements Board {
     switch (moveType) {
       case NORMAL -> {
         killPiece(getPieceAtPosition(to));
-
         movePiece(from, to, piece);
         piece.setHasMoved(true);
       }
@@ -120,6 +119,7 @@ public class ChessBoard implements Board {
 
       case PROMOTION -> {
         Piece promotionPiece = move.getPromotionPiece();
+        addPieceToLookup(promotionPiece);
 
         killPiece(getPieceAtPosition(to));
 
@@ -136,6 +136,16 @@ public class ChessBoard implements Board {
 
         movePiece(from, to, piece);
       }
+    }
+
+    if (moveType == MoveType.NORMAL && ChessPiece.isType(piece, PieceType.PAWN)) {
+      if (Math.abs(from - to) == 16) {
+        enPassantTarget = (from + to) / 2;
+      } else {
+        enPassantTarget = -1;
+      }
+    } else {
+      enPassantTarget = -1;
     }
   }
 
@@ -183,7 +193,16 @@ public class ChessBoard implements Board {
       if (!ChessPiece.isEmpty(capturedPiece)) {
         int capturedPiecePosition = capturedPiece.getPosition();
         board[capturedPiecePosition] = capturedPiece;
+
+        // restore en passant target
+        if (moveType == MoveType.EN_PASSANT) {
+          enPassantTarget = capturedPiecePosition + (ChessPiece.isColor(capturedPiece, WHITE) ? 8 : -8);
+        }
       }
+    }
+
+    if (moveType != MoveType.EN_PASSANT) {
+      enPassantTarget = -1;
     }
   }
 
@@ -280,6 +299,10 @@ public class ChessBoard implements Board {
   }
 
   private Piece revivePiece() {
+    if (capturedPieces.isEmpty()) {
+      return null;
+    }
+
     Piece piece = capturedPieces.pop();
 
     if (!ChessPiece.isEmpty(piece)) {
