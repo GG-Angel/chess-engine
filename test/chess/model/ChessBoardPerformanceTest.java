@@ -20,10 +20,10 @@ class ChessBoardPerformanceTest {
   @CsvSource({
       "0, 1",
       "1, 20",
-//      "2, 400",
-//      "3, 8902",
-//    "4, 197281",
-//    "5, 4865609",
+      "2, 400",
+      "3, 8902",
+      "4, 197281",
+      "5, 4865609",
   })
   void testInitialPosition(int depth, long expectedNodes) {
     Board board = new ChessBoard();

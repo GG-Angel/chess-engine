@@ -4,6 +4,7 @@ import static chess.model.piece.PieceColor.*;
 import static chess.utilities.Utils.convertRankFileToPosition;
 import static chess.utilities.Utils.to1D;
 
+import chess.model.piece.ChessPiece;
 import chess.model.piece.Piece;
 import chess.model.piece.PieceColor;
 import chess.model.piece.PieceFactory;
@@ -15,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 public class ChessBoard implements Board {
   public static int BOARD_SIZE = 8;
@@ -22,7 +24,7 @@ public class ChessBoard implements Board {
   private final Piece[] board;
   private final Map<PieceColor, List<Piece>> pieces;
   private final Map<PieceColor, Piece> kings;
-  private final Map<PieceColor, List<Move>> legalMoveCache;
+  private final Stack<Piece> capturedPieces;
 
   private int enPassantTarget;
 
@@ -34,13 +36,11 @@ public class ChessBoard implements Board {
     this.board = new Piece[64];
     this.pieces = new HashMap<>();
     this.kings = new HashMap<>();
-    this.legalMoveCache = new HashMap<>();
+    this.capturedPieces = new Stack<>();
     this.enPassantTarget = -1;
 
     this.pieces.put(WHITE, new ArrayList<>());
     this.pieces.put(BLACK, new ArrayList<>());
-    this.legalMoveCache.put(WHITE, new ArrayList<>());
-    this.legalMoveCache.put(BLACK, new ArrayList<>());
 
     initializeBoardFromFen(fen);
 
@@ -86,60 +86,100 @@ public class ChessBoard implements Board {
     return enemyPositionsControlled.contains(kingPosition);
   }
 
+  private void movePiece(int from, int to, Piece piece) {
+    board[to] = piece;
+    board[from] = null;
+    piece.setPosition(to);
+  }
+
   @Override
   public void makeMove(Move move) {
-    switch (move.getMoveType()) {
+    int from = move.getFrom();
+    int to = move.getTo();
+    Piece piece = move.getPiece();
+    MoveType moveType = move.getMoveType();
+
+    switch (moveType) {
       case NORMAL -> {
-        movePiece(move.getFrom(), move.getTo(), move.getPiece());
-        move.getPiece().setHasMoved(true);
+        killPiece(getPieceAtPosition(to));
+
+        movePiece(from, to, piece);
+        piece.setHasMoved(true);
       }
+
       case CASTLING -> {
         Move rookMove = move.getCastlingMove();
-        movePiece(move.getFrom(), move.getTo(), move.getPiece());
-        movePiece(rookMove.getFrom(), rookMove.getTo(), rookMove.getPiece());
-        move.getPiece().setHasMoved(true);
-        rookMove.getPiece().setHasMoved(true);
+        Piece rook = rookMove.getPiece();
+
+        movePiece(from, to, piece);
+        movePiece(rookMove.getFrom(), rookMove.getTo(), rook);
+
+        piece.setHasMoved(true);
+        rook.setHasMoved(true);
       }
+
       case PROMOTION -> {
-        movePiece(move.getFrom(), move.getTo(), move.getPromotionPiece());
-        move.getPromotionPiece().setHasMoved(true);
+        Piece promotionPiece = move.getPromotionPiece();
+
+        killPiece(getPieceAtPosition(to));
+
+        movePiece(from, to, promotionPiece);
+        promotionPiece.setHasMoved(true);
       }
+
       case EN_PASSANT -> {
-        movePiece(move.getFrom(), move.getTo(), move.getPiece());
-        board[move.getEnPassantPawnPosition()] = null;
-        move.getPiece().setHasMoved(true);
+        int enPassantPawnPosition = move.getEnPassantPawnPosition();
+        Piece enPassantPawn = getPieceAtPosition(enPassantPawnPosition);
+
+        killPiece(enPassantPawn);
+        board[enPassantPawnPosition] = null;
+
+        movePiece(from, to, piece);
       }
     }
   }
 
   @Override
   public void unmakeMove(Move move) {
-    switch (move.getMoveType()) {
+    int from = move.getFrom();
+    int to = move.getTo();
+    Piece piece = move.getPiece();
+    MoveType moveType = move.getMoveType();
+
+    // move piece back to its original position
+    switch (moveType) {
       case NORMAL -> {
-        movePiece(move.getTo(), move.getFrom(), move.getPiece());
-        // TODO: bring captured piece back
+        movePiece(to, from, piece);
       }
+
       case CASTLING -> {
         Move rookMove = move.getCastlingMove();
-        movePiece(move.getTo(), move.getFrom(), move.getPiece());
-        movePiece(rookMove.getTo(), rookMove.getFrom(), rookMove.getPiece());
+        Piece rook = rookMove.getPiece();
+
+        movePiece(to, from, piece);
+        movePiece(rookMove.getTo(), rookMove.getFrom(), rook);
       }
+
       case PROMOTION -> {
-        movePiece(move.getTo(), move.getFrom(), move.getPiece());
-        removePiece(move.getPromotionPiece());
-        // TODO: bring captured piece back
+        Piece promotionPiece = move.getPromotionPiece();
+        removePieceFromLookup(promotionPiece);
+
+        movePiece(to, from, piece);
       }
+
       case EN_PASSANT -> {
-        movePiece(move.getTo(), move.getFrom(), move.getPiece());
-        // TODO: bring captured pawn back
+        movePiece(to, from, piece);
       }
     }
-  }
 
-  private void movePiece(int from, int to, Piece piece) {
-    board[to] = piece;
-    board[from] = null;
-    piece.setPosition(to);
+    // restore captured piece
+    if (moveType != MoveType.PROMOTION) {
+      Piece capturedPiece = revivePiece();
+      if (!ChessPiece.isEmpty(capturedPiece)) {
+        int capturedPiecePosition = capturedPiece.getPosition();
+        board[capturedPiecePosition] = capturedPiece;
+      }
+    }
   }
 
   @Override
@@ -200,7 +240,7 @@ public class ChessBoard implements Board {
 
         // store references for lookup
         if (type == PieceType.KING) { kings.put(color, piece); }
-        addPiece(piece);
+        addPieceToLookup(piece);
       }
     }
 
@@ -213,19 +253,36 @@ public class ChessBoard implements Board {
     return pieces.get(color);
   }
 
-  private void addPiece(Piece piece) {
-    pieces.get(piece.getColor()).add(piece);
-  }
-
-  private void removePiece(Piece piece) {
-    pieces.get(piece.getColor()).remove(piece);
-  }
-
   private Piece getKing(PieceColor color) {
     return kings.get(color);
   }
 
   private List<Piece> getKings() {
     return kings.values().stream().toList();
+  }
+
+  private void addPieceToLookup(Piece piece) {
+    pieces.get(piece.getColor()).add(piece);
+  }
+
+  private void removePieceFromLookup(Piece piece) {
+    pieces.get(piece.getColor()).remove(piece);
+  }
+
+  private void killPiece(Piece piece) {
+    if (!ChessPiece.isEmpty(piece)) {
+      removePieceFromLookup(piece);
+    }
+    capturedPieces.push(piece);
+  }
+
+  private Piece revivePiece() {
+    Piece piece = capturedPieces.pop();
+
+    if (!ChessPiece.isEmpty(piece)) {
+      addPieceToLookup(piece);
+    }
+
+    return piece;
   }
 }
