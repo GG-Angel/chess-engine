@@ -9,12 +9,8 @@ import java.io.IOException;
 
 public class Chess {
 
-  public static void main(String[] args) throws IOException {
-    Board board = new ChessBoard();
-    TextView view = new ChessTextView(board);
-
-    System.out.println("Legal White Moves: " + board.generateLegalMoves(PieceColor.WHITE).size());
-
-    view.renderBoard();
+  public static void main(String[] args) {
+    Board board = new ChessBoard("r3k2r/p1ppqpb1/1n2pnp1/1b1PN3/1p2P3/2N2Q1p/PPPB1PPP/R3K2R w KQkq - 0 2");
+    board.legalMovesPerft(3, PieceColor.WHITE);
   }
 }

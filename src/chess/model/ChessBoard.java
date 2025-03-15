@@ -23,10 +23,10 @@ public class ChessBoard implements Board {
   public static int BOARD_SIZE = 8;
 
   private final Piece[] board;
-  private final Map<PieceColor, List<Piece>> pieces;
+  private final Map<PieceColor, Set<Piece>> pieces;
   private final Map<PieceColor, Piece> kings;
   private final Stack<Piece> capturedPieces;
-
+  
   private int enPassantTarget;
 
   public ChessBoard() {
@@ -40,8 +40,8 @@ public class ChessBoard implements Board {
     this.capturedPieces = new Stack<>();
     this.enPassantTarget = -1;
 
-    this.pieces.put(WHITE, new ArrayList<>());
-    this.pieces.put(BLACK, new ArrayList<>());
+    this.pieces.put(WHITE, new HashSet<>());
+    this.pieces.put(BLACK, new HashSet<>());
 
     initializeBoardFromFen(fen);
 
@@ -209,24 +209,6 @@ public class ChessBoard implements Board {
     }
   }
 
-//  @Override
-//  public long legalMovesPerft(int depth, PieceColor startingColor) {
-//    if (depth == 0) {
-//      return 1;
-//    }
-//
-//    long nodes = 0;
-//    List<Move> legalMoves = generateLegalMoves(startingColor);
-//
-//    for (Move move : legalMoves) {
-//      makeMove(move);
-//      nodes += legalMovesPerft(depth - 1, getEnemyColor(startingColor));
-//      unMakeMove(move);
-//    }
-//
-//    return nodes;
-//  }
-
   @Override
   public long legalMovesPerft(int depth, PieceColor startingColor) {
     return legalMovesPerft(depth, startingColor, depth);
@@ -307,7 +289,7 @@ public class ChessBoard implements Board {
     this.enPassantTarget = !fenParams[3].equals("-") ? convertRankFileToPosition(fenParams[3]) : -1;
   }
 
-  private List<Piece> getPieces(PieceColor color) {
+  private Set<Piece> getPieces(PieceColor color) {
     return pieces.get(color);
   }
 
