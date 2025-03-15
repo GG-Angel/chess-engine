@@ -78,7 +78,7 @@ public class ChessKing extends ChessPiece {
         boolean isClearToMoveThrough = isEmpty(board.getPieceAtPosition(pathPosition));
         boolean isControlledByEnemy = enemyPositionsControlled.contains(pathPosition);
 
-        if (!isClearToMoveThrough || isControlledByEnemy) {
+        if (!isClearToMoveThrough || (castleDirIndex != 4 && isControlledByEnemy)) {
           return; // since the path is invalid
         }
       }

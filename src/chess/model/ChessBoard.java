@@ -123,6 +123,7 @@ public class ChessBoard implements Board {
         addPieceToLookup(promotionPiece);
 
         killPiece(getPieceAtPosition(to));
+        removePieceFromLookup(piece);
 
         movePiece(from, to, promotionPiece);
         promotionPiece.setHasMoved(true);
@@ -181,6 +182,7 @@ public class ChessBoard implements Board {
         removePieceFromLookup(promotionPiece);
 
         movePiece(to, from, piece);
+        addPieceToLookup(piece);
       }
 
       case EN_PASSANT -> {
@@ -189,7 +191,7 @@ public class ChessBoard implements Board {
     }
 
     // restore captured piece
-    if (moveType != MoveType.PROMOTION) {
+    if (moveType != MoveType.CASTLING) {
       Piece capturedPiece = revivePiece();
       if (!ChessPiece.isEmpty(capturedPiece)) {
         int capturedPiecePosition = capturedPiece.getPosition();
