@@ -1,6 +1,6 @@
 package chess;
 
-import static chess.Utilities.toPosition;
+import static chess.Utilities.toSquarePosition;
 
 public class BitBoard {
   public static long setBit(long bitboard, int square) {
@@ -23,7 +23,7 @@ public class BitBoard {
     StringBuilder sbBoard = new StringBuilder();
     for (int rank = 0; rank < 8; rank++) {
       for (int file = 0; file < 8; file++) {
-        int square = toPosition(rank, file);
+        int square = toSquarePosition(rank, file);
         if (hasPieceAtBit(bitboard, square)) {
           sbBoard.append("1");
         } else {

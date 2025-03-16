@@ -1,11 +1,20 @@
 package chess;
 
-import static chess.Utilities.toPosition;
+import static chess.PieceLookup.getPieceImagePath;
+import static chess.Utilities.toSquarePosition;
 import static java.util.Objects.requireNonNull;
 
-import java.util.Objects;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.Image;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
 
 public class ChessGUI extends JFrame {
   private static final int BOARD_SIZE = 8;
@@ -14,15 +23,15 @@ public class ChessGUI extends JFrame {
   private static final Color C_BEIGE = new Color(240, 218, 181);
   private static final Color C_BROWN = new Color(181, 135, 99);
 
+  private final ChessBoard board;
   private JPanel boardPanel;
-  private ChessBoard chessBoard;
 
   public ChessGUI() {
     this("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
   }
 
   public ChessGUI(String fen) {
-    this.chessBoard = new ChessBoard(fen);
+    this.board = new ChessBoard(fen);
     initialize();
   }
 
@@ -41,23 +50,27 @@ public class ChessGUI extends JFrame {
 
   private void render() {
     boardPanel.removeAll();
-    char[] board = chessBoard.toString().replaceAll("\\s+", "").toCharArray();
+
+    PieceType[] pieces = board.getBoard();
     for (int rank = 0; rank < BOARD_SIZE; rank++) {
       for (int file = 0; file < BOARD_SIZE; file++) {
-        char pieceSymbol = board[toPosition(rank, file)];
         boolean isLightSquare = (rank + file) % 2 == 0;
+        int square = toSquarePosition(rank, file);
+        PieceType piece = pieces[square];
 
         JLabel label = new JLabel();
         label.setHorizontalAlignment(SwingConstants.CENTER);
         label.setOpaque(true);
         label.setBackground(isLightSquare ? C_BEIGE : C_BROWN);
 
-        if (pieceSymbol != '.') {
-          PieceType pieceType = PieceLookup.getPieceFromSymbol(pieceSymbol);
-          String pieceImagePath = PieceLookup.getPieceImagePath(pieceType);
-          ImageIcon pieceIcon = new ImageIcon(requireNonNull(getClass().getResource(pieceImagePath)));
-          Image pieceImage = pieceIcon.getImage().getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
-          label.setIcon(new ImageIcon(pieceImage));
+        if (piece != null) {
+          String pieceImagePath = getPieceImagePath(piece);
+
+          ImageIcon unscaledPieceIcon = new ImageIcon(requireNonNull(getClass().getResource(pieceImagePath)));
+          Image scaledPieceImage = unscaledPieceIcon.getImage().getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
+          ImageIcon scaledPieceIcon = new ImageIcon(scaledPieceImage);
+
+          label.setIcon(scaledPieceIcon);
         }
 
         boardPanel.add(label);

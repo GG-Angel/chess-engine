@@ -37,15 +37,15 @@ public class PieceLookup {
     return LOOKUP_TYPE.get(symbol);
   }
 
-  public static char getTypeSymbolFromPiece(PieceType pieceType) {
+  public static char getTypeSymbol(PieceType pieceType) {
     return LOOKUP_SYMBOL[pieceType.ordinal()];
   }
 
-  public static char getColorSymbolFromPiece(PieceType pieceType) {
+  public static char getColorSymbol(PieceType pieceType) {
     return isWhite(pieceType) ? 'w' : 'b';
   }
 
   public static String getPieceImagePath(PieceType pieceType) {
-    return "/pieces/" + getColorSymbolFromPiece(pieceType) + getTypeSymbolFromPiece(pieceType) + ".png";
+    return "/pieces/" + getColorSymbol(pieceType) + getTypeSymbol(pieceType) + ".png";
   }
 }
