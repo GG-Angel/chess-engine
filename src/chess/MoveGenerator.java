@@ -6,14 +6,13 @@ import static chess.Color.WHITE;
 import java.util.List;
 
 public class MoveGenerator {
-  public static long generatePawnMoves(List<Move> moves, Color color, long us, long them) {
+  public static long generatePawnMoves(List<Move> moves, Color color, long pawns, long them) {
     if (color == WHITE) {
-      System.out.println(bitboardToString(us));
-      long singlePush = us << 8;
+      System.out.println(bitboardToString(pawns));
+      long singlePush = pawns << 8;
       System.out.println(bitboardToString(singlePush));
-
-      System.out.println(Long.toBinaryString(us));
-      System.out.println(Long.toBinaryString(singlePush));
+    } else {
+      long singlePush = pawns >> 8;
     }
 
     return 0L;
