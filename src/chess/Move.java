@@ -1,21 +1,13 @@
 package chess;
 
-import static chess.Utilities.getRankAndFile;
-
-import java.util.Objects;
-
 public class Move {
   private final int from, to;
-  private final Piece promotion;
+  private final byte flags;
 
-  public Move(int from, int to) {
-    this(from, to, null);
-  }
-
-  public Move(int from, int to, Piece promotion) {
+  public Move(int from, int to, byte flags) {
     this.from = from;
     this.to = to;
-    this.promotion = promotion;
+    this.flags = flags;
   }
 
   public int getFrom() {
@@ -26,12 +18,20 @@ public class Move {
     return to;
   }
 
-  public Piece getPromotion() {
-    return Objects.requireNonNull(promotion, "Not a promotion move.");
+  public byte getFlags() {
+    return flags;
   }
+
+
 
   @Override
   public String toString() {
-    return String.format("%s%s", getRankAndFile(from), getRankAndFile(to));
+    return squareToString(from) + squareToString(to);
+  }
+
+  private String squareToString(int square) {
+    char file = (char) ('a' + (square % 8));
+    int rank = square / 8 + 1;
+    return "" + file + rank;
   }
 }

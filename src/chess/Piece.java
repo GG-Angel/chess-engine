@@ -1,16 +1,24 @@
 package chess;
 
 public enum Piece {
-  W_PAWN, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING,
-  B_PAWN, B_KNIGHT, B_BISHOP, B_ROOK, B_QUEEN, B_KING;
+  WHITE_PAWN,
+  WHITE_KNIGHT,
+  WHITE_BISHOP,
+  WHITE_ROOK,
+  WHITE_QUEEN,
+  WHITE_KING,
+  BLACK_PAWN,
+  BLACK_KNIGHT,
+  BLACK_BISHOP,
+  BLACK_ROOK,
+  BLACK_QUEEN,
+  BLACK_KING;
 
-  public final static int NUM_OF_PIECE_BITBOARDS = Piece.values().length;
-
-  public static Piece[] getAllPieceTypes() {
-    return Piece.values();
+  public static boolean isWhite(int piece) {
+    return piece >= WHITE_PAWN.ordinal() && piece <= WHITE_KING.ordinal();
   }
 
-  public static boolean isWhite(Piece pieceType) {
-    return pieceType.ordinal() < 6;
+  public static boolean isBlack(int piece) {
+    return piece >= BLACK_PAWN.ordinal() && piece <= BLACK_KING.ordinal();
   }
 }
