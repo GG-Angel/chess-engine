@@ -1,7 +1,8 @@
 package chess;
 
+
 public class Board {
-  public static int getSquare(int rank, int file) {
+  public static int toSquare(int rank, int file) {
     return rank * 8 + file;
   }
 
@@ -36,7 +37,7 @@ public class Board {
       } else {
         Piece type = Piece.fromChar(symbol);
         long bitboard = getPiecesByType(type);
-        int square = getSquare(rank, file);
+        int square = toSquare(rank, file);
         bitboards[type.index()] = bitboard | (1L << square);
         file++;
       }
@@ -67,8 +68,39 @@ public class Board {
     return ~getOccupied();
   }
 
+  private Piece[] getTypedBoard() {
+    Piece[] board = new Piece[64];
+    for (Piece pieceType : Piece.values()) {
+      long bitboard = getPiecesByType(pieceType);
+      while (bitboard != 0) {
+        int square = Long.numberOfTrailingZeros(bitboard); // get LSB index
+        board[square] = pieceType;
+        bitboard &= bitboard - 1; // remove LSB
+      }
+    }
+    return board;
+  }
+
   @Override
   public String toString() {
-    return "";
+    Piece[] board = getTypedBoard();
+    StringBuilder sb = new StringBuilder();
+    for (int rank = 0; rank < 8; rank++) {
+      for (int file = 0; file < 8; file++) {
+        int square = toSquare(rank, file);
+        Piece squarePiece = board[square];
+        if (squarePiece != null) {
+          sb.append(squarePiece.toChar());
+        } else {
+          sb.append("."); // empty space
+        }
+
+        if (file < 7) {
+          sb.append(" ");
+        }
+      }
+      sb.append("\n");
+    }
+    return sb.toString();
   }
 }
