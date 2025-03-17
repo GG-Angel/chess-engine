@@ -1,9 +1,11 @@
 package chess;
 
 
+import java.util.Arrays;
+
 public class Board {
   public static int toSquare(int rank, int file) {
-    return rank * 8 + file;
+    return (7 - rank) * 8 + file;
   }
 
   private final long[] bitboards;
@@ -36,15 +38,14 @@ public class Board {
         file += Character.getNumericValue(symbol);
       } else {
         Piece type = Piece.fromChar(symbol);
-        long bitboard = getPiecesByType(type);
         int square = toSquare(rank, file);
-        bitboards[type.index()] = bitboard | (1L << square);
+        bitboards[type.index()] |= (1L << square);
         file++;
       }
     }
   }
 
-  private long getPiecesByType(Piece type) {
+  public long getPiecesByType(Piece type) {
     return bitboards[type.index()];
   }
 
@@ -81,6 +82,25 @@ public class Board {
     return board;
   }
 
+  public static String bitboardToString(long bitboard) {
+    StringBuilder sb = new StringBuilder();
+    for (int rank = 0; rank < 8; rank++) {
+      for (int file = 0; file < 8; file++) {
+        int square = toSquare(rank, file);
+        long mask = (1L << square);
+        if ((bitboard & mask) != 0) {
+          sb.append('1');
+        } else {
+          sb.append('-');
+        }
+
+        if (file < 7) sb.append(" ");
+      }
+      sb.append('\n');
+    }
+    return sb.toString();
+  }
+
   @Override
   public String toString() {
     Piece[] board = getTypedBoard();
@@ -95,11 +115,9 @@ public class Board {
           sb.append("."); // empty space
         }
 
-        if (file < 7) {
-          sb.append(" ");
-        }
+        if (file < 7) sb.append(" ");
       }
-      sb.append("\n");
+      sb.append('\n');
     }
     return sb.toString();
   }
