@@ -1,12 +1,12 @@
 package chess;
 
-import static chess.PieceType.*;
+import static chess.Piece.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class PieceLookup {
-  private static final Map<Character, PieceType> LOOKUP_TYPE = new HashMap<>();
+  private static final Map<Character, Piece> LOOKUP_TYPE = new HashMap<>();
   private static final char[] LOOKUP_SYMBOL;
   private static final char[] LOOKUP_ASCII;
 
@@ -33,19 +33,19 @@ public class PieceLookup {
     LOOKUP_TYPE.put('k', B_KING);
   }
 
-  public static PieceType getPieceFromSymbol(char symbol) {
+  public static Piece getPieceFromSymbol(char symbol) {
     return LOOKUP_TYPE.get(symbol);
   }
 
-  public static char getTypeSymbol(PieceType pieceType) {
+  public static char getTypeSymbol(Piece pieceType) {
     return LOOKUP_SYMBOL[pieceType.ordinal()];
   }
 
-  public static char getColorSymbol(PieceType pieceType) {
+  public static char getColorSymbol(Piece pieceType) {
     return isWhite(pieceType) ? 'w' : 'b';
   }
 
-  public static String getPieceImagePath(PieceType pieceType) {
+  public static String getPieceImagePath(Piece pieceType) {
     return "/pieces/" + getColorSymbol(pieceType) + getTypeSymbol(pieceType) + ".png";
   }
 }

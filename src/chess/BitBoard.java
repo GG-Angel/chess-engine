@@ -27,7 +27,7 @@ public class BitBoard {
         if (hasPieceAtBit(bitboard, square)) {
           sbBoard.append("1");
         } else {
-          sbBoard.append("_");
+          sbBoard.append("-");
         }
         if (file < 7) {
           sbBoard.append(' ');
