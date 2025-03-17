@@ -1,8 +1,10 @@
 package chess;
 
-import static chess.Utilities.toSquarePosition;
-
 public class Board {
+  public static int getSquare(int rank, int file) {
+    return rank * 8 + file;
+  }
+
   private final long[] bitboards;
 
   public Board() {
@@ -33,18 +35,40 @@ public class Board {
         file += Character.getNumericValue(symbol);
       } else {
         Piece type = Piece.fromChar(symbol);
-        long bitboard = getPieces(type);
-
-//        Piece type = getPieceFromSymbol(symbol);
-//        long bitboard = getBitboardPiece(pieceType);
-//        int square = toSquarePosition(rank, file);
-//        bitboardPieces[pieceType.ordinal()] = setBit(bitboard, square);
+        long bitboard = getPiecesByType(type);
+        int square = getSquare(rank, file);
+        bitboards[type.index()] = bitboard | (1L << square);
         file++;
       }
     }
   }
 
-  private long getPieces(Piece type) {
+  private long getPiecesByType(Piece type) {
     return bitboards[type.index()];
+  }
+
+  private long getPiecesByColor(Color color) {
+    long pieces = 0L;
+    for (int i = 0; i < 6; i++) {
+      pieces |= bitboards[color.startIndex() + i];
+    }
+    return pieces;
+  }
+
+  private long getOccupied() {
+    long occupied = 0L;
+    for (long bitboard : bitboards) {
+      occupied |= bitboard;
+    }
+    return occupied;
+  }
+
+  private long getEmpty() {
+    return ~getOccupied();
+  }
+
+  @Override
+  public String toString() {
+    return "";
   }
 }
