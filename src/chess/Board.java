@@ -49,7 +49,7 @@ public class Board {
     return bitboards[type.index()];
   }
 
-  private long getPiecesByColor(Color color) {
+  public long getPiecesByColor(Color color) {
     long pieces = 0L;
     for (int i = 0; i < 6; i++) {
       pieces |= bitboards[color.startIndex() + i];
@@ -57,7 +57,7 @@ public class Board {
     return pieces;
   }
 
-  private long getOccupied() {
+  public long getOccupied() {
     long occupied = 0L;
     for (long bitboard : bitboards) {
       occupied |= bitboard;
@@ -65,7 +65,7 @@ public class Board {
     return occupied;
   }
 
-  private long getEmpty() {
+  public long getEmpty() {
     return ~getOccupied();
   }
 

@@ -1,26 +1,6 @@
 package chess;
 
-public class Move {
-  private final int from, to;
-  private final byte flags;
-
-  public Move(int from, int to, byte flags) {
-    this.from = from;
-    this.to = to;
-    this.flags = flags;
-  }
-
-  public int getFrom() {
-    return from;
-  }
-
-  public int getTo() {
-    return to;
-  }
-
-  public byte getFlags() {
-    return flags;
-  }
+public record Move(int from, int to, byte flags) {
 
   @Override
   public String toString() {

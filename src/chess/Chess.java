@@ -26,9 +26,9 @@ public class Chess {
   }
 
   public static void main(String[] args) {
-    Board board = new Board();
-    MoveGenerator.generatePawnMoves(new ArrayList<>(), Color.WHITE, board.getPiecesByType(Piece.WHITE_PAWN), board.getPiecesByType(Piece.BLACK_PAWN));
-
-    printBitboard(rank8);
+    Board board = new Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -");
+    System.out.println(board);
+    MoveGenerator.generatePawnMoves(new ArrayList<>(), Color.WHITE, board.getPiecesByType(Piece.WHITE_PAWN), board.getPiecesByColor(Color.BLACK), board.getOccupied());
+    MoveGenerator.generatePawnMoves(new ArrayList<>(), Color.BLACK, board.getPiecesByType(Piece.BLACK_PAWN), board.getPiecesByColor(Color.WHITE), board.getOccupied());
   }
 }
