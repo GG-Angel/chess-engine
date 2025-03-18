@@ -1,11 +1,8 @@
 package chess;
 
-import static chess.Masks.fileA;
-import static chess.Masks.fileAB;
-import static chess.Masks.fileGH;
-import static chess.Masks.fileH;
-import static chess.Masks.rank1;
-import static chess.Masks.rank8;
+import static chess.Board.bitboardToString;
+import static chess.Masks.knightMask;
+import static chess.MoveGenerator.generateKnightMoves;
 import static chess.MoveGenerator.generatePawnMoves;
 
 import java.util.ArrayList;
@@ -33,7 +30,18 @@ public class Chess {
 
     List<Move> moves = new ArrayList<>();
 //    generatePawnMoves(moves, Color.WHITE, board.getPiecesByType(Piece.WHITE_PAWN), board.getPiecesByColor(Color.BLACK), board.getOccupied());
-    generatePawnMoves(moves, Color.BLACK, board.getPiecesByType(Piece.BLACK_PAWN), board.getPiecesByColor(Color.WHITE), board.getOccupied());
-    System.out.println(moves);
+//    System.out.println("WHITE: " + moves);
+//
+//    moves.clear();
+//    generatePawnMoves(moves, Color.BLACK, board.getPiecesByType(Piece.BLACK_PAWN), board.getPiecesByColor(Color.WHITE), board.getOccupied());
+//    System.out.println("BLACK: " + moves);
+
+    moves.clear();
+    generateKnightMoves(moves, board.getPiecesByType(Piece.WHITE_KNIGHT), board.getPiecesByColor(Color.WHITE), board.getPiecesByColor(Color.BLACK));
+    System.out.println("WHITE: " + moves);
+
+    moves.clear();
+    generateKnightMoves(moves, board.getPiecesByType(Piece.BLACK_KNIGHT), board.getPiecesByColor(Color.BLACK), board.getPiecesByColor(Color.WHITE));
+    System.out.println("BLACK: " + moves);
   }
 }
