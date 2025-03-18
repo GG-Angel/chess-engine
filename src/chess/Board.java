@@ -106,6 +106,7 @@ public class Board {
     Piece[] board = getTypedBoard();
     StringBuilder sb = new StringBuilder();
     for (int rank = 0; rank < 8; rank++) {
+      sb.append((8 - rank)).append(" | ");
       for (int file = 0; file < 8; file++) {
         int square = toSquare(rank, file);
         Piece squarePiece = board[square];
@@ -119,6 +120,7 @@ public class Board {
       }
       sb.append('\n');
     }
+    sb.append("   ————————————————\n").append("    A B C D E F G H");
     return sb.toString();
   }
 }

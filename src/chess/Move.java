@@ -1,6 +1,6 @@
 package chess;
 
-public record Move(int from, int to, byte flags) {
+public record Move(int from, int to, MoveType type) {
 
   @Override
   public String toString() {

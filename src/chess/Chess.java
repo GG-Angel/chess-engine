@@ -6,8 +6,10 @@ import static chess.Masks.fileGH;
 import static chess.Masks.fileH;
 import static chess.Masks.rank1;
 import static chess.Masks.rank8;
+import static chess.MoveGenerator.generatePawnMoves;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Chess {
   public static void printBitboard(long bitboard) {
@@ -28,7 +30,10 @@ public class Chess {
   public static void main(String[] args) {
     Board board = new Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -");
     System.out.println(board);
-    MoveGenerator.generatePawnMoves(new ArrayList<>(), Color.WHITE, board.getPiecesByType(Piece.WHITE_PAWN), board.getPiecesByColor(Color.BLACK), board.getOccupied());
-    MoveGenerator.generatePawnMoves(new ArrayList<>(), Color.BLACK, board.getPiecesByType(Piece.BLACK_PAWN), board.getPiecesByColor(Color.WHITE), board.getOccupied());
+
+    List<Move> moves = new ArrayList<>();
+//    generatePawnMoves(moves, Color.WHITE, board.getPiecesByType(Piece.WHITE_PAWN), board.getPiecesByColor(Color.BLACK), board.getOccupied());
+    generatePawnMoves(moves, Color.BLACK, board.getPiecesByType(Piece.BLACK_PAWN), board.getPiecesByColor(Color.WHITE), board.getOccupied());
+    System.out.println(moves);
   }
 }
