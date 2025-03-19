@@ -16,13 +16,12 @@ import static chess.MoveType.DOUBLE_PAWN_PUSH;
 import static chess.MoveType.PromotionCaptures;
 import static chess.MoveType.Promotions;
 import static chess.MoveType.QUIET;
+import static java.lang.Long.reverse;
 
 import java.util.List;
 
 public class MoveGenerator {
-  public static void generatePawnMoves(List<Move> moves, Color color, long pawns, long them, long occupied) {
-    long empty = ~occupied;
-
+  public static void generatePawnMoves(List<Move> moves, Color color, long pawns, long them, long empty) {
     if (color == WHITE) {
       addPawnMoves(moves, pawns, empty, ~rank8, 8, QUIET);
       addPawnMoves(moves, pawns, empty & (empty << 8), rank4, 16, DOUBLE_PAWN_PUSH);
@@ -32,9 +31,7 @@ public class MoveGenerator {
       addPromotionMoves(moves, pawns, empty, rank8, 8, Promotions);
       addPromotionMoves(moves, pawns, them, rank8 & ~fileH, 9, PromotionCaptures);
       addPromotionMoves(moves, pawns, them, rank8 & ~fileA, 7, PromotionCaptures);
-    }
-
-    else {
+    } else {
       addPawnMoves(moves, pawns, empty, ~rank1, -8, QUIET);
       addPawnMoves(moves, pawns, empty & (empty >> 8), rank5, -16, DOUBLE_PAWN_PUSH);
       addPawnMoves(moves, pawns, them, ~(rank1 | fileH), -9, CAPTURE);
@@ -75,10 +72,10 @@ public class MoveGenerator {
 
   public static void generateKnightMoves(List<Move> moves, long knights, long us, long them) {
     // isolate knight
-    long k = knights & -knights;
+    long knight = knights & -knights;
 
-    while (k != 0) {
-      int knightSquare = Long.numberOfTrailingZeros(k);
+    while (knight != 0) {
+      int knightSquare = Long.numberOfTrailingZeros(knight);
 
       // apply move mask to knight position
       long moveBitboard;
@@ -95,7 +92,7 @@ public class MoveGenerator {
         moveBitboard &= ~fileGH;
       }
 
-      // remove moves to friendly pieces
+      // remove captures of friendly pieces
       moveBitboard &= ~us;
 
       // create moves
@@ -107,14 +104,45 @@ public class MoveGenerator {
       }
 
       // isolate next available knight
-      knights = knights & ~k;
-      k = knights & -knights;
+      knights = knights & ~knight;
+      knight = knights & -knights;
     }
   }
 
-  public static void generateRookMoves(List<Move> moves, long rooks, long us, long them, long occupied) {
-    // occ - bits of the rank occupied by rook
-    // s - rook position
-    // 
+  public static void generateRookMoves(List<Move> moves, long rooks, long us, long them) {
+    long occupied = us | them;
+    while (rooks != 0) {
+      int rookSquare = Long.numberOfTrailingZeros(rooks);
+      long rook = 1L << rookSquare;
+
+      // generate horizontal moves
+      long rankMask = 0xFFL << (rookSquare / 8 * 8);
+      long left = (occupied & rankMask) - (2 * rook);
+      long right = reverse(reverse(occupied & rankMask) - (2 * reverse(rook)));
+      long horizontalMovesBitboard = (left ^ right) & rankMask;
+
+      // generate vertical moves
+      long fileMask = 0x0101010101010101L << (rookSquare % 8);
+      long up = (occupied & fileMask) - (2 * rook);
+      long down = reverse(reverse(occupied & fileMask) - (2 * reverse(rook)));
+      long verticalMovesBitboard = (up ^ down) & fileMask;
+
+      // combine
+      long movesBitboard = horizontalMovesBitboard | verticalMovesBitboard;
+
+      // remove captures of friendly pieces
+      movesBitboard &= ~(us);
+
+      // create moves for this rook
+      while (movesBitboard != 0) {
+        int rookTarget = Long.numberOfTrailingZeros(movesBitboard);
+        MoveType moveType = (them & (1L << rookTarget)) != 0 ? CAPTURE : QUIET;
+        moves.add(new Move(rookSquare, rookTarget, moveType));
+        movesBitboard &= movesBitboard - 1;
+      }
+
+      // move onto the next rook
+      rooks &= rooks - 1;
+    }
   }
 }

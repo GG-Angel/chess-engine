@@ -4,6 +4,7 @@ import static chess.Board.bitboardToString;
 import static chess.Masks.knightMask;
 import static chess.MoveGenerator.generateKnightMoves;
 import static chess.MoveGenerator.generatePawnMoves;
+import static chess.MoveGenerator.generateRookMoves;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,19 +30,12 @@ public class Chess {
     System.out.println(board);
 
     List<Move> moves = new ArrayList<>();
-//    generatePawnMoves(moves, Color.WHITE, board.getPiecesByType(Piece.WHITE_PAWN), board.getPiecesByColor(Color.BLACK), board.getOccupied());
-//    System.out.println("WHITE: " + moves);
-//
-//    moves.clear();
-//    generatePawnMoves(moves, Color.BLACK, board.getPiecesByType(Piece.BLACK_PAWN), board.getPiecesByColor(Color.WHITE), board.getOccupied());
-//    System.out.println("BLACK: " + moves);
 
-    moves.clear();
-    generateKnightMoves(moves, board.getPiecesByType(Piece.WHITE_KNIGHT), board.getPiecesByColor(Color.WHITE), board.getPiecesByColor(Color.BLACK));
+    generateRookMoves(moves, board.getPiecesByType(Piece.WHITE_ROOK), board.getPiecesByColor(Color.WHITE), board.getPiecesByColor(Color.BLACK));
     System.out.println("WHITE: " + moves);
 
     moves.clear();
-    generateKnightMoves(moves, board.getPiecesByType(Piece.BLACK_KNIGHT), board.getPiecesByColor(Color.BLACK), board.getPiecesByColor(Color.WHITE));
+    generateRookMoves(moves, board.getPiecesByType(Piece.BLACK_ROOK), board.getPiecesByColor(Color.BLACK), board.getPiecesByColor(Color.WHITE));
     System.out.println("BLACK: " + moves);
   }
 }
