@@ -1,16 +1,57 @@
 package chess;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum Piece {
-  W_PAWN, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING,
-  B_PAWN, B_KNIGHT, B_BISHOP, B_ROOK, B_QUEEN, B_KING;
+  WHITE_PAWN   ('P', 0),
+  WHITE_KNIGHT ('N', 1),
+  WHITE_BISHOP ('B', 2),
+  WHITE_ROOK   ('R', 3),
+  WHITE_QUEEN  ('Q', 4),
+  WHITE_KING   ('K', 5),
+  BLACK_PAWN   ('p', 6),
+  BLACK_KNIGHT ('n', 7),
+  BLACK_BISHOP ('b', 8),
+  BLACK_ROOK   ('r', 9),
+  BLACK_QUEEN  ('q', 10),
+  BLACK_KING   ('k', 11);
 
-  public final static int NUM_OF_PIECE_BITBOARDS = Piece.values().length;
+  private final char symbol;
+  private final int index;
 
-  public static Piece[] getAllPieceTypes() {
-    return Piece.values();
+  private static final Map<Character, Piece> symbolToPiece = new HashMap<>();
+  private static final Map<Piece, Character> pieceToSymbol = new HashMap<>();
+
+  Piece(char symbol, int index) {
+    this.symbol = symbol;
+    this.index = index;
   }
 
-  public static boolean isWhite(Piece pieceType) {
-    return pieceType.ordinal() < 6;
+  static {
+    for (Piece piece : values()) {
+      symbolToPiece.put(piece.symbol, piece);
+      pieceToSymbol.put(piece, piece.symbol);
+    }
+  }
+
+  public static Piece fromChar(char symbol) {
+    return symbolToPiece.get(symbol);
+  }
+
+  public char toChar() {
+    return pieceToSymbol.get(this);
+  }
+
+  public int index() {
+    return index;
+  }
+
+  public static boolean isWhite(int piece) {
+    return piece >= WHITE_PAWN.ordinal() && piece <= WHITE_KING.ordinal();
+  }
+
+  public static boolean isBlack(int piece) {
+    return piece >= BLACK_PAWN.ordinal() && piece <= BLACK_KING.ordinal();
   }
 }
