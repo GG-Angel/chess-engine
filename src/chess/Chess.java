@@ -4,6 +4,7 @@ import static chess.Board.bitboardToString;
 import static chess.Masks.kingMask;
 import static chess.MoveGenerator.generateBishopMoves;
 import static chess.MoveGenerator.generateCastlingMoves;
+import static chess.MoveGenerator.generateEnPassant;
 import static chess.MoveGenerator.generateKingMoves;
 import static chess.MoveGenerator.generateKnightMoves;
 import static chess.MoveGenerator.generatePawnMoves;
@@ -18,7 +19,8 @@ public class Chess {
   public static void main(String[] args) {
     long start = System.nanoTime();
 
-    Board board = new Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -");
+//    Board board = new Board("rnbqkbnr/pppp1ppp/8/8/3Pp3/2N4P/PPP1PPP1/R1BQKBNR b KQkq d3 0 3");
+    Board board = new Board("r1bqkbnr/ppp1pppp/2n5/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
     System.out.println(board);
 
     List<Move> moves = new ArrayList<>();
@@ -77,8 +79,6 @@ public class Chess {
         board.getPiecesByType(Piece.BLACK_KING)
     );
 
-    System.out.println(board);
-
     System.out.println("King:");
     moves.clear();
     generateKingMoves(
@@ -100,8 +100,13 @@ public class Chess {
     );
     System.out.println("WHITE: " + moves);
 
-    long end = System.nanoTime();
+    moves.clear();
+    long epFileMask = board.getEnPasssantFileMask();
+//    generateEnPassant(moves, Color.WHITE, board.getPiecesByType(Piece.WHITE_PAWN), board.getPiecesByType(Piece.BLACK_PAWN), epFileMask);
+    generateEnPassant(moves, Color.BLACK, board.getPiecesByType(Piece.BLACK_PAWN), board.getPiecesByType(Piece.WHITE_PAWN), epFileMask);
+    System.out.println("En Passant? " + moves);
 
+    long end = System.nanoTime();
     System.out.println(((end - start) / 1000000.0)+ " ms");
   }
 }

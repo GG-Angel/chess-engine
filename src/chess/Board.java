@@ -3,16 +3,26 @@ package chess;
 
 import static chess.Color.BLACK;
 import static chess.Color.WHITE;
+import static chess.Masks.fileA;
+import static chess.MoveType.DOUBLE_PAWN_PUSH;
 
 import java.util.Arrays;
+import java.util.Stack;
 
 public class Board {
   public static int toSquare(int rank, int file) {
     return rank * 8 + file;
   }
 
+  // bitboards
   private final long[] bitboards;
   private long whitePieces, blackPieces;
+
+  // progression trackers
+  private final Stack<Move> previousMoves;
+
+  // state booleans
+  private boolean whiteToMove;
   private boolean castleWK, castleWQ, castleBK, castleBQ;
 
   public Board() {
@@ -21,6 +31,7 @@ public class Board {
 
   public Board(String fen) {
     this.bitboards = new long[Piece.values().length];
+    this.previousMoves = new Stack<>();
     loadPosition(fen);
   }
 
@@ -51,6 +62,9 @@ public class Board {
     whitePieces = refreshColorPieces(WHITE);
     blackPieces = refreshColorPieces(BLACK);
 
+    // set color to move
+    whiteToMove = fenParams[1].equals("w");
+
     // set castling privileges
     char[] fenCastling = fenParams[2].toCharArray();
     for (char symbol : fenCastling) {
@@ -59,6 +73,19 @@ public class Board {
         case 'Q' -> castleWQ = true;
         case 'k' -> castleBK = true;
         case 'q' -> castleBQ = true;
+      }
+    }
+
+    // log previous en passant move (if present)
+    String enPassantTarget = fenParams[3];
+    if (!enPassantTarget.equals("-")) {
+      int epFile = enPassantTarget.charAt(0) - 'a';
+      int epRank = enPassantTarget.charAt(1) - '1';
+      int epSquare = toSquare(epRank, epFile); // has the square behind the pawn (indexed at 0)
+      switch (epRank) {
+        case 2 -> previousMoves.push(new Move(epSquare - 8, epSquare + 8, DOUBLE_PAWN_PUSH)); // white
+        case 5 -> previousMoves.push(new Move(epSquare + 8, epSquare - 8, DOUBLE_PAWN_PUSH)); // black
+        default -> throw new IllegalArgumentException("Invalid en passant target.");
       }
     }
   }
@@ -85,6 +112,17 @@ public class Board {
       pieces |= bitboards[color.startIndex() + i];
     }
     return pieces;
+  }
+
+  public long getEnPasssantFileMask() {
+    Move lastMove = previousMoves.peek();
+
+    if (lastMove == null || lastMove.type() != DOUBLE_PAWN_PUSH) {
+      return 0; // en passant not possible
+    }
+
+    // return a mask of the file that the pawn resides on
+    return fileA << (lastMove.to() % 8);
   }
 
   private Piece[] getTypedBoard() {
