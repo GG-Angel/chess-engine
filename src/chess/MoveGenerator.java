@@ -1,9 +1,8 @@
 package chess;
 
-import static chess.Board.bitboardToString;
 import static chess.Color.WHITE;
-import static chess.Masks.bishopRightMasks;
-import static chess.Masks.bishopLeftMasks;
+import static chess.Masks.diagonalRightMasks;
+import static chess.Masks.diagonalLeftMasks;
 import static chess.Masks.fileA;
 import static chess.Masks.fileAB;
 import static chess.Masks.fileGH;
@@ -13,8 +12,8 @@ import static chess.Masks.rank1;
 import static chess.Masks.rank4;
 import static chess.Masks.rank5;
 import static chess.Masks.rank8;
-import static chess.Masks.rookFileMasks;
-import static chess.Masks.rookRankMasks;
+import static chess.Masks.fileMasks;
+import static chess.Masks.rankMasks;
 import static chess.MoveType.CAPTURE;
 import static chess.MoveType.DOUBLE_PAWN_PUSH;
 import static chess.MoveType.PromotionCaptures;
@@ -47,7 +46,6 @@ public class MoveGenerator {
     }
   }
 
-
   private static void addPawnMoves(List<Move> moves, long pawns, long targets, long mask, int shift, MoveType moveType) {
     long moveBitboard = shiftPawnBitboard(pawns, shift) & targets & mask;
     while (moveBitboard != 0) {
@@ -74,117 +72,104 @@ public class MoveGenerator {
     return amount >= 0 ? (bitboard << amount) : (bitboard >> -amount);
   }
 
-  public static void generateKnightMoves(List<Move> moves, long knights, long us, long them) {
+  public static void generateKnightMoves(List<Move> moves, long knights, long friendly, long enemy) {
     // isolate knight
     long knight = knights & -knights;
 
     while (knight != 0) {
       int knightSquare = Long.numberOfTrailingZeros(knight);
+      long knightMoves;
 
       // apply move mask to knight position
-      long moveBitboard;
       if (knightSquare > 18) {
-        moveBitboard = knightMask << (knightSquare - 18);
+        knightMoves = knightMask << (knightSquare - 18);
       } else {
-        moveBitboard = knightMask >> (18 - knightSquare);
+        knightMoves = knightMask >> (18 - knightSquare);
       }
 
-      // ensure moves do not wrap around board
-      if (knightSquare % 8 < 4) {
-        moveBitboard &= ~fileAB;
-      } else {
-        moveBitboard &= ~fileGH;
-      }
+      // ensure moves do not wrap around the board
+      knightMoves &= (knightSquare % 8 < 4) ? ~fileAB : ~fileGH;
 
       // remove captures of friendly pieces
-      moveBitboard &= ~us;
+      knightMoves &= ~friendly;
 
-      // create moves
-      while (moveBitboard != 0) {
-        int knightTarget = Long.numberOfTrailingZeros(moveBitboard);
-        MoveType moveType = (them & (1L << knightTarget)) != 0 ? CAPTURE : QUIET;
-        moves.add(new Move(knightSquare, knightTarget, moveType));
-        moveBitboard &= moveBitboard - 1;
-      }
+      createMovesFromBitboard(moves, knightMoves, knightSquare, enemy);
 
-      // isolate next available knight
+      // isolate next knight
       knights = knights & ~knight;
       knight = knights & -knights;
     }
   }
 
-  public static void generateRookMoves(List<Move> moves, long rooks, long us, long them) {
-    long occupied = us | them;
+  public static void generateQueenMoves(List<Move> moves, long queens, long friendly, long enemy) {
+    generateRookMoves(moves, queens, friendly, enemy);
+    generateBishopMoves(moves, queens, friendly, enemy);
+  }
+
+  public static void generateRookMoves(List<Move> moves, long rooks, long friendly, long enemy) {
+    long occupied = friendly | enemy;
     while (rooks != 0) {
       int rookSquare = Long.numberOfTrailingZeros(rooks);
       long rook = 1L << rookSquare;
 
-//      // generate horizontal moves
-//      long rankMask = 0xFFL << (rookSquare / 8 * 8);
-//      long horizontalMoves = generateSlidingMoveBitboard(rook, occupied, rankMask);
-//
-//      // generate vertical moves
-//      long fileMask = 0x0101010101010101L << (rookSquare % 8);
-//      long verticalMoves = generateSlidingMoveBitboard(rook, occupied, fileMask);
+      long straightMoves = generateStraightMoves(rook, occupied, rookSquare);
+      long rookMoves = straightMoves & ~friendly;
 
-      long rankMask = rookRankMasks[rookSquare];
-      long fileMask = rookFileMasks[rookSquare];
-
-      long rankMoves = generateSlidingMoveBitboard(rook, occupied, rankMask);
-      long fileMoves = generateSlidingMoveBitboard(rook, occupied, fileMask);
-
-      // get combined moves without friendly captures
-      long rookMoves = (rankMoves | fileMoves) & ~us;
-
-      // create moves for this rook
-      while (rookMoves != 0) {
-        int rookTarget = Long.numberOfTrailingZeros(rookMoves);
-        MoveType moveType = (them & (1L << rookTarget)) != 0 ? CAPTURE : QUIET;
-        moves.add(new Move(rookSquare, rookTarget, moveType));
-        rookMoves &= rookMoves - 1;
-      }
-
-      // move onto the next rook
+      createMovesFromBitboard(moves, rookMoves, rookSquare, enemy);
       rooks &= rooks - 1;
     }
   }
 
-  public static void generateBishopMoves(List<Move> moves, long bishops, long us, long them) {
-    long occupied = us | them;
+  public static void generateBishopMoves(List<Move> moves, long bishops, long friendly, long enemy) {
+    long occupied = friendly | enemy;
     while (bishops != 0) {
       int bishopSquare = Long.numberOfTrailingZeros(bishops);
       long bishop = 1L << bishopSquare;
 
-      // generate diagonal moves
-      long bishopLeftMask = bishopLeftMasks[bishopSquare];
-      long bishopRightMask = bishopRightMasks[bishopSquare];
-      long rightMoves = generateSlidingMoveBitboard(bishop, occupied, bishopLeftMask);
-      long leftMoves = generateSlidingMoveBitboard(bishop, occupied, bishopRightMask);
+      long diagonalMoves = generateDiagonalMoves(bishop, occupied, bishopSquare);
+      long bishopMoves = diagonalMoves & ~friendly;
 
-      // get combined moves without friendly piece captures
-      long allMoves = (leftMoves | rightMoves) & ~us;
-
-      // create moves for this bishop
-      while (allMoves != 0) {
-        int bishopTarget = Long.numberOfTrailingZeros(allMoves);
-        MoveType moveType = (them & (1L << bishopTarget)) != 0 ? CAPTURE : QUIET;
-        moves.add(new Move(bishopSquare, bishopTarget, moveType));
-        allMoves &= allMoves - 1; // Remove the least significant bit
-      }
-
-      // Remove the current bishop from the bitboard
+      createMovesFromBitboard(moves, bishopMoves, bishopSquare, enemy);
       bishops &= bishops - 1;
     }
   }
 
-  private static long generateSlidingMoveBitboard(long piece, long occupied, long mask) {
+  private static long generateStraightMoves(long piece, long occupied, int square) {
+    long rankMask = rankMasks[square];
+    long fileMask = fileMasks[square];
+
+    long rankMoves = calculateSlidingMoves(piece, occupied, rankMask);
+    long fileMoves = calculateSlidingMoves(piece, occupied, fileMask);
+
+    return rankMoves | fileMoves;
+  }
+
+  private static long generateDiagonalMoves(long piece, long occupied, int square) {
+    long leftMask = diagonalLeftMasks[square];
+    long rightMask = diagonalRightMasks[square];
+
+    long leftMoves = calculateSlidingMoves(piece, occupied, rightMask);
+    long rightMoves = calculateSlidingMoves(piece, occupied, leftMask);
+
+    return leftMoves | rightMoves;
+  }
+
+  // hyperbola quintessence :D
+  private static long calculateSlidingMoves(long piece, long occupied, long mask) {
     long m0 = (occupied & mask) - (2 * piece);
     long m1 = reverse(reverse(occupied & mask) - (2 * reverse(piece)));
     return (m0 ^ m1) & mask;
   }
 
-  // TODO: Bishop
-  // TODO: Queen
+  private static void createMovesFromBitboard(List<Move> moves, long movesBitboard, int pieceSquare, long enemy) {
+    while (movesBitboard != 0) {
+      int bishopTarget = Long.numberOfTrailingZeros(movesBitboard);
+      MoveType moveType = (enemy & (1L << bishopTarget)) != 0 ? CAPTURE : QUIET;
+      moves.add(new Move(pieceSquare, bishopTarget, moveType));
+      movesBitboard &= movesBitboard - 1;
+    }
+  }
+
   // TODO: En passant
   // TODO: Castling
   // TODO: King moves

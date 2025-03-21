@@ -1,6 +1,5 @@
 package chess;
 
-import static chess.Board.bitboardToString;
 import static chess.MoveGenerator.generateBishopMoves;
 import static chess.MoveGenerator.generateRookMoves;
 
