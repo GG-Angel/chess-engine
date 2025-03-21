@@ -15,6 +15,7 @@ public class Masks {
 
   public static final long knightMask = 0xa1100110aL;
 
+  // access by piece square for corresponding mask
   public static final long[] fileMasks = new long[64]; // files
   public static final long[] rankMasks = new long[64]; // ranks
   public static final long[] diagonalLeftMasks = new long[64];  // northwest-southeast

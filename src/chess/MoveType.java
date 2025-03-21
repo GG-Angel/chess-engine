@@ -24,13 +24,13 @@ public enum MoveType {
       KNIGHT_PROMO_CAPTURE, BISHOP_PROMO_CAPTURE, ROOK_PROMO_CAPTURE, QUEEN_PROMO_CAPTURE
   };
 
-  private final byte code;
+  private final int code;
 
   MoveType(int code) {
-    this.code = (byte) code;
+    this.code = code;
   }
 
-  public byte code() {
+  public int code() {
     return code;
   }
 }
