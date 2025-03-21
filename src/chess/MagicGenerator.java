@@ -13,137 +13,137 @@ import java.util.Random;
 public class MagicGenerator {
   // magic numbers generated
   private static final long[] ROOK_MAGICS = {
-      0x2008011010000042L,
-      0x35a80004d02001L,
-      0x112801a12000028L,
-      0x4002700100404L,
-      0x51404108400200L,
-      0x400002210000000L,
-      0x20054082000000L,
-      0x8050065040050000L,
-      0x202003080011000L,
-      0x481000404200901L,
-      0xa88000a4c30c000L,
-      0x6445000000200411L,
-      0x10420004100a140L,
-      0x40840c0100c04a00L,
-      0x426200400410a015L,
-      0x400289001202180L,
-      0x4000020502c11420L,
-      0xc000181000038020L,
-      0x8186901a20040L,
-      0x808000000904210L,
-      0x20009a000L,
-      0x9180000060240L,
-      0x80c00000a4044104L,
-      0x402200200001800L,
-      0x221800010420002L,
-      0xc60050006100002L,
-      0x9021000400500080L,
-      0x8010048200L,
-      0x9800001140104L,
-      0x4020224000080d08L,
-      0xc400001000100810L,
-      0x1004000286000080L,
-      0x8000200204100L,
-      0xa220088000054060L,
-      0x22000200c0080010L,
-      0x1800000040802805L,
-      0x500100800adL,
-      0x10144000c7002180L,
-      0x8a003800059001L,
-      0x580008508a000104L,
-      0x1000408400048000L,
-      0x4101281040000L,
-      0x908000000c003L,
-      0x420200004121008L,
-      0x50110210040014L,
-      0x2000042820442050L,
-      0x430008308200920L,
-      0x10404a0000048040L,
-      0x4000020011002050L,
-      0x1081010809490050L,
-      0x44d405a000028020L,
-      0x5201420880004010L,
-      0x80040081030cL,
-      0x24209080e0404800L,
-      0x222200400000800L,
-      0x20111202008L,
-      0x100000010110040cL,
-      0x901081100054000L,
-      0x202800122080120L,
-      0x200010014120544L,
-      0x80002901101003L,
-      0x902000041198060L,
-      0xc0010000000125L,
-      0x4008808842304000L,
+      0x2012100088680c08L,
+      0x400004c0004a20L,
+      0x3502280002010080L,
+      0x431800000205021L,
+      0x8080060400000000L,
+      0x4400100209002cc4L,
+      0x1000200208094084L,
+      0x80403100000801L,
+      0x12000300000020L,
+      0x114000060020L,
+      0x1410040240050000L,
+      0x44200850281000L,
+      0x41110280100a02L,
+      0x102204041c000L,
+      0x8011000202020080L,
+      0x580802008400100L,
+      0x4000200902000004L,
+      0x111014c00003140L,
+      0x24a4e04081500080L,
+      0x2810050110000100L,
+      0x42220000040001L,
+      0x328500024a6d009L,
+      0x910604020000100L,
+      0x8004400000b8L,
+      0x20010000641c0c48L,
+      0x24b000002210000L,
+      0x520201002049000L,
+      0x41001890028080L,
+      0x84050020000204c0L,
+      0x29000c4102000230L,
+      0x144300006020L,
+      0x10800888480446ccL,
+      0x20ea0004801af4L,
+      0x204b090004408L,
+      0x150040000200809L,
+      0x1190020c20400002L,
+      0x6034804002100L,
+      0x40004000000d8800L,
+      0x1020300008000200L,
+      0x1001000024b0008cL,
+      0x9a0000410002e40L,
+      0x4000820620000c28L,
+      0x2850000008009204L,
+      0xc18030890050082L,
+      0x8408000080830040L,
+      0x840060040020384L,
+      0x23001288300a688L,
+      0x16004920000L,
+      0x1080a0824400100L,
+      0x42181c0443029884L,
+      0x20011411058800L,
+      0x5000228102040800L,
+      0x80086040858L,
+      0xc000100000102080L,
+      0x140282014000L,
+      0x48800520001L,
+      0x4010098000021L,
+      0x1c10b2144004400L,
+      0x1045008010660000L,
+      0xc001000400421800L,
+      0x8030100843042000L,
+      0x100001841c40800aL,
+      0x2081400000408001L,
+      0x900440022001c018L,
   };
 
   private static final long[] BISHOP_MAGICS = {
-      0x418881380a0000L,
-      0x10a00090a0810L,
-      0x8060101088240012L,
-      0x2036020204341240L,
-      0x804050200040500L,
-      0x880c0182041810L,
-      0x8000c4404042104L,
-      0x244010048620000L,
-      0x2002a0800008810L,
-      0x80010100b0071000L,
-      0xc0040042008c000L,
-      0x8000d200005a1843L,
-      0x220980000920L,
-      0x20a1009081040400L,
-      0x8460181210L,
-      0x8000080820301980L,
-      0x440400228024b800L,
-      0x48140001202520L,
-      0x108a880000013080L,
-      0x10000e5008c0220L,
-      0x22224000820000L,
-      0x4323102ac80056L,
-      0xc004000149088000L,
-      0x401204014040a20cL,
-      0x14c01001428400L,
-      0x40041210a05028aL,
-      0x8000000008224448L,
-      0x944102000080008L,
-      0xa4140000021008c7L,
-      0x220604020010L,
-      0x5100000411188251L,
-      0x10020c408020080L,
-      0x350050c02a0040L,
-      0x16327801060c188L,
-      0x805d000100088400L,
-      0x9000000002018c00L,
-      0x4301000428122000L,
-      0x240040500038444L,
-      0x2204805423012221L,
-      0x10201004b0022010L,
-      0x80039041010012L,
-      0x9c00015840042800L,
-      0x4a1000840801080L,
-      0x120010011002861L,
-      0x510004120008210L,
-      0x2803800102830010L,
-      0x60040102200a0024L,
-      0x40480081083L,
-      0x80411004064d112L,
-      0x9640808890208040L,
-      0x300018005212642L,
-      0x40000104029801L,
-      0x2408104008085618L,
-      0x10204080020f41L,
-      0x2848000000133101L,
-      0x8060000240054808L,
-      0x2100286042922042L,
-      0x810048200110L,
-      0xa002001110100421L,
-      0xd00a000400c0830L,
-      0x4009001000a09360L,
-      0x9003520484100110L,
-      0x8081400103401900L,
-      0x8808012000620410L,
+      0x8400218120024L,
+      0x232002120800013L,
+      0x80c084000088000L,
+      0x62c005810100020L,
+      0x8214104018410120L,
+      0x9012804900202880L,
+      0x200094100904018cL,
+      0x10322190000808L,
+      0x9000208a02000028L,
+      0xa028500148b08804L,
+      0xcf1002020040L,
+      0x1004129220100410L,
+      0x400a14020412040L,
+      0x408600000a005L,
+      0x4001422000025081L,
+      0x2265010401040103L,
+      0xc08885480084010L,
+      0x10084d20000440L,
+      0xa84009000210440L,
+      0x88000011800444L,
+      0x1800800810104021L,
+      0x8044000030000000L,
+      0x8420a44004004229L,
+      0x40008020880144a0L,
+      0x8020c00081124a20L,
+      0x400200a441140050L,
+      0x1400400020409040L,
+      0x4060008008c112L,
+      0x4024a022288203L,
+      0x2041110808200080L,
+      0x1068004a1514800L,
+      0x1200001024108L,
+      0x8083080108218L,
+      0x1802500842400600L,
+      0x182420d0a14001L,
+      0x10100c4000122808L,
+      0x1000080c021004L,
+      0x1200302a011d000L,
+      0x1000620310110L,
+      0x2041000481000a40L,
+      0x2241c040080008a0L,
+      0x802001e00000380L,
+      0x4884200010514L,
+      0x80020200814010L,
+      0x2000180400804a9L,
+      0x8106c4049a98014L,
+      0x4200c0120214001L,
+      0x14082029216100L,
+      0x201040033400612L,
+      0x1111292008002010L,
+      0x11140a0090008L,
+      0x18004130042202L,
+      0x81848009004a4000L,
+      0x8002108280010820L,
+      0x31400a00842008a0L,
+      0x4a84200001c285L,
+      0x408200900042101L,
+      0xc0084500c0700810L,
+      0x40400500e00052L,
+      0x4100014402100482L,
+      0x100000258c48040cL,
+      0xa32400a080830041L,
+      0x8801204080890088L,
+      0x1008901408002224L,
   };
 
   // important tables
@@ -204,16 +204,19 @@ public class MagicGenerator {
       int rookBits = RookBits[square];
       int bishopBits = BishopBits[square];
 
+      // initialize rook attacks
       for (int i = 0; i < (1 << rookBits); i++) {
         long blockers = convertIndexToBitboard(i, rookBits, rookMask);
         int index = transform(blockers, ROOK_MAGICS[square], rookBits);
         ROOK_ATTACKS[square][index] = generateRookAttacks(square, blockers);
       }
 
+      // initialize bishop attacks
       for (int i = 0; i < (1 << bishopBits); i++) {
         long blockers = convertIndexToBitboard(i, bishopBits, bishopMask);
         int index = transform(blockers, BISHOP_MAGICS[square], bishopBits);
         BISHOP_ATTACKS[square][index] = generateBishopAttacks(square, blockers);
+
       }
     }
   }
@@ -389,11 +392,26 @@ public class MagicGenerator {
     return attacks;
   }
 
+//  private static int transform(long bitboard, long magic, int bits) {
+//    long product1 = (bitboard & 0xFFFFFFFFL) * (magic & 0xFFFFFFFFL);
+//    long product2 = ((bitboard >>> 32) * (magic >>> 32));
+//    long combined = (product1 ^ product2) >>> (32 - bits);
+//    int index = (int) combined & ((1 << bits) - 1);
+//
+//    System.out.println("Transform Debug:");
+//    System.out.println("Bitboard: " + Long.toBinaryString(bitboard));
+//    System.out.println("Magic: " + Long.toBinaryString(magic));
+//    System.out.println("Product1: " + Long.toBinaryString(product1));
+//    System.out.println("Product2: " + Long.toBinaryString(product2));
+//    System.out.println("Combined: " + Long.toBinaryString(combined));
+//    System.out.println("Index: " + index);
+//
+//    return index;
+//  }
+
   private static int transform(long bitboard, long magic, int bits) {
-    long product1 = (bitboard & 0xFFFFFFFFL) * (magic & 0xFFFFFFFFL);
-    long product2 = ((bitboard >>> 32) * (magic >>> 32));
-    long combined = (product1 ^ product2) >>> (32 - bits);
-    return (int) combined & ((1 << bits) - 1);
+    long product = bitboard * magic;
+    return (int) (product >>> (64 - bits));
   }
 
   private static long findMagic(int square, int numberOfBitsInMagic, boolean isBishop) throws IllegalStateException {
@@ -489,6 +507,7 @@ public class MagicGenerator {
 
   // try generating some magic numbers yourself :D
   public static void main(String[] args) {
+    // Regenerate magic numbers with the fixed transform function
     System.out.println("private static final long[] ROOK_MAGICS = {");
     for (int square = 0; square < 64; square++) {
       System.out.printf("  0x%xL,\n", findMagic(square, RookBits[square], false));
@@ -501,20 +520,10 @@ public class MagicGenerator {
     }
     System.out.println("};");
 
-    System.out.println("------------------------------");
+    // Reinitialize attack tables with new magics
+    initializeAttackTables();
 
-    printMasks();
-
-    System.out.println("------------------------------");
-
-    // Test rook attacks from e4 with blockers on e5 and e6
-    int square = 28; // e4
-    long blockers = 0x1000000000L; // Blockers on e5 and e6
-    printAttackTableEntry(square, blockers, true);
-
-    // Test bishop attacks from c4 with blockers on b5 and d5
-    square = 26; // c4
-    blockers = 0x800000000L; // Blockers on b5 and d5
-    printAttackTableEntry(square, blockers, false);
+    // Test the attack bitboards
+    testGetAttackBitboard();
   }
 }

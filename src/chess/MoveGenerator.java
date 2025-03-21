@@ -2,6 +2,8 @@ package chess;
 
 import static chess.Board.bitboardToString;
 import static chess.Color.WHITE;
+import static chess.Masks.bishopRightMasks;
+import static chess.Masks.bishopLeftMasks;
 import static chess.Masks.fileA;
 import static chess.Masks.fileAB;
 import static chess.Masks.fileGH;
@@ -11,6 +13,8 @@ import static chess.Masks.rank1;
 import static chess.Masks.rank4;
 import static chess.Masks.rank5;
 import static chess.Masks.rank8;
+import static chess.Masks.rookFileMasks;
+import static chess.Masks.rookRankMasks;
 import static chess.MoveType.CAPTURE;
 import static chess.MoveType.DOUBLE_PAWN_PUSH;
 import static chess.MoveType.PromotionCaptures;
@@ -97,9 +101,9 @@ public class MoveGenerator {
 
       // create moves
       while (moveBitboard != 0) {
-        int knightTo = Long.numberOfTrailingZeros(moveBitboard);
-        MoveType moveType = (them & (1L << knightTo)) != 0 ? CAPTURE : QUIET;
-        moves.add(new Move(knightSquare, knightTo, moveType));
+        int knightTarget = Long.numberOfTrailingZeros(moveBitboard);
+        MoveType moveType = (them & (1L << knightTarget)) != 0 ? CAPTURE : QUIET;
+        moves.add(new Move(knightSquare, knightTarget, moveType));
         moveBitboard &= moveBitboard - 1;
       }
 
@@ -115,19 +119,22 @@ public class MoveGenerator {
       int rookSquare = Long.numberOfTrailingZeros(rooks);
       long rook = 1L << rookSquare;
 
-      // generate horizontal moves
-      long rankMask = 0xFFL << (rookSquare / 8 * 8);
-      long horizontalMoves = generateSlidingMoveBitboard(rook, occupied, rankMask);
+//      // generate horizontal moves
+//      long rankMask = 0xFFL << (rookSquare / 8 * 8);
+//      long horizontalMoves = generateSlidingMoveBitboard(rook, occupied, rankMask);
+//
+//      // generate vertical moves
+//      long fileMask = 0x0101010101010101L << (rookSquare % 8);
+//      long verticalMoves = generateSlidingMoveBitboard(rook, occupied, fileMask);
 
-      // generate vertical moves
-      long fileMask = 0x0101010101010101L << (rookSquare % 8);
-      long verticalMoves = generateSlidingMoveBitboard(rook, occupied, fileMask);
+      long rankMask = rookRankMasks[rookSquare];
+      long fileMask = rookFileMasks[rookSquare];
 
-      // combine
-      long rookMoves = horizontalMoves | verticalMoves;
+      long rankMoves = generateSlidingMoveBitboard(rook, occupied, rankMask);
+      long fileMoves = generateSlidingMoveBitboard(rook, occupied, fileMask);
 
-      // remove captures of friendly pieces
-      rookMoves &= ~(us);
+      // get combined moves without friendly captures
+      long rookMoves = (rankMoves | fileMoves) & ~us;
 
       // create moves for this rook
       while (rookMoves != 0) {
@@ -149,6 +156,24 @@ public class MoveGenerator {
       long bishop = 1L << bishopSquare;
 
       // generate diagonal moves
+      long bishopLeftMask = bishopLeftMasks[bishopSquare];
+      long bishopRightMask = bishopRightMasks[bishopSquare];
+      long rightMoves = generateSlidingMoveBitboard(bishop, occupied, bishopLeftMask);
+      long leftMoves = generateSlidingMoveBitboard(bishop, occupied, bishopRightMask);
+
+      // get combined moves without friendly piece captures
+      long allMoves = (leftMoves | rightMoves) & ~us;
+
+      // create moves for this bishop
+      while (allMoves != 0) {
+        int bishopTarget = Long.numberOfTrailingZeros(allMoves);
+        MoveType moveType = (them & (1L << bishopTarget)) != 0 ? CAPTURE : QUIET;
+        moves.add(new Move(bishopSquare, bishopTarget, moveType));
+        allMoves &= allMoves - 1; // Remove the least significant bit
+      }
+
+      // Remove the current bishop from the bitboard
+      bishops &= bishops - 1;
     }
   }
 
@@ -157,8 +182,6 @@ public class MoveGenerator {
     long m1 = reverse(reverse(occupied & mask) - (2 * reverse(piece)));
     return (m0 ^ m1) & mask;
   }
-
-
 
   // TODO: Bishop
   // TODO: Queen
