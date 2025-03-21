@@ -1,6 +1,11 @@
 package chess;
 
 import static chess.Color.WHITE;
+import static chess.Masks.blackKSInter;
+import static chess.Masks.blackKSRook;
+import static chess.Masks.blackQSInter;
+import static chess.Masks.blackQSPath;
+import static chess.Masks.blackQSRook;
 import static chess.Masks.diagonalRightMasks;
 import static chess.Masks.diagonalLeftMasks;
 import static chess.Masks.fileA;
@@ -15,10 +20,17 @@ import static chess.Masks.rank5;
 import static chess.Masks.rank8;
 import static chess.Masks.fileMasks;
 import static chess.Masks.rankMasks;
+import static chess.Masks.whiteKSInter;
+import static chess.Masks.whiteKSRook;
+import static chess.Masks.whiteQSInter;
+import static chess.Masks.whiteQSPath;
+import static chess.Masks.whiteQSRook;
 import static chess.MoveType.CAPTURE;
 import static chess.MoveType.DOUBLE_PAWN_PUSH;
+import static chess.MoveType.KING_CASTLE;
 import static chess.MoveType.PromotionCaptures;
 import static chess.MoveType.Promotions;
+import static chess.MoveType.QUEEN_CASTLE;
 import static chess.MoveType.QUIET;
 import static java.lang.Long.reverse;
 
@@ -257,13 +269,52 @@ public class MoveGenerator {
     return unsafe;
   }
 
-  public static void generateCastlingMoves(List<Move> moves, long king, long rooks, long unsafe, boolean ks, boolean qs) {
+  public static void generateCastlingMoves(
+      List<Move> moves, Color color,
+      long king, long rooks, long occupied, long unsafe,
+      boolean kingSide, boolean queenSide
+  ) {
     // prevent castling when king is in check
     if ((king & unsafe) != 0) return;
 
+    // exit early if castling is not allowed
+    if (!kingSide && !queenSide) return;
 
+    int kingSquare = Long.numberOfTrailingZeros(king);
+    long ksRook, ksInter, qsRook, qsInter, qsPath;
+    int ksTarget, qsTarget;
+    if (color == WHITE) {
+      ksRook = whiteKSRook;
+      ksInter = whiteKSInter;
+      qsRook = whiteQSRook;
+      qsInter = whiteQSInter;
+      qsPath = whiteQSPath;
+      ksTarget = 6;
+      qsTarget = 2;
+    } else {
+      ksRook = blackKSRook;
+      ksInter = blackKSInter;
+      qsRook = blackQSRook;
+      qsInter = blackQSInter;
+      qsPath = blackQSPath;
+      ksTarget = 62;
+      qsTarget = 58;
+    }
+
+    // check king-side castling
+    if (kingSide && (rooks & ksRook) != 0) {
+      if (((occupied | unsafe) & ksInter) == 0) {
+        moves.add(new Move(kingSquare, ksTarget, KING_CASTLE));
+      }
+    }
+
+    // check queen-side castling
+    if (queenSide && ((rooks & qsRook) != 0)) {
+      if ((occupied & qsInter) == 0 && (unsafe & qsPath) == 0) {
+        moves.add(new Move(kingSquare, qsTarget, QUEEN_CASTLE));
+      }
+    }
   }
 
   // TODO: En passant
-  // TODO: Castling
 }

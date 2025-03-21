@@ -3,6 +3,7 @@ package chess;
 import static chess.Board.bitboardToString;
 import static chess.Masks.kingMask;
 import static chess.MoveGenerator.generateBishopMoves;
+import static chess.MoveGenerator.generateCastlingMoves;
 import static chess.MoveGenerator.generateKingMoves;
 import static chess.MoveGenerator.generateKnightMoves;
 import static chess.MoveGenerator.generatePawnMoves;
@@ -75,7 +76,8 @@ public class Chess {
         board.getPiecesByType(Piece.BLACK_QUEEN),
         board.getPiecesByType(Piece.BLACK_KING)
     );
-    System.out.println(bitboardToString(unsafeSquares));
+
+    System.out.println(board);
 
     System.out.println("King:");
     moves.clear();
@@ -85,6 +87,16 @@ public class Chess {
         board.getPiecesByColor(Color.WHITE),
         board.getPiecesByColor(Color.BLACK),
         unsafeSquares
+    );
+    generateCastlingMoves(
+        moves,
+        Color.WHITE,
+        board.getPiecesByType(Piece.WHITE_KING),
+        board.getPiecesByType(Piece.WHITE_ROOK),
+        board.getOccupied(),
+        unsafeSquares,
+        true,
+        true
     );
     System.out.println("WHITE: " + moves);
 
