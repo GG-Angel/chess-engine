@@ -17,8 +17,7 @@ public class Chess {
   public static void main(String[] args) {
     long start = System.nanoTime();
 
-    Board board = new Board("rnbqkbnr/pppp1ppp/8/8/3Pp3/2N4P/PPP1PPP1/R1BQKBNR b KQkq d3 0 3");
-//    Board board = new Board("r1bqkbnr/ppp1pppp/2n5/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
+    Board board = new Board("r1bqkbnr/ppp1pppp/2n5/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
     System.out.println(board);
 
     List<Move> moves = new ArrayList<>();
@@ -100,8 +99,7 @@ public class Chess {
 
     moves.clear();
     long epFileMask = board.getEnPasssantFileMask();
-//    generateEnPassant(moves, Color.WHITE, board.getPiecesByType(Piece.WHITE_PAWN), board.getPiecesByType(Piece.BLACK_PAWN), epFileMask);
-    generateEnPassant(moves, Color.BLACK, board.getPiecesByType(Piece.BLACK_PAWN), board.getPiecesByType(Piece.WHITE_PAWN), epFileMask);
+    generateEnPassant(moves, Color.WHITE, board.getPiecesByType(Piece.WHITE_PAWN), board.getPiecesByType(Piece.BLACK_PAWN), epFileMask);
     System.out.println("En Passant? " + moves);
 
     long end = System.nanoTime();

@@ -329,36 +329,19 @@ public class MoveGenerator {
     long leftOverflowMask = (color == WHITE) ? fileA : fileH;
     long rightOverflowMask = (color == WHITE) ? fileH : fileA;
 
-    if (color == WHITE) {
-      long epPawnLeft = ((friendlyPawns >> 1) & enemyPawns) & rank5 & ~fileA & epFileMask;
-      long epPawnRight = ((friendlyPawns << 1) & enemyPawns) & rank5 & ~fileH & epFileMask;
+    long epPawnLeft = ((friendlyPawns >> 1) & enemyPawns) & enemyDoublePushRank & ~leftOverflowMask & epFileMask;
+    long epPawnRight = ((friendlyPawns << 1) & enemyPawns) & enemyDoublePushRank & ~rightOverflowMask & epFileMask;
 
-      if (epPawnLeft == 0 && epPawnRight == 0) {
-        throw new IllegalArgumentException("Failed to find en passant pawn.");
-      }
-
-      long epPawn = epPawnLeft != 0 ? epPawnLeft : epPawnRight;
-      int epPawnSquare = Long.numberOfTrailingZeros(epPawn);
-
-      int epCapturePawnSquare = epPawnSquare + (epPawnLeft != 0 ? 1 : -1);
-      int epCaptureTargetSquare = epPawnSquare + 8;
-
-      moves.add(new Move(epCapturePawnSquare, epCaptureTargetSquare, EP_CAPTURE));
-    } else {
-      long epPawnLeft = ((friendlyPawns >> 1) & enemyPawns) & rank4 & ~fileH & epFileMask;
-      long epPawnRight = ((friendlyPawns << 1) & enemyPawns) & rank4 & ~fileA & epFileMask;
-
-      if (epPawnLeft == 0 && epPawnRight == 0) {
-        throw new IllegalArgumentException("Failed to find en passant pawn.");
-      }
-
-      long epPawn = epPawnLeft != 0 ? epPawnLeft : epPawnRight;
-      int epPawnSquare = Long.numberOfTrailingZeros(epPawn);
-
-      int epCapturePawnSquare = epPawnSquare + (epPawnLeft != 0 ? 1 : -1);
-      int epCaptureTargetSquare = epPawnSquare - 8;
-
-      moves.add(new Move(epCapturePawnSquare, epCaptureTargetSquare, EP_CAPTURE));
+    if (epPawnLeft == 0 && epPawnRight == 0) {
+      throw new IllegalArgumentException("Failed to find en passant pawn, likely due to invalid mask.");
     }
+
+    long epPawn = epPawnLeft != 0 ? epPawnLeft : epPawnRight;
+    int epPawnSquare = Long.numberOfTrailingZeros(epPawn);
+
+    int epCapturePawnSquare = epPawnSquare + (epPawnLeft != 0 ? 1 : -1);
+    int epCaptureTargetSquare = epPawnSquare + direction;
+
+    moves.add(new Move(epCapturePawnSquare, epCaptureTargetSquare, EP_CAPTURE));
   }
 }
