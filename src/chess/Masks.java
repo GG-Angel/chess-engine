@@ -1,5 +1,7 @@
 package chess;
 
+import static chess.Board.bitboardToString;
+
 public class Masks {
   public static final long universe = 0xFFFFFFFFFFFFFFFFL;
   public static final long empty = 0L;
@@ -12,6 +14,15 @@ public class Masks {
   public static final long fileAB = 0xC0C0C0C0C0C0C0C0L;
   public static final long fileGH = 0x0303030303030303L;
   public static final long fileH  = 0x0101010101010101L;
+
+  public static final long whiteKSRook = 0x0101010101010101L;
+  public static final long whiteQSRook = 0x1L;
+  public static final long whiteKSInter = 0x06L;
+  public static final long whiteQSInter = 0x7L;
+
+  public static void main(String[] args) {
+    System.out.println(bitboardToString(whiteKSRook));
+  }
 
   public static final long knightMask = 0xA1100110AL;
   public static final long kingMask = 0x70507;

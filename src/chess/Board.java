@@ -13,6 +13,7 @@ public class Board {
 
   private final long[] bitboards;
   private long whitePieces, blackPieces;
+  private boolean castleWK, castleWQ, castleBK, castleBQ;
 
   public Board() {
     this("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -24,11 +25,11 @@ public class Board {
   }
 
   public void loadPosition(String fen) {
-    // reset bitboards
-    for (int i = 0; i < 12; i++) {
-      bitboards[i] = 0L;
-    }
+    // reset bitboards and castling privileges
+    Arrays.fill(bitboards, 0L);
+    castleWK = castleWQ = castleBK = castleBQ = false;
 
+    // parse fen parameters
     String[] fenParams = fen.split(" ");
 
     // set pieces on their corresponding bitboards
@@ -47,9 +48,19 @@ public class Board {
         file++;
       }
     }
-
     whitePieces = refreshColorPieces(WHITE);
     blackPieces = refreshColorPieces(BLACK);
+
+    // set castling privileges
+    char[] fenCastling = fenParams[2].toCharArray();
+    for (char symbol : fenCastling) {
+      switch (symbol) {
+        case 'K' -> castleWK = true;
+        case 'Q' -> castleWQ = true;
+        case 'k' -> castleBK = true;
+        case 'q' -> castleBQ = true;
+      }
+    }
   }
 
   public long getPiecesByType(Piece type) {

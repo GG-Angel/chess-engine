@@ -1,6 +1,5 @@
 package chess;
 
-import static chess.Board.bitboardToString;
 import static chess.Color.WHITE;
 import static chess.Masks.diagonalRightMasks;
 import static chess.Masks.diagonalLeftMasks;
@@ -256,6 +255,13 @@ public class MoveGenerator {
     unsafe |= enemyKingMoves;
 
     return unsafe;
+  }
+
+  public static void generateCastlingMoves(List<Move> moves, long king, long rooks, long unsafe, boolean ks, boolean qs) {
+    // prevent castling when king is in check
+    if ((king & unsafe) != 0) return;
+
+
   }
 
   // TODO: En passant
