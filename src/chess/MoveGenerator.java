@@ -24,51 +24,56 @@ import static java.lang.Long.reverse;
 import java.util.List;
 
 public class MoveGenerator {
-  public static void generatePawnMoves(List<Move> moves, Color color, long pawns, long them, long empty) {
-    if (color == WHITE) {
-      addPawnMoves(moves, pawns, empty, ~rank8, 8, QUIET);
-      addPawnMoves(moves, pawns, empty & (empty << 8), rank4, 16, DOUBLE_PAWN_PUSH);
-      addPawnMoves(moves, pawns, them, ~(rank8 | fileA), 7, CAPTURE);
-      addPawnMoves(moves, pawns, them, ~(rank8 | fileH), 9, CAPTURE);
+  public static void generatePawnMoves(List<Move> moves, Color color, long pawns, long friendly, long enemy) {
+    long empty = ~(friendly | enemy);
 
-      addPromotionMoves(moves, pawns, empty, rank8, 8, Promotions);
-      addPromotionMoves(moves, pawns, them, rank8 & ~fileH, 9, PromotionCaptures);
-      addPromotionMoves(moves, pawns, them, rank8 & ~fileA, 7, PromotionCaptures);
-    } else {
-      addPawnMoves(moves, pawns, empty, ~rank1, -8, QUIET);
-      addPawnMoves(moves, pawns, empty & (empty >> 8), rank5, -16, DOUBLE_PAWN_PUSH);
-      addPawnMoves(moves, pawns, them, ~(rank1 | fileH), -9, CAPTURE);
-      addPawnMoves(moves, pawns, them, ~(rank1 | fileA), -7, CAPTURE);
+    int direction = (color == WHITE) ? 1 : -1;
+    int shift = 8 * direction;
+    long promotionRankMask = (color == WHITE) ? rank8 : rank1;
+    long doublePushMask = (color == WHITE) ? rank4 : rank5;
 
-      addPromotionMoves(moves, pawns, empty, rank1, -8, Promotions);
-      addPromotionMoves(moves, pawns, them, rank1 & ~fileH, -9, PromotionCaptures);
-      addPromotionMoves(moves, pawns, them, rank1 & ~fileA, -7, PromotionCaptures);
-    }
+    // quiet moves
+    addPawnMoves(moves, pawns, empty, ~promotionRankMask, shift, QUIET);
+
+    // double pawn pushes
+    long doublePawnPushTargets = empty & (color == WHITE ? empty << 8 : empty >> 8);
+    addPawnMoves(moves, pawns, doublePawnPushTargets, doublePushMask, shift * 2, DOUBLE_PAWN_PUSH);
+
+    // captures
+    addPawnMoves(moves, pawns, enemy, ~(promotionRankMask | fileA), 7 * direction, CAPTURE);
+    addPawnMoves(moves, pawns, enemy, ~(promotionRankMask | fileH), 9 * direction, CAPTURE);
+
+    // quiet promotions
+    addPromotionMoves(moves, pawns, empty, promotionRankMask, shift, Promotions);
+
+    // promotions with capture
+    addPromotionMoves(moves, pawns, enemy, promotionRankMask & ~fileA, 7 * direction, PromotionCaptures);
+    addPromotionMoves(moves, pawns, enemy, promotionRankMask & ~fileH, 9 * direction, PromotionCaptures);
   }
 
   private static void addPawnMoves(List<Move> moves, long pawns, long targets, long mask, int shift, MoveType moveType) {
-    long moveBitboard = shiftPawnBitboard(pawns, shift) & targets & mask;
-    while (moveBitboard != 0) {
-      int to = Long.numberOfTrailingZeros(moveBitboard);
+    long pawnMoves = shiftPawns(pawns, shift) & targets & mask;
+    while (pawnMoves != 0) {
+      int to = Long.numberOfTrailingZeros(pawnMoves);
       int from = to - shift;
       moves.add(new Move(from, to, moveType));
-      moveBitboard &= moveBitboard - 1;
+      pawnMoves &= pawnMoves - 1;
     }
   }
 
   private static void addPromotionMoves(List<Move> moves, long pawns, long targets, long mask, int shift, MoveType[] promotionTypes) {
-    long moveBitboard = shiftPawnBitboard(pawns, shift) & targets & mask;
-    while (moveBitboard != 0) {
-      int to = Long.numberOfTrailingZeros(moveBitboard);
+    long promotionMoves = shiftPawns(pawns, shift) & targets & mask;
+    while (promotionMoves != 0) {
+      int to = Long.numberOfTrailingZeros(promotionMoves);
       int from = to - shift;
       for (MoveType promotion : promotionTypes) {
         moves.add(new Move(from, to, promotion));
       }
-      moveBitboard &= moveBitboard - 1;
+      promotionMoves &= promotionMoves - 1;
     }
   }
 
-  private static long shiftPawnBitboard(long bitboard, long amount) {
+  private static long shiftPawns(long bitboard, long amount) {
     return amount >= 0 ? (bitboard << amount) : (bitboard >> -amount);
   }
 
