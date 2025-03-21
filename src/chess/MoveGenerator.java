@@ -1,5 +1,6 @@
 package chess;
 
+import static chess.Board.bitboardToString;
 import static chess.Color.WHITE;
 import static chess.Masks.diagonalRightMasks;
 import static chess.Masks.diagonalLeftMasks;
@@ -7,6 +8,7 @@ import static chess.Masks.fileA;
 import static chess.Masks.fileAB;
 import static chess.Masks.fileGH;
 import static chess.Masks.fileH;
+import static chess.Masks.kingMask;
 import static chess.Masks.knightMask;
 import static chess.Masks.rank1;
 import static chess.Masks.rank4;
@@ -78,18 +80,15 @@ public class MoveGenerator {
   }
 
   public static void generateKnightMoves(List<Move> moves, long knights, long friendly, long enemy) {
-    // isolate knight
-    long knight = knights & -knights;
-
-    while (knight != 0) {
-      int knightSquare = Long.numberOfTrailingZeros(knight);
-      long knightMoves;
+    while (knights != 0) {
+      int knightSquare = Long.numberOfTrailingZeros(knights);
+      long knightMoves = knightMask;
 
       // apply move mask to knight position
       if (knightSquare > 18) {
-        knightMoves = knightMask << (knightSquare - 18);
+        knightMoves <<= (knightSquare - 18);
       } else {
-        knightMoves = knightMask >> (18 - knightSquare);
+        knightMoves >>= (18 - knightSquare);
       }
 
       // ensure moves do not wrap around the board
@@ -99,10 +98,7 @@ public class MoveGenerator {
       knightMoves &= ~friendly;
 
       createMovesFromBitboard(moves, knightMoves, knightSquare, enemy);
-
-      // isolate next knight
-      knights = knights & ~knight;
-      knight = knights & -knights;
+      knights &= knights - 1;
     }
   }
 
@@ -175,7 +171,93 @@ public class MoveGenerator {
     }
   }
 
+  public static void generateKingMoves(List<Move> moves, long king, long friendly, long enemy, long unsafe) {
+    int kingSquare = Long.numberOfTrailingZeros(king);
+    long kingMoves = kingMask;
+
+    // move mask to king location
+    if (kingSquare > 9) {
+      kingMoves <<= kingSquare - 9;
+    } else {
+      kingMoves >>= 9 - kingSquare;
+    }
+
+    // ensure moves do not wrap around the board
+    kingMoves &= (kingSquare % 8 < 4) ? ~fileAB : ~fileGH;
+
+    // ensure moves do not enter unsafe squares or capture friendly pieces
+    kingMoves &= ~(unsafe | friendly);
+
+    createMovesFromBitboard(moves, kingMoves, kingSquare, enemy);
+  }
+
+  public static long generateUnsafeSquares (
+      long king, long friendly, long enemy,
+      long enemyPawns, long enemyKnights, long enemyBishops,
+      long enemyRooks, long enemyQueens, long enemyKing
+  ) {
+    int kingSquare = Long.numberOfTrailingZeros(king);
+
+    long friendlyWithoutKing = friendly & ~(1L << kingSquare);
+    long occupiedWithoutKing = friendlyWithoutKing | enemy;
+
+    // diagonal pawn captures
+    long unsafe = (enemyPawns >> 7) & ~fileH;
+    unsafe |= (enemyPawns >> 9) & ~fileA;
+
+    // knight captures
+    while (enemyKnights != 0) {
+      int knightSquare = Long.numberOfTrailingZeros(enemyKnights);
+      long knightMoves = knightMask;
+
+      if (knightSquare > 18) {
+        knightMoves <<= (knightSquare - 18);
+      } else {
+        knightMoves >>= (18 - knightSquare);
+      }
+
+      knightMoves &= (knightSquare % 8 < 4) ? ~fileAB : ~fileGH;
+
+      unsafe |= knightMoves;
+      enemyKnights &= enemyKnights - 1;
+    }
+
+    // diagonally sliding pieces
+    long enemyDiagonalPieces = enemyBishops | enemyQueens;
+    while (enemyDiagonalPieces != 0) {
+      int pieceSquare = Long.numberOfTrailingZeros(enemyDiagonalPieces);
+      long piece = 1L << pieceSquare;
+      long diagonalMoves = generateDiagonalMoves(piece, occupiedWithoutKing, pieceSquare);
+
+      unsafe |= diagonalMoves;
+      enemyDiagonalPieces &= enemyDiagonalPieces - 1;
+    }
+
+    // straight sliding pieces
+    long enemyStraightPieces = enemyRooks | enemyQueens;
+    while (enemyStraightPieces != 0) {
+      int pieceSquare = Long.numberOfTrailingZeros(enemyStraightPieces);
+      long piece = 1L << pieceSquare;
+      long straightMoves = generateStraightMoves(piece, occupiedWithoutKing, pieceSquare);
+
+      unsafe |= straightMoves;
+      enemyStraightPieces &= enemyStraightPieces - 1;
+    }
+
+    // king moves
+    int enemyKingSquare = Long.numberOfTrailingZeros(enemyKing);
+    long enemyKingMoves = kingMask;
+    if (enemyKingSquare > 9) {
+      enemyKingMoves <<= (enemyKingSquare - 9);
+    } else {
+      enemyKingMoves >>= (9 - enemyKingSquare);
+    }
+    enemyKingMoves &= (enemyKingSquare % 8 < 4) ? ~fileAB : ~fileGH;
+    unsafe |= enemyKingMoves;
+
+    return unsafe;
+  }
+
   // TODO: En passant
   // TODO: Castling
-  // TODO: King moves
 }

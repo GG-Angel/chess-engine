@@ -1,6 +1,9 @@
 package chess;
 
 
+import static chess.Color.BLACK;
+import static chess.Color.WHITE;
+
 import java.util.Arrays;
 
 public class Board {
@@ -9,6 +12,7 @@ public class Board {
   }
 
   private final long[] bitboards;
+  private long whitePieces, blackPieces;
 
   public Board() {
     this("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -43,6 +47,9 @@ public class Board {
         file++;
       }
     }
+
+    whitePieces = refreshColorPieces(WHITE);
+    blackPieces = refreshColorPieces(BLACK);
   }
 
   public long getPiecesByType(Piece type) {
@@ -50,23 +57,23 @@ public class Board {
   }
 
   public long getPiecesByColor(Color color) {
+    return color == WHITE ? whitePieces : blackPieces;
+  }
+
+  public long getOccupied() {
+    return whitePieces | blackPieces;
+  }
+
+  public long getEmpty() {
+    return ~getOccupied();
+  }
+
+  private long refreshColorPieces(Color color) {
     long pieces = 0L;
     for (int i = 0; i < 6; i++) {
       pieces |= bitboards[color.startIndex() + i];
     }
     return pieces;
-  }
-
-  public long getOccupied() {
-    long occupied = 0L;
-    for (long bitboard : bitboards) {
-      occupied |= bitboard;
-    }
-    return occupied;
-  }
-
-  public long getEmpty() {
-    return ~getOccupied();
   }
 
   private Piece[] getTypedBoard() {

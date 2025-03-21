@@ -13,7 +13,8 @@ public class Masks {
   public static final long fileGH = 0x0303030303030303L;
   public static final long fileH  = 0x0101010101010101L;
 
-  public static final long knightMask = 0xa1100110aL;
+  public static final long knightMask = 0xA1100110AL;
+  public static final long kingMask = 0x70507;
 
   // access by piece square for corresponding mask
   public static final long[] fileMasks = new long[64]; // files
