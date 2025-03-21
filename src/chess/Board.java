@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 public class Board {
   public static int toSquare(int rank, int file) {
-    return (7 - rank) * 8 + file;
+    return rank * 8 + file;
   }
 
   private final long[] bitboards;
@@ -34,11 +34,11 @@ public class Board {
 
     // set pieces on their corresponding bitboards
     char[] fenBoard = fenParams[0].toCharArray();
-    int rank = 0, file = 0;
+    int rank = 7, file = 0;
     for (char symbol : fenBoard) {
       if (symbol == '/') {
         file = 0;
-        rank++;
+        rank--;
       } else if (Character.isDigit(symbol)) {
         file += Character.getNumericValue(symbol);
       } else {
@@ -102,7 +102,7 @@ public class Board {
 
   public static String bitboardToString(long bitboard) {
     StringBuilder sb = new StringBuilder();
-    for (int rank = 0; rank < 8; rank++) {
+    for (int rank = 7; rank >= 0; rank--) {
       for (int file = 0; file < 8; file++) {
         int square = toSquare(rank, file);
         long mask = (1L << square);
@@ -123,8 +123,8 @@ public class Board {
   public String toString() {
     Piece[] board = getTypedBoard();
     StringBuilder sb = new StringBuilder();
-    for (int rank = 0; rank < 8; rank++) {
-      sb.append((8 - rank)).append(" | ");
+    for (int rank = 7; rank >= 0; rank--) {
+      sb.append((rank + 1)).append(" | ");
       for (int file = 0; file < 8; file++) {
         int square = toSquare(rank, file);
         Piece squarePiece = board[square];

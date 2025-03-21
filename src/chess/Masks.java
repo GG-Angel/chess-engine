@@ -7,22 +7,25 @@ public class Masks {
   public static final long empty = 0L;
 
   public static final long rank8  = 0xFF00000000000000L;
-  public static final long rank5  = 0xFF00000000L;
-  public static final long rank4  = 0xFF000000L;
+  public static final long rank5  = 0x000000FF00000000L;
+  public static final long rank4  = 0x00000000FF000000L;
   public static final long rank1  = 0xFFL;
-  public static final long fileA  = 0x8080808080808080L;
-  public static final long fileAB = 0xC0C0C0C0C0C0C0C0L;
-  public static final long fileGH = 0x0303030303030303L;
-  public static final long fileH  = 0x0101010101010101L;
+  public static final long fileA  = 0x0101010101010101L;
+  public static final long fileAB = 0x0303030303030303L;
+  public static final long fileGH = 0xC0C0C0C0C0C0C0C0L;
+  public static final long fileH  = 0x8080808080808080L;
 
-  public static final long whiteKSRook = 0x0101010101010101L;
+  public static final long whiteKSRook = 0x80L;
   public static final long whiteQSRook = 0x1L;
-  public static final long whiteKSInter = 0x06L;
-  public static final long whiteQSInter = 0x7L;
+  public static final long whiteKSInter = 0x60L;
+  public static final long whiteQSInter = 0xEL;
+  public static final long whiteQSPath = 0xCL;
 
-  public static void main(String[] args) {
-    System.out.println(bitboardToString(whiteKSRook));
-  }
+  public static final long blackKSRook = whiteKSRook << 56;
+  public static final long blackQSRook = whiteQSRook << 56;
+  public static final long blackKSInter = whiteKSInter << 56;
+  public static final long blackQSInter = whiteQSInter << 56;
+  public static final long blackQSPath = whiteQSPath << 56;
 
   public static final long knightMask = 0xA1100110AL;
   public static final long kingMask = 0x70507;
