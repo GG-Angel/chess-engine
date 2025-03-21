@@ -1,9 +1,6 @@
 package chess;
 
 import static chess.Board.bitboardToString;
-import static chess.Masks.knightMask;
-import static chess.MoveGenerator.generateKnightMoves;
-import static chess.MoveGenerator.generatePawnMoves;
 import static chess.MoveGenerator.generateRookMoves;
 
 import java.util.ArrayList;

@@ -117,32 +117,52 @@ public class MoveGenerator {
 
       // generate horizontal moves
       long rankMask = 0xFFL << (rookSquare / 8 * 8);
-      long left = (occupied & rankMask) - (2 * rook);
-      long right = reverse(reverse(occupied & rankMask) - (2 * reverse(rook)));
-      long horizontalMovesBitboard = (left ^ right) & rankMask;
+      long horizontalMoves = generateSlidingMoveBitboard(rook, occupied, rankMask);
 
       // generate vertical moves
       long fileMask = 0x0101010101010101L << (rookSquare % 8);
-      long up = (occupied & fileMask) - (2 * rook);
-      long down = reverse(reverse(occupied & fileMask) - (2 * reverse(rook)));
-      long verticalMovesBitboard = (up ^ down) & fileMask;
+      long verticalMoves = generateSlidingMoveBitboard(rook, occupied, fileMask);
 
       // combine
-      long movesBitboard = horizontalMovesBitboard | verticalMovesBitboard;
+      long rookMoves = horizontalMoves | verticalMoves;
 
       // remove captures of friendly pieces
-      movesBitboard &= ~(us);
+      rookMoves &= ~(us);
 
       // create moves for this rook
-      while (movesBitboard != 0) {
-        int rookTarget = Long.numberOfTrailingZeros(movesBitboard);
+      while (rookMoves != 0) {
+        int rookTarget = Long.numberOfTrailingZeros(rookMoves);
         MoveType moveType = (them & (1L << rookTarget)) != 0 ? CAPTURE : QUIET;
         moves.add(new Move(rookSquare, rookTarget, moveType));
-        movesBitboard &= movesBitboard - 1;
+        rookMoves &= rookMoves - 1;
       }
 
       // move onto the next rook
       rooks &= rooks - 1;
     }
   }
+
+  public static void generateBishopMoves(List<Move> moves, long bishops, long us, long them) {
+    long occupied = us | them;
+    while (bishops != 0) {
+      int bishopSquare = Long.numberOfTrailingZeros(bishops);
+      long bishop = 1L << bishopSquare;
+
+      // generate diagonal moves
+    }
+  }
+
+  private static long generateSlidingMoveBitboard(long piece, long occupied, long mask) {
+    long m0 = (occupied & mask) - (2 * piece);
+    long m1 = reverse(reverse(occupied & mask) - (2 * reverse(piece)));
+    return (m0 ^ m1) & mask;
+  }
+
+
+
+  // TODO: Bishop
+  // TODO: Queen
+  // TODO: En passant
+  // TODO: Castling
+  // TODO: King moves
 }
