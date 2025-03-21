@@ -138,7 +138,7 @@ public class Board {
     return board;
   }
 
-  public static String bitboardToString(long bitboard) {
+  public static void printBitboard(long bitboard) {
     StringBuilder sb = new StringBuilder();
     for (int rank = 7; rank >= 0; rank--) {
       for (int file = 0; file < 8; file++) {
@@ -154,7 +154,7 @@ public class Board {
       }
       sb.append('\n');
     }
-    return sb.toString();
+    System.out.println(sb);
   }
 
   @Override

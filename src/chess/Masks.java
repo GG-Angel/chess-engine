@@ -1,7 +1,5 @@
 package chess;
 
-import static chess.Board.bitboardToString;
-
 public class Masks {
   public static final long universe = 0xFFFFFFFFFFFFFFFFL;
   public static final long empty = 0L;

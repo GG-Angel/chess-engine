@@ -1,6 +1,6 @@
 package chess;
 
-import static chess.Board.bitboardToString;
+import static chess.Board.printBitboard;
 import static chess.Color.WHITE;
 import static chess.Masks.blackKSInter;
 import static chess.Masks.blackKSRook;
@@ -324,6 +324,11 @@ public class MoveGenerator {
   ) throws IllegalArgumentException {
     if (epFileMask == 0) return;
 
+    int direction = (color == WHITE) ? 8 : -8;
+    long enemyDoublePushRank = (color == WHITE) ? rank5 : rank4;
+    long leftOverflowMask = (color == WHITE) ? fileA : fileH;
+    long rightOverflowMask = (color == WHITE) ? fileH : fileA;
+
     if (color == WHITE) {
       long epPawnLeft = ((friendlyPawns >> 1) & enemyPawns) & rank5 & ~fileA & epFileMask;
       long epPawnRight = ((friendlyPawns << 1) & enemyPawns) & rank5 & ~fileH & epFileMask;
@@ -340,7 +345,20 @@ public class MoveGenerator {
 
       moves.add(new Move(epCapturePawnSquare, epCaptureTargetSquare, EP_CAPTURE));
     } else {
+      long epPawnLeft = ((friendlyPawns >> 1) & enemyPawns) & rank4 & ~fileH & epFileMask;
+      long epPawnRight = ((friendlyPawns << 1) & enemyPawns) & rank4 & ~fileA & epFileMask;
 
+      if (epPawnLeft == 0 && epPawnRight == 0) {
+        throw new IllegalArgumentException("Failed to find en passant pawn.");
+      }
+
+      long epPawn = epPawnLeft != 0 ? epPawnLeft : epPawnRight;
+      int epPawnSquare = Long.numberOfTrailingZeros(epPawn);
+
+      int epCapturePawnSquare = epPawnSquare + (epPawnLeft != 0 ? 1 : -1);
+      int epCaptureTargetSquare = epPawnSquare - 8;
+
+      moves.add(new Move(epCapturePawnSquare, epCaptureTargetSquare, EP_CAPTURE));
     }
   }
 }

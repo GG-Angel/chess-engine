@@ -1,7 +1,5 @@
 package chess;
 
-import static chess.Board.bitboardToString;
-import static chess.Masks.kingMask;
 import static chess.MoveGenerator.generateBishopMoves;
 import static chess.MoveGenerator.generateCastlingMoves;
 import static chess.MoveGenerator.generateEnPassant;
@@ -19,8 +17,8 @@ public class Chess {
   public static void main(String[] args) {
     long start = System.nanoTime();
 
-//    Board board = new Board("rnbqkbnr/pppp1ppp/8/8/3Pp3/2N4P/PPP1PPP1/R1BQKBNR b KQkq d3 0 3");
-    Board board = new Board("r1bqkbnr/ppp1pppp/2n5/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
+    Board board = new Board("rnbqkbnr/pppp1ppp/8/8/3Pp3/2N4P/PPP1PPP1/R1BQKBNR b KQkq d3 0 3");
+//    Board board = new Board("r1bqkbnr/ppp1pppp/2n5/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
     System.out.println(board);
 
     List<Move> moves = new ArrayList<>();
