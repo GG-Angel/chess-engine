@@ -104,6 +104,10 @@ public class Board {
   }
 
   public long getEnPasssantFileMask() {
+    if (previousMoves.isEmpty()) {
+      return 0; // there is no previous en passant
+    }
+
     Move lastMove = previousMoves.peek();
 
     if (lastMove == null || lastMove.type() != DOUBLE_PAWN_PUSH) {

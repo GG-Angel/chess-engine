@@ -1,5 +1,6 @@
 package chess;
 
+import static chess.Masks.universe;
 import static chess.MoveGenerator.generateKnightMoves;
 import static chess.MoveGenerator.generatePawnMoves;
 import static chess.MoveGenerator.generatePseudoLegalMoves;
@@ -19,12 +20,16 @@ public class Chess {
     List<Move> moves = generatePseudoLegalMoves(board, WHITE);
     long end = System.nanoTime();
 
-    System.out.println("PSEUDO-LEGAL MOVES: " + moves);
+    System.out.println("PSEUDO-LEGAL MOVES: ");
+    for (Move move : moves) {
+      System.out.println(move + ": 1");
+    }
+
     System.out.println("# OF MOVES: " + moves.size());
     System.out.println("TOOK " + ((end - start) / 1000000.0)+ " ms");
 
     moves.clear();
-    generatePawnMoves(moves, WHITE, board.getPieces(WHITE, Type.PAWN), board.getPiecesByColor(WHITE), board.getPiecesByColor(BLACK));
+    generatePawnMoves(moves, WHITE, board.getPieces(WHITE, Type.PAWN), board.getPiecesByColor(WHITE), board.getPiecesByColor(BLACK), universe);
     System.out.println(moves);
   }
 }
