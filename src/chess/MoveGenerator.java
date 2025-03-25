@@ -1,7 +1,5 @@
 package chess;
 
-import static chess.Board.printBitboard;
-import static chess.Color.WHITE;
 import static chess.Masks.blackKSInter;
 import static chess.Masks.blackKSRook;
 import static chess.Masks.blackQSInter;
@@ -36,22 +34,23 @@ import static chess.MoveType.QUEEN_CASTLE;
 import static chess.MoveType.QUIET;
 import static java.lang.Long.reverse;
 
+import chess.Piece.Color;
 import java.util.List;
 
 public class MoveGenerator {
   public static void generatePawnMoves(List<Move> moves, Color color, long pawns, long friendly, long enemy) {
     long empty = ~(friendly | enemy);
 
-    int direction = (color == WHITE) ? 1 : -1;
+    long promotionRankMask = (color == Color.WHITE) ? rank8 : rank1;
+    long doublePushMask = (color == Color.WHITE) ? rank4 : rank5;
+    int direction = (color == Color.WHITE) ? 1 : -1;
     int shift = 8 * direction;
-    long promotionRankMask = (color == WHITE) ? rank8 : rank1;
-    long doublePushMask = (color == WHITE) ? rank4 : rank5;
 
     // quiet moves
     addPawnMoves(moves, pawns, empty, ~promotionRankMask, shift, QUIET);
 
     // double pawn pushes
-    long doublePawnPushTargets = empty & (color == WHITE ? empty << 8 : empty >> 8);
+    long doublePawnPushTargets = empty & (color == Color.WHITE ? empty << 8 : empty >> 8);
     addPawnMoves(moves, pawns, doublePawnPushTargets, doublePushMask, shift * 2, DOUBLE_PAWN_PUSH);
 
     // captures
@@ -218,7 +217,7 @@ public class MoveGenerator {
     int kingSquare = Long.numberOfTrailingZeros(king);
     long ksRook, ksInter, qsRook, qsInter, qsPath;
     int ksTarget, qsTarget;
-    if (color == WHITE) {
+    if (color == Color.WHITE) {
       ksRook = whiteKSRook;
       ksInter = whiteKSInter;
       qsRook = whiteQSRook;
@@ -318,16 +317,16 @@ public class MoveGenerator {
     return unsafe;
   }
 
-  public static void generateEnPassant(
+  public static void generateEnPassantMoves(
       List<Move> moves, Color color,
       long friendlyPawns, long enemyPawns, long epFileMask
   ) throws IllegalArgumentException {
     if (epFileMask == 0) return;
 
-    int direction = (color == WHITE) ? 8 : -8;
-    long enemyDoublePushRank = (color == WHITE) ? rank5 : rank4;
-    long leftOverflowMask = (color == WHITE) ? fileA : fileH;
-    long rightOverflowMask = (color == WHITE) ? fileH : fileA;
+    int direction = (color == Color.WHITE) ? 8 : -8;
+    long enemyDoublePushRank = (color == Color.WHITE) ? rank5 : rank4;
+    long leftOverflowMask = (color == Color.WHITE) ? fileA : fileH;
+    long rightOverflowMask = (color == Color.WHITE) ? fileH : fileA;
 
     long epPawnLeft = ((friendlyPawns >> 1) & enemyPawns) & enemyDoublePushRank & ~leftOverflowMask & epFileMask;
     long epPawnRight = ((friendlyPawns << 1) & enemyPawns) & enemyDoublePushRank & ~rightOverflowMask & epFileMask;
@@ -344,4 +343,6 @@ public class MoveGenerator {
 
     moves.add(new Move(epCapturePawnSquare, epCaptureTargetSquare, EP_CAPTURE));
   }
+
+
 }

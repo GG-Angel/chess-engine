@@ -1,22 +1,16 @@
 package chess;
 
-
-import static chess.Color.BLACK;
-import static chess.Color.WHITE;
 import static chess.Masks.fileA;
 import static chess.MoveType.DOUBLE_PAWN_PUSH;
 
+import chess.Piece.Color;
+import chess.Piece.Type;
 import java.util.Arrays;
 import java.util.Stack;
 
 public class Board {
-  public static int toSquare(int rank, int file) {
-    return rank * 8 + file;
-  }
-
   // bitboards
   private final long[] bitboards;
-  private long whitePieces, blackPieces;
 
   // progression trackers
   private final Stack<Move> previousMoves;
@@ -30,7 +24,7 @@ public class Board {
   }
 
   public Board(String fen) {
-    this.bitboards = new long[Piece.values().length];
+    this.bitboards = new long[Type.values().length * Color.values().length];
     this.previousMoves = new Stack<>();
     loadPosition(fen);
   }
@@ -53,14 +47,13 @@ public class Board {
       } else if (Character.isDigit(symbol)) {
         file += Character.getNumericValue(symbol);
       } else {
-        Piece type = Piece.fromChar(symbol);
+        Color pieceColor = Color.fromChar(symbol);
+        Type pieceType = Type.fromChar(symbol);
         int square = toSquare(rank, file);
-        bitboards[type.index()] |= (1L << square);
+        bitboards[Piece.getIndex(pieceColor, pieceType)] |= (1L << square);
         file++;
       }
     }
-    whitePieces = refreshColorPieces(WHITE);
-    blackPieces = refreshColorPieces(BLACK);
 
     // set color to move
     whiteToMove = fenParams[1].equals("w");
@@ -90,28 +83,24 @@ public class Board {
     }
   }
 
-  public long getPiecesByType(Piece type) {
-    return bitboards[type.index()];
+  public long getPieces(Color color, Type type) {
+    return bitboards[Piece.getIndex(color, type)];
   }
 
   public long getPiecesByColor(Color color) {
-    return color == WHITE ? whitePieces : blackPieces;
+    long pieces = 0L;
+    for (int i = color.offset; i < color.offset + 6; i++) {
+      pieces |= bitboards[i];
+    }
+    return pieces;
   }
 
   public long getOccupied() {
-    return whitePieces | blackPieces;
+    return getPiecesByColor(Color.WHITE) | getPiecesByColor(Color.BLACK);
   }
 
   public long getEmpty() {
     return ~getOccupied();
-  }
-
-  private long refreshColorPieces(Color color) {
-    long pieces = 0L;
-    for (int i = 0; i < 6; i++) {
-      pieces |= bitboards[color.startIndex() + i];
-    }
-    return pieces;
   }
 
   public long getEnPasssantFileMask() {
@@ -125,17 +114,8 @@ public class Board {
     return fileA << (lastMove.to() % 8);
   }
 
-  private Piece[] getTypedBoard() {
-    Piece[] board = new Piece[64];
-    for (Piece pieceType : Piece.values()) {
-      long bitboard = getPiecesByType(pieceType);
-      while (bitboard != 0) {
-        int square = Long.numberOfTrailingZeros(bitboard); // get LSB index
-        board[square] = pieceType;
-        bitboard &= bitboard - 1; // remove LSB
-      }
-    }
-    return board;
+  private static int toSquare(int rank, int file) {
+    return rank * 8 + file;
   }
 
   public static void printBitboard(long bitboard) {
@@ -159,24 +139,32 @@ public class Board {
 
   @Override
   public String toString() {
-    Piece[] board = getTypedBoard();
+    char[] board = new char[64];
+    Arrays.fill(board, '.');
+
+    for (Color color : Color.values()) {
+      for (Type type : Type.values()) {
+        long piece = getPieces(color, type);
+        while (piece != 0) {
+          int pieceSquare = Long.numberOfTrailingZeros(piece);
+          board[pieceSquare] = Piece.getSymbol(color, type);
+          piece &= piece - 1;
+        }
+      }
+    }
+
     StringBuilder sb = new StringBuilder();
     for (int rank = 7; rank >= 0; rank--) {
-      sb.append((rank + 1)).append(" | ");
+      sb.append(rank + 1).append(" | ");
       for (int file = 0; file < 8; file++) {
         int square = toSquare(rank, file);
-        Piece squarePiece = board[square];
-        if (squarePiece != null) {
-          sb.append(squarePiece.toChar());
-        } else {
-          sb.append("."); // empty space
-        }
-
+        sb.append(board[square]);
         if (file < 7) sb.append(" ");
       }
       sb.append('\n');
     }
     sb.append("   ————————————————\n").append("    A B C D E F G H");
+
     return sb.toString();
   }
 }

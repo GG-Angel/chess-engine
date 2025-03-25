@@ -3,55 +3,57 @@ package chess;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum Piece {
-  WHITE_PAWN   ('P', 0),
-  WHITE_KNIGHT ('N', 1),
-  WHITE_BISHOP ('B', 2),
-  WHITE_ROOK   ('R', 3),
-  WHITE_QUEEN  ('Q', 4),
-  WHITE_KING   ('K', 5),
-  BLACK_PAWN   ('p', 6),
-  BLACK_KNIGHT ('n', 7),
-  BLACK_BISHOP ('b', 8),
-  BLACK_ROOK   ('r', 9),
-  BLACK_QUEEN  ('q', 10),
-  BLACK_KING   ('k', 11);
+public class Piece {
+  public enum Type {
+    PAWN   ('p', 0),
+    KNIGHT ('n', 1),
+    BISHOP ('b', 2),
+    ROOK   ('r', 3),
+    QUEEN  ('q', 4),
+    KING   ('k', 5);
 
-  private final char symbol;
-  private final int index;
+    public final char symbol;
+    public final int index;
 
-  private static final Map<Character, Piece> symbolToPiece = new HashMap<>();
-  private static final Map<Piece, Character> pieceToSymbol = new HashMap<>();
+    Type(char symbol, int index) {
+      this.symbol = symbol;
+      this.index = index;
+    }
 
-  Piece(char symbol, int index) {
-    this.symbol = symbol;
-    this.index = index;
-  }
+    // initialize lookup table
+    private static final Map<Character, Type> symbolToType = new HashMap<>();
 
-  static {
-    for (Piece piece : values()) {
-      symbolToPiece.put(piece.symbol, piece);
-      pieceToSymbol.put(piece, piece.symbol);
+    static {
+      for (Type pieceType : values()) {
+        symbolToType.put(pieceType.symbol, pieceType);
+      }
+    }
+
+    public static Type fromChar(char symbol) {
+      return symbolToType.get(Character.toLowerCase(symbol));
     }
   }
 
-  public static Piece fromChar(char symbol) {
-    return symbolToPiece.get(symbol);
+  public enum Color {
+    WHITE (0),
+    BLACK (6);
+
+    public final int offset;
+
+    Color(int offset) {
+      this.offset = offset;
+    }
+
+    public static Color fromChar(char symbol) {
+      return Character.isUpperCase(symbol) ? WHITE : BLACK;
+    }
   }
 
-  public char toChar() {
-    return pieceToSymbol.get(this);
+  public static char getSymbol(Color color, Type type) {
+    return color == Color.WHITE ? Character.toUpperCase(type.symbol) : type.symbol;
   }
 
-  public int index() {
-    return index;
-  }
-
-  public static boolean isWhite(int piece) {
-    return piece >= WHITE_PAWN.ordinal() && piece <= WHITE_KING.ordinal();
-  }
-
-  public static boolean isBlack(int piece) {
-    return piece >= BLACK_PAWN.ordinal() && piece <= BLACK_KING.ordinal();
+  public static int getIndex(Color color, Type type) {
+    return type.index + color.offset;
   }
 }
