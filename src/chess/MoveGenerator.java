@@ -32,25 +32,34 @@ import static chess.MoveType.PromotionCaptures;
 import static chess.MoveType.Promotions;
 import static chess.MoveType.QUEEN_CASTLE;
 import static chess.MoveType.QUIET;
+import static chess.Piece.Color.BLACK;
+import static chess.Piece.Color.WHITE;
+import static chess.Piece.Type.BISHOP;
+import static chess.Piece.Type.KNIGHT;
+import static chess.Piece.Type.PAWN;
+import static chess.Piece.Type.QUEEN;
+import static chess.Piece.Type.ROOK;
 import static java.lang.Long.reverse;
 
 import chess.Piece.Color;
+import chess.Piece.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MoveGenerator {
   public static void generatePawnMoves(List<Move> moves, Color color, long pawns, long friendly, long enemy) {
     long empty = ~(friendly | enemy);
 
-    long promotionRankMask = (color == Color.WHITE) ? rank8 : rank1;
-    long doublePushMask = (color == Color.WHITE) ? rank4 : rank5;
-    int direction = (color == Color.WHITE) ? 1 : -1;
+    long promotionRankMask = (color == WHITE) ? rank8 : rank1;
+    long doublePushMask = (color == WHITE) ? rank4 : rank5;
+    int direction = (color == WHITE) ? 1 : -1;
     int shift = 8 * direction;
 
     // quiet moves
     addPawnMoves(moves, pawns, empty, ~promotionRankMask, shift, QUIET);
 
     // double pawn pushes
-    long doublePawnPushTargets = empty & (color == Color.WHITE ? empty << 8 : empty >> 8);
+    long doublePawnPushTargets = empty & (color == WHITE ? empty << 8 : empty >> 8);
     addPawnMoves(moves, pawns, doublePawnPushTargets, doublePushMask, shift * 2, DOUBLE_PAWN_PUSH);
 
     // captures
@@ -91,20 +100,53 @@ public class MoveGenerator {
     return amount >= 0 ? (bitboard << amount) : (bitboard >> -amount);
   }
 
+  public static void generateEnPassantMoves(
+      List<Move> moves, Color color,
+      long friendlyPawns, long enemyPawns, long epFileMask
+  ) throws IllegalArgumentException {
+    if (epFileMask == 0) return;
+
+    int direction = (color == WHITE) ? 8 : -8;
+    long enemyDoublePushRank = (color == WHITE) ? rank5 : rank4;
+    long leftOverflowMask = (color == WHITE) ? fileA : fileH;
+    long rightOverflowMask = (color == WHITE) ? fileH : fileA;
+
+    long epPawnLeft = ((friendlyPawns >> 1) & enemyPawns) & enemyDoublePushRank & ~leftOverflowMask & epFileMask;
+    long epPawnRight = ((friendlyPawns << 1) & enemyPawns) & enemyDoublePushRank & ~rightOverflowMask & epFileMask;
+
+    if (epPawnLeft == 0 && epPawnRight == 0) {
+      throw new IllegalArgumentException("Failed to find en passant pawn, likely due to invalid mask.");
+    }
+
+    long epPawn = epPawnLeft != 0 ? epPawnLeft : epPawnRight;
+    int epPawnSquare = Long.numberOfTrailingZeros(epPawn);
+
+    int epCapturePawnSquare = epPawnSquare + (epPawnLeft != 0 ? 1 : -1);
+    int epCaptureTargetSquare = epPawnSquare + direction;
+
+    moves.add(new Move(epCapturePawnSquare, epCaptureTargetSquare, EP_CAPTURE));
+  }
+
+  private static long calculateKnightMoves(int square) {
+    long knightMoves = knightMask;
+
+    // apply move mask to knight position
+    if (square > 18) {
+      knightMoves <<= (square - 18);
+    } else {
+      knightMoves >>= (18 - square);
+    }
+
+    // ensure moves do not wrap around the board
+    knightMoves &= (square % 8 < 4) ? ~fileAB : ~fileGH;
+
+    return knightMoves;
+  }
+
   public static void generateKnightMoves(List<Move> moves, long knights, long friendly, long enemy) {
     while (knights != 0) {
       int knightSquare = Long.numberOfTrailingZeros(knights);
-      long knightMoves = knightMask;
-
-      // apply move mask to knight position
-      if (knightSquare > 18) {
-        knightMoves <<= (knightSquare - 18);
-      } else {
-        knightMoves >>= (18 - knightSquare);
-      }
-
-      // ensure moves do not wrap around the board
-      knightMoves &= (knightSquare % 8 < 4) ? ~fileAB : ~fileGH;
+      long knightMoves = calculateKnightMoves(knightSquare);
 
       // remove captures of friendly pieces
       knightMoves &= ~friendly;
@@ -125,7 +167,7 @@ public class MoveGenerator {
       int rookSquare = Long.numberOfTrailingZeros(rooks);
       long rook = 1L << rookSquare;
 
-      long straightMoves = generateStraightMoves(rook, occupied, rookSquare);
+      long straightMoves = calculateStraightMoves(rook, occupied, rookSquare);
       long rookMoves = straightMoves & ~friendly;
 
       createMovesFromBitboard(moves, rookMoves, rookSquare, enemy);
@@ -139,7 +181,7 @@ public class MoveGenerator {
       int bishopSquare = Long.numberOfTrailingZeros(bishops);
       long bishop = 1L << bishopSquare;
 
-      long diagonalMoves = generateDiagonalMoves(bishop, occupied, bishopSquare);
+      long diagonalMoves = calculateDiagonalMoves(bishop, occupied, bishopSquare);
       long bishopMoves = diagonalMoves & ~friendly;
 
       createMovesFromBitboard(moves, bishopMoves, bishopSquare, enemy);
@@ -147,7 +189,7 @@ public class MoveGenerator {
     }
   }
 
-  private static long generateStraightMoves(long piece, long occupied, int square) {
+  private static long calculateStraightMoves(long piece, long occupied, int square) {
     long rankMask = rankMasks[square];
     long fileMask = fileMasks[square];
 
@@ -157,7 +199,7 @@ public class MoveGenerator {
     return rankMoves | fileMoves;
   }
 
-  private static long generateDiagonalMoves(long piece, long occupied, int square) {
+  private static long calculateDiagonalMoves(long piece, long occupied, int square) {
     long leftMask = diagonalLeftMasks[square];
     long rightMask = diagonalRightMasks[square];
 
@@ -217,7 +259,7 @@ public class MoveGenerator {
     int kingSquare = Long.numberOfTrailingZeros(king);
     long ksRook, ksInter, qsRook, qsInter, qsPath;
     int ksTarget, qsTarget;
-    if (color == Color.WHITE) {
+    if (color == WHITE) {
       ksRook = whiteKSRook;
       ksInter = whiteKSInter;
       qsRook = whiteQSRook;
@@ -267,15 +309,7 @@ public class MoveGenerator {
     // knight captures
     while (enemyKnights != 0) {
       int knightSquare = Long.numberOfTrailingZeros(enemyKnights);
-      long knightMoves = knightMask;
-
-      if (knightSquare > 18) {
-        knightMoves <<= (knightSquare - 18);
-      } else {
-        knightMoves >>= (18 - knightSquare);
-      }
-
-      knightMoves &= (knightSquare % 8 < 4) ? ~fileAB : ~fileGH;
+      long knightMoves = calculateKnightMoves(knightSquare);
 
       unsafe |= knightMoves;
       enemyKnights &= enemyKnights - 1;
@@ -286,7 +320,7 @@ public class MoveGenerator {
     while (enemyDiagonalPieces != 0) {
       int pieceSquare = Long.numberOfTrailingZeros(enemyDiagonalPieces);
       long piece = 1L << pieceSquare;
-      long diagonalMoves = generateDiagonalMoves(piece, occupiedWithoutKing, pieceSquare);
+      long diagonalMoves = calculateDiagonalMoves(piece, occupiedWithoutKing, pieceSquare);
 
       unsafe |= diagonalMoves;
       enemyDiagonalPieces &= enemyDiagonalPieces - 1;
@@ -297,7 +331,7 @@ public class MoveGenerator {
     while (enemyStraightPieces != 0) {
       int pieceSquare = Long.numberOfTrailingZeros(enemyStraightPieces);
       long piece = 1L << pieceSquare;
-      long straightMoves = generateStraightMoves(piece, occupiedWithoutKing, pieceSquare);
+      long straightMoves = calculateStraightMoves(piece, occupiedWithoutKing, pieceSquare);
 
       unsafe |= straightMoves;
       enemyStraightPieces &= enemyStraightPieces - 1;
@@ -317,32 +351,53 @@ public class MoveGenerator {
     return unsafe;
   }
 
-  public static void generateEnPassantMoves(
-      List<Move> moves, Color color,
-      long friendlyPawns, long enemyPawns, long epFileMask
-  ) throws IllegalArgumentException {
-    if (epFileMask == 0) return;
-
-    int direction = (color == Color.WHITE) ? 8 : -8;
-    long enemyDoublePushRank = (color == Color.WHITE) ? rank5 : rank4;
-    long leftOverflowMask = (color == Color.WHITE) ? fileA : fileH;
-    long rightOverflowMask = (color == Color.WHITE) ? fileH : fileA;
-
-    long epPawnLeft = ((friendlyPawns >> 1) & enemyPawns) & enemyDoublePushRank & ~leftOverflowMask & epFileMask;
-    long epPawnRight = ((friendlyPawns << 1) & enemyPawns) & enemyDoublePushRank & ~rightOverflowMask & epFileMask;
-
-    if (epPawnLeft == 0 && epPawnRight == 0) {
-      throw new IllegalArgumentException("Failed to find en passant pawn, likely due to invalid mask.");
+  public record CheckingPiece(int square, Type type) {
+    @Override
+    public String toString() {
+      char file = (char) ('a' + (square % 8));
+      int rank = square / 8 + 1;
+      return String.format("(%c%d, %s)", file, rank, type);
     }
-
-    long epPawn = epPawnLeft != 0 ? epPawnLeft : epPawnRight;
-    int epPawnSquare = Long.numberOfTrailingZeros(epPawn);
-
-    int epCapturePawnSquare = epPawnSquare + (epPawnLeft != 0 ? 1 : -1);
-    int epCaptureTargetSquare = epPawnSquare + direction;
-
-    moves.add(new Move(epCapturePawnSquare, epCaptureTargetSquare, EP_CAPTURE));
   }
 
+  public static List<CheckingPiece> getCheckingPieces(
+      Color color, long king, long occupied,
+      long enemyPawns, long enemyKnights,
+      long enemyBishops, long enemyRooks, long enemyQueens
+  ) {
+    List<CheckingPiece> checkingPieces = new ArrayList<>();
+    
+    long checkingPawns = 0L;
+    int pawnDirection = color == WHITE ? 1 : -1;
+    if ((color == WHITE && (king & rank8) == 0) || (color == BLACK && (king & rank1) == 0)) {
+      checkingPawns |= shiftPawns(king, 7 * pawnDirection) & ~fileA;
+      checkingPawns |= shiftPawns(king, 9 * pawnDirection) & ~fileH;
+    }
 
+    int kingSquare = Long.numberOfTrailingZeros(king);
+    long diagonals = calculateDiagonalMoves(king, occupied, kingSquare) & (enemyBishops | enemyQueens);
+    long straights = calculateStraightMoves(king, occupied, kingSquare) & (enemyRooks | enemyQueens);
+
+    checkingPawns &= enemyPawns;
+    long checkingKnights = calculateKnightMoves(kingSquare) & enemyKnights;
+    long checkingBishops = diagonals & enemyBishops;
+    long checkingRooks = straights & enemyRooks;
+    long checkingQueens = (diagonals | straights) & enemyQueens;
+
+    addCheckingPiece(checkingPieces, checkingPawns, PAWN);
+    addCheckingPiece(checkingPieces, checkingKnights, KNIGHT);
+    addCheckingPiece(checkingPieces, checkingBishops, BISHOP);
+    addCheckingPiece(checkingPieces, checkingRooks, ROOK);
+    addCheckingPiece(checkingPieces, checkingQueens, QUEEN);
+
+    return checkingPieces;
+  }
+
+  private static void addCheckingPiece(List<CheckingPiece> checkingPieces, long piece, Type type) {
+    while (piece != 0) {
+      int square = Long.numberOfTrailingZeros(piece);
+      checkingPieces.add(new CheckingPiece(square, type));
+      piece &= piece - 1;
+    }
+  }
 }

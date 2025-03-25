@@ -1,37 +1,41 @@
 package chess;
 
-import static chess.MoveGenerator.generatePawnMoves;
+import static chess.MoveGenerator.getCheckingPieces;
 import static chess.Piece.Color.BLACK;
 import static chess.Piece.Color.WHITE;
+import static chess.Piece.Type.BISHOP;
+import static chess.Piece.Type.KING;
+import static chess.Piece.Type.KNIGHT;
+import static chess.Piece.Type.PAWN;
+import static chess.Piece.Type.QUEEN;
+import static chess.Piece.Type.ROOK;
 
-import chess.Piece.Type;
-import java.util.ArrayList;
+import chess.MoveGenerator.CheckingPiece;
 import java.util.List;
 
 public class Chess {
   public static void main(String[] args) {
-    long start = System.nanoTime();
-    Board board = new Board("r1bqkbnr/ppp1pppp/2n5/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
+//    Board board = new Board("r1bqkbnr/ppp1pppp/2n5/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
+//    Board board = new Board("8/8/2k2R2/2b5/6K1/5Q2/8/2R5 b - - 0 1");
+    Board board = new Board("8/8/8/8/1b4k1/5np1/3BPp2/q1N1K3 w - - 0 1");
     System.out.println(board);
 
-    List<Move> moves = new ArrayList<>();
+    long king = board.getPieces(WHITE, KING);
+    long occupied = board.getOccupied();
+    long enemyPawns = board.getPieces(BLACK, PAWN);
+    long enemyKnights = board.getPieces(BLACK, KNIGHT);
+    long enemyBishops = board.getPieces(BLACK, BISHOP);
+    long enemyRooks = board.getPieces(BLACK, ROOK);
+    long enemyQueens = board.getPieces(BLACK, QUEEN);
 
-    generatePawnMoves(
-        moves, WHITE,
-        board.getPieces(WHITE, Type.PAWN),
-        board.getPiecesByColor(WHITE),
-        board.getPiecesByColor(BLACK)
-    );
-    System.out.println("WHITE: " + moves);
+    long start = System.nanoTime();
 
-    moves.clear();
-    generatePawnMoves(
-        moves, BLACK,
-        board.getPieces(BLACK, Type.PAWN),
-        board.getPiecesByColor(BLACK),
-        board.getPiecesByColor(WHITE)
+    List<CheckingPiece> checkingPieces = getCheckingPieces(
+        WHITE, king, occupied,
+        enemyPawns, enemyKnights,
+        enemyBishops, enemyRooks, enemyQueens
     );
-    System.out.println("BLACK: " + moves);
+    System.out.println("CHECKING PIECES: " + checkingPieces);
 
     long end = System.nanoTime();
     System.out.println(((end - start) / 1000000.0)+ " ms");
