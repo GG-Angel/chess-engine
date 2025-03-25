@@ -1,5 +1,6 @@
 package chess;
 
+import static chess.Board.printBitboard;
 import static chess.Masks.blackKSInter;
 import static chess.Masks.blackKSRook;
 import static chess.Masks.blackQSInter;
@@ -164,7 +165,7 @@ public class MoveGenerator {
     }
 
     // ensure moves do not wrap around the board
-    knightMoves &= (square % 8 < 4) ? ~fileAB : ~fileGH;
+    knightMoves &= (square % 8 < 4) ? ~fileGH : ~fileAB;
 
     return knightMoves;
   }
@@ -427,6 +428,57 @@ public class MoveGenerator {
     }
   }
 
+  private static void generateCheckEvasions(
+      List<Move> moves, Color color, long evasion, long occupied, long empty, long enemy,
+      long pawns, long knights, long bishops, long rooks, long queens
+  ) {
+    long promotionRankMask = (color == WHITE) ? rank8 : rank1;
+    long doublePushMask = (color == WHITE) ? rank4 : rank5;
+    int direction = (color == WHITE) ? 1 : -1;
+    int shift = 8 * direction;
+
+    long quietMoves = calculatePawnQuietMoves(pawns, empty, promotionRankMask, shift) & evasion;
+    long doublePushMoves = calculatePawnDoublePushMoves(pawns, empty, doublePushMask, shift) & evasion;
+    long leftCaptureMoves = calculatePawnLeftCaptures(pawns, enemy, promotionRankMask, direction) & evasion;
+    long rightCaptureMoves = calculatePawnRightCaptures(pawns, enemy, promotionRankMask, direction) & evasion;
+    long quietPromotionMoves = calculatePawnQuietPromotions(pawns, empty, promotionRankMask, shift) & evasion;
+    long leftCapturePromotionMoves = calculatePawnLeftPromotionCaptures(pawns, enemy, promotionRankMask, direction) & evasion;
+    long rightCapturePromotionMoves = calculatePawnRightPromotionCaptures(pawns, enemy, promotionRankMask, direction) & evasion;
+
+    addPawnMoves(moves, quietMoves, shift, QUIET);
+    addPawnMoves(moves, doublePushMoves, shift * 2, DOUBLE_PAWN_PUSH);
+    addPawnMoves(moves, leftCaptureMoves, 7 * direction, CAPTURE);
+    addPawnMoves(moves, rightCaptureMoves, 9 * direction, CAPTURE);
+    addPromotionMoves(moves, quietPromotionMoves, shift, Promotions);
+    addPromotionMoves(moves, leftCapturePromotionMoves, 7 * direction, PromotionCaptures);
+    addPromotionMoves(moves, rightCapturePromotionMoves, 9 * direction, PromotionCaptures);
+
+    while (knights != 0) {
+      int knightSquare = Long.numberOfTrailingZeros(knights);
+      long knightMoves = calculateKnightMoves(knightSquare) & evasion;
+      createMovesFromBitboard(moves, knightMoves, knightSquare, enemy);
+      knights &= knights - 1;
+    }
+
+    long diagonalPieces = bishops | queens;
+    while (diagonalPieces != 0) {
+      int diagonalSquare = Long.numberOfTrailingZeros(diagonalPieces);
+      long diagonalPiece = 1L << diagonalSquare;
+      long diagonalMoves = calculateDiagonalMoves(diagonalPiece, occupied, diagonalSquare) & evasion;
+      createMovesFromBitboard(moves, diagonalMoves, diagonalSquare, enemy);
+      diagonalPieces &= diagonalPieces - 1;
+    }
+
+    long straightPieces = rooks | queens;
+    while (straightPieces != 0) {
+      int straightSquare = Long.numberOfTrailingZeros(straightPieces);
+      long straightPiece = 1L << straightSquare;
+      long straightMoves = calculateStraightMoves(straightPiece, occupied, straightSquare) & evasion;
+      createMovesFromBitboard(moves, straightMoves, straightSquare, enemy);
+      straightPieces &= straightPieces - 1;
+    }
+  }
+
   public static List<Move> generatePseudoLegalMoves(Board board, Color color) {
     List<Move> moves = new ArrayList<>();
 
@@ -516,56 +568,5 @@ public class MoveGenerator {
     }
 
     return moves;
-  }
-
-  private static void generateCheckEvasions(
-      List<Move> moves, Color color, long evasion, long occupied, long empty, long enemy,
-      long pawns, long knights, long bishops, long rooks, long queens
-  ) {
-    long promotionRankMask = (color == WHITE) ? rank8 : rank1;
-    long doublePushMask = (color == WHITE) ? rank4 : rank5;
-    int direction = (color == WHITE) ? 1 : -1;
-    int shift = 8 * direction;
-
-    long quietMoves = calculatePawnQuietMoves(pawns, empty, promotionRankMask, shift) & evasion;
-    long doublePushMoves = calculatePawnDoublePushMoves(pawns, empty, doublePushMask, shift) & evasion;
-    long leftCaptureMoves = calculatePawnLeftCaptures(pawns, enemy, promotionRankMask, direction) & evasion;
-    long rightCaptureMoves = calculatePawnRightCaptures(pawns, enemy, promotionRankMask, direction) & evasion;
-    long quietPromotionMoves = calculatePawnQuietPromotions(pawns, empty, promotionRankMask, shift) & evasion;
-    long leftCapturePromotionMoves = calculatePawnLeftPromotionCaptures(pawns, enemy, promotionRankMask, direction) & evasion;
-    long rightCapturePromotionMoves = calculatePawnRightPromotionCaptures(pawns, enemy, promotionRankMask, direction) & evasion;
-
-    addPawnMoves(moves, quietMoves, shift, QUIET);
-    addPawnMoves(moves, doublePushMoves, shift * 2, DOUBLE_PAWN_PUSH);
-    addPawnMoves(moves, leftCaptureMoves, 7 * direction, CAPTURE);
-    addPawnMoves(moves, rightCaptureMoves, 9 * direction, CAPTURE);
-    addPromotionMoves(moves, quietPromotionMoves, shift, Promotions);
-    addPromotionMoves(moves, leftCapturePromotionMoves, 7 * direction, PromotionCaptures);
-    addPromotionMoves(moves, rightCapturePromotionMoves, 9 * direction, PromotionCaptures);
-
-    while (knights != 0) {
-      int knightSquare = Long.numberOfTrailingZeros(knights);
-      long knightMoves = calculateKnightMoves(knightSquare) & evasion;
-      createMovesFromBitboard(moves, knightMoves, knightSquare, enemy);
-      knights &= knights - 1;
-    }
-
-    long diagonalPieces = bishops | queens;
-    while (diagonalPieces != 0) {
-      int diagonalSquare = Long.numberOfTrailingZeros(diagonalPieces);
-      long diagonalPiece = 1L << diagonalSquare;
-      long diagonalMoves = calculateDiagonalMoves(diagonalPiece, occupied, diagonalSquare) & evasion;
-      createMovesFromBitboard(moves, diagonalMoves, diagonalSquare, enemy);
-      diagonalPieces &= diagonalPieces - 1;
-    }
-
-    long straightPieces = rooks | queens;
-    while (straightPieces != 0) {
-      int straightSquare = Long.numberOfTrailingZeros(straightPieces);
-      long straightPiece = 1L << straightSquare;
-      long straightMoves = calculateStraightMoves(straightPiece, occupied, straightSquare) & evasion;
-      createMovesFromBitboard(moves, straightMoves, straightSquare, enemy);
-      straightPieces &= straightPieces - 1;
-    }
   }
 }
