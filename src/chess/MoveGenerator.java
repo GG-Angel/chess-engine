@@ -57,7 +57,7 @@ public class MoveGenerator {
     int shift = 8 * direction;
 
     long quietMoves = calculatePawnQuietMoves(pawns, empty, promotionRankMask, shift);
-    long doublePushMoves = calculatePawnDoublePushMoves(pawns, empty, doublePushMask, shift);
+    long doublePushMoves = calculatePawnDoublePushMoves(pawns, empty, doublePushMask, shift, color);
     long leftCaptureMoves = calculatePawnLeftCaptures(pawns, enemy, promotionRankMask, direction);
     long rightCaptureMoves = calculatePawnRightCaptures(pawns, enemy, promotionRankMask, direction);
     long quietPromotionMoves = calculatePawnQuietPromotions(pawns, empty, promotionRankMask, shift);
@@ -77,9 +77,9 @@ public class MoveGenerator {
     return shiftPawns(pawns, shift) & empty & ~promotionRankMask;
   }
 
-  private static long calculatePawnDoublePushMoves(long pawns, long empty, long doublePushMask, int shift) {
-    long doublePawnPushTargets = empty & shiftPawns(empty, shift / 2);
-    return shiftPawns(pawns, shift) & doublePawnPushTargets & doublePushMask;
+  private static long calculatePawnDoublePushMoves(long pawns, long empty, long doublePushMask, int shift, Color color) {
+    long doublePawnPushTargets = empty & (color == WHITE ? empty << 8 : empty >> 8);
+    return shiftPawns(pawns, shift * 2) & doublePawnPushTargets & doublePushMask;
   }
 
   private static long calculatePawnLeftCaptures(long pawns, long enemy, long promotionRankMask, int direction) {
@@ -438,7 +438,7 @@ public class MoveGenerator {
     int shift = 8 * direction;
 
     long quietMoves = calculatePawnQuietMoves(pawns, empty, promotionRankMask, shift) & evasion;
-    long doublePushMoves = calculatePawnDoublePushMoves(pawns, empty, doublePushMask, shift) & evasion;
+    long doublePushMoves = calculatePawnDoublePushMoves(pawns, empty, doublePushMask, shift, color) & evasion;
     long leftCaptureMoves = calculatePawnLeftCaptures(pawns, enemy, promotionRankMask, direction) & evasion;
     long rightCaptureMoves = calculatePawnRightCaptures(pawns, enemy, promotionRankMask, direction) & evasion;
     long quietPromotionMoves = calculatePawnQuietPromotions(pawns, empty, promotionRankMask, shift) & evasion;
