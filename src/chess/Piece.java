@@ -47,6 +47,10 @@ public class Piece {
     public static Color fromChar(char symbol) {
       return Character.isUpperCase(symbol) ? WHITE : BLACK;
     }
+
+    public Color getOpponent() {
+      return this == WHITE ? BLACK : WHITE;
+    }
   }
 
   public static char getSymbol(Color color, Type type) {

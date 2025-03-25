@@ -35,6 +35,7 @@ import static chess.MoveType.QUIET;
 import static chess.Piece.Color.BLACK;
 import static chess.Piece.Color.WHITE;
 import static chess.Piece.Type.BISHOP;
+import static chess.Piece.Type.KING;
 import static chess.Piece.Type.KNIGHT;
 import static chess.Piece.Type.PAWN;
 import static chess.Piece.Type.QUEEN;
@@ -43,6 +44,7 @@ import static java.lang.Long.reverse;
 
 import chess.Piece.Color;
 import chess.Piece.Type;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -218,9 +220,9 @@ public class MoveGenerator {
 
   private static void createMovesFromBitboard(List<Move> moves, long movesBitboard, int pieceSquare, long enemy) {
     while (movesBitboard != 0) {
-      int bishopTarget = Long.numberOfTrailingZeros(movesBitboard);
-      MoveType moveType = (enemy & (1L << bishopTarget)) != 0 ? CAPTURE : QUIET;
-      moves.add(new Move(pieceSquare, bishopTarget, moveType));
+      int target = Long.numberOfTrailingZeros(movesBitboard);
+      MoveType moveType = (enemy & (1L << target)) != 0 ? CAPTURE : QUIET;
+      moves.add(new Move(pieceSquare, target, moveType));
       movesBitboard &= movesBitboard - 1;
     }
   }
@@ -366,13 +368,13 @@ public class MoveGenerator {
       long enemyBishops, long enemyRooks, long enemyQueens
   ) {
     List<CheckingPiece> checkingPieces = new ArrayList<>();
-    
+
     long checkingPawns = 0L;
     int pawnDirection = color == WHITE ? 1 : -1;
     if ((color == WHITE && (king & rank8) == 0) || (color == BLACK && (king & rank1) == 0)) {
       checkingPawns |= shiftPawns(king, 7 * pawnDirection) & ~fileA;
       checkingPawns |= shiftPawns(king, 9 * pawnDirection) & ~fileH;
-    }
+    } // TODO: might be buggy
 
     int kingSquare = Long.numberOfTrailingZeros(king);
     long diagonals = calculateDiagonalMoves(king, occupied, kingSquare) & (enemyBishops | enemyQueens);
@@ -399,5 +401,113 @@ public class MoveGenerator {
       checkingPieces.add(new CheckingPiece(square, type));
       piece &= piece - 1;
     }
+  }
+
+  public static List<Move> generatePseudoLegalMoves(Board board, Color color) {
+    List<Move> moves = new ArrayList<>();
+
+    long pawns = board.getPieces(color, PAWN);
+    long knights = board.getPieces(color, KNIGHT);
+    long bishops = board.getPieces(color, BISHOP);
+    long rooks = board.getPieces(color, ROOK);
+    long queens = board.getPieces(color, QUEEN);
+    long king = board.getPieces(color, KING);
+
+    Color opponentColor = color.getOpponent();
+    long enemyPawns = board.getPieces(opponentColor, PAWN);
+    long enemyKnights = board.getPieces(opponentColor, KNIGHT);
+    long enemyBishops = board.getPieces(opponentColor, BISHOP);
+    long enemyRooks = board.getPieces(opponentColor, ROOK);
+    long enemyQueens = board.getPieces(opponentColor, QUEEN);
+    long enemyKing = board.getPieces(opponentColor, KING);
+
+    long friendly = pawns | knights | bishops | rooks | queens | king;
+    long enemy = enemyPawns | enemyKnights | enemyBishops | enemyRooks | enemyQueens | enemyKing;
+    long occupied = friendly | enemy;
+    long unsafe = generateUnsafeSquares(
+        king, friendly, enemy,
+        enemyPawns, enemyKnights, enemyBishops,
+        enemyRooks, enemyQueens, enemyKing
+    );
+
+    List<CheckingPiece> checkingPieces = getCheckingPieces(
+        color, king, occupied,
+        enemyPawns, enemyKnights,
+        enemyBishops, enemyRooks, enemyQueens
+    );
+
+    // king is not in check, generate moves normally
+    if (checkingPieces.isEmpty()) {
+      generatePawnMoves(moves, color, pawns, friendly, enemy);
+      generateKnightMoves(moves, knights, friendly, enemy);
+      generateBishopMoves(moves, bishops, friendly, enemy);
+      generateRookMoves(moves, rooks, friendly, enemy);
+      generateQueenMoves(moves, queens, friendly, enemy);
+      generateKingMoves(moves, king, friendly, enemy, unsafe);
+    }
+
+    // king is in check, use alternative move generation
+    else {
+      //
+      if (checkingPieces.size() == 1) {
+        CheckingPiece checkingPiece = checkingPieces.getFirst();
+        Type checkerType = checkingPiece.type;
+        int checkerSquare = checkingPiece.square;
+        long checker = 1L << checkerSquare;
+
+        // generate moves which block or capture the attacking piece
+        if (checkerType != KNIGHT && checkerType != PAWN) {
+          int kingSquare = Long.numberOfTrailingZeros(king);
+
+          // get line of sight between king and checking piece for blocking
+          long lineOfSight = 0L;
+          switch (checkerType) {
+            case BISHOP -> lineOfSight = calculateDiagonalMoves(king, occupied, kingSquare);
+            case ROOK   -> lineOfSight = calculateStraightMoves(king, occupied, kingSquare);
+            case QUEEN  -> lineOfSight = calculateDiagonalMoves(king, occupied, kingSquare)
+                                       | calculateStraightMoves(king, occupied, kingSquare);
+          }
+
+          long blockOrCapture = lineOfSight | checker;
+
+          
+        }
+
+        // generate moves which capture the attacking piece
+        else {
+          // TODO: pawns
+
+          while (knights != 0) {
+            int knightSquare = Long.numberOfTrailingZeros(knights);
+            long knightMoves = calculateKnightMoves(knightSquare) & checker;
+            createMovesFromBitboard(moves, knightMoves, knightSquare, enemy);
+            knights &= knights - 1;
+          }
+
+          long diagonalPieces = bishops | queens;
+          while (diagonalPieces != 0) {
+            int diagonalSquare = Long.numberOfTrailingZeros(diagonalPieces);
+            long diagonalPiece = 1L << diagonalSquare;
+            long diagonalMoves = calculateDiagonalMoves(diagonalPiece, occupied, diagonalSquare) & checker;
+            createMovesFromBitboard(moves, diagonalMoves, diagonalSquare, enemy);
+            diagonalPieces &= diagonalPieces - 1;
+          }
+
+          long straightPieces = rooks | queens;
+          while (straightPieces != 0) {
+            int straightSquare = Long.numberOfTrailingZeros(straightPieces);
+            long straightPiece = 1L << straightSquare;
+            long straightMoves = calculateStraightMoves(straightPiece, occupied, straightSquare) & checker;
+            createMovesFromBitboard(moves, straightMoves, straightSquare, enemy);
+            straightPieces &= straightPieces - 1;
+          }
+        }
+      }
+
+      // generate king moves to safety
+      generateKingMoves(moves, king, friendly, enemy, unsafe);
+    }
+
+    return moves;
   }
 }
